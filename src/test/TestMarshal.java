@@ -29,7 +29,7 @@ public class TestMarshal {
 	private static ArrayList<Researcher> Researchers;
 	private static List<CfPersType> listPersType = new ArrayList<CfPersType>();
 	
-	private static String fileOutPut = "/home/amartinez/Escriptori/output.xml";
+	private static String fileOutPut = "./output.xml";
 	
 	/**
 	 * @param args
