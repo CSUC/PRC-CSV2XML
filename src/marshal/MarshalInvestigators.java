@@ -3,6 +3,8 @@
  */
 package marshal;
 
+import org.apache.commons.lang3.StringUtils;
+
 import global.RandomNumeric;
 import global.UIDS;
 import cerif.CfCoreClassWithFractionType;
@@ -61,18 +63,18 @@ public class MarshalInvestigators {
 	 * @param universityCode
 	 */
 	private void setAttrPers(ObjectFactory factory,
-            String familyNames, String firstNames, String signatureFamilyNames,
-            String signatureFirstNames, String orcid, String ae, String universityCode){
+            String familyNames, String firstNames, String orcid, String signatureFamilyNames,
+            String signatureFirstNames, String ae, String universityCode){
 		
 		this.factory = factory;
 		this.familyNames = familyNames;
-		this.firstNames = firstNames;		
+		this.firstNames = firstNames;
+		this.orcid = orcid;
 		this.signatureFamilyNames = signatureFamilyNames;
 		this.signatureFirstNames = signatureFirstNames;
-		this.orcid = orcid;
 		this.ae = ae;
 		this.universityCode = universityCode;
-		
+				
 	}
 	
 	/**
@@ -81,7 +83,7 @@ public class MarshalInvestigators {
 	private void createResearcher(){
 		pers = factory.createCfPersType();
 		this._ID = RandomNumeric.getInstance().newId();
-        pers.setCfPersId(_ID);
+        pers.setCfPersId(_ID);        
 		createPersClass();
 		createPersNamePers();
 		createPersSignaturePers();
@@ -103,38 +105,32 @@ public class MarshalInvestigators {
 	/**
 	 * 
 	 */
-	private void createPersNamePers(){
-		
-		if(familyNames != null)
-			if(!familyNames.isEmpty()){
-				CfPersType.CfPersNamePers persname = new CfPersType.CfPersNamePers();
+	private void createPersNamePers(){		
+		if(!StringUtils.isEmpty(familyNames)
+				|| !StringUtils.isEmpty(firstNames)){
+        	CfPersType.CfPersNamePers persname = new CfPersType.CfPersNamePers();
 	        	persname.setCfPersNameId(RandomNumeric.getInstance().newId());
 	            persname.setCfFamilyNames(familyNames);
 	            persname.setCfFirstNames(firstNames);
 	            persname.setCfClassId(UIDS.CLASS_ID.getPRESENTED_NAME());
 	            persname.setCfClassSchemeId(UIDS.SCHEME_ID.getPERSON_NAMES());	
 	            pers.getCfResIntOrCfKeywOrCfPersPers().add(factory.createCfPersTypeCfPersNamePers(persname));
-			}
+		}
 	}
 	
 	/**
 	 * 
 	 */
 	private void createPersSignaturePers(){
-		
-		
-		if(signatureFamilyNames != null
-				|| signatureFirstNames != null){
-			if(!signatureFamilyNames.isEmpty()
-				|| !signatureFirstNames.isEmpty() ){
-				CfPersType.CfPersNamePers sig = new CfPersType.CfPersNamePers();
-			       sig.setCfPersNameId(RandomNumeric.getInstance().newId());
-			       sig.setCfFamilyNames(signatureFamilyNames);
-			       sig.setCfFirstNames(signatureFirstNames);
-			       sig.setCfClassId(UIDS.CLASS_ID.getSIGNATURE());
-			       sig.setCfClassSchemeId(UIDS.SCHEME_ID.getPERSON_NAMES());
-			       pers.getCfResIntOrCfKeywOrCfPersPers().add(factory.createCfPersTypeCfPersNamePers(sig));
-			}
+		if(!StringUtils.isEmpty(signatureFamilyNames)
+				|| !StringUtils.isEmpty(signatureFirstNames)){
+    	   CfPersType.CfPersNamePers sig = new CfPersType.CfPersNamePers();
+		       sig.setCfPersNameId(RandomNumeric.getInstance().newId());
+		       sig.setCfFamilyNames(signatureFamilyNames);
+		       sig.setCfFirstNames(signatureFirstNames);
+		       sig.setCfClassId(UIDS.CLASS_ID.getSIGNATURE());
+		       sig.setCfClassSchemeId(UIDS.SCHEME_ID.getPERSON_NAMES());
+		       pers.getCfResIntOrCfKeywOrCfPersPers().add(factory.createCfPersTypeCfPersNamePers(sig));
 		}
 	}
 	
@@ -142,45 +138,42 @@ public class MarshalInvestigators {
 	 * 
 	 */
 	private void createPersUniversityCode(){
-		if(universityCode != null)
-			if(!universityCode.isEmpty()){
-				CfPersType.CfPersOrgUnit orgUnit = new CfPersType.CfPersOrgUnit();
-				orgUnit.setCfOrgUnitId(universityCode);
-				orgUnit.setCfClassId(UIDS.CLASS_ID.getUNIVERSITY_CODE());
-				orgUnit.setCfClassSchemeId(UIDS.SCHEME_ID.getIDENTIFIER_TYPES());
-				pers.getCfResIntOrCfKeywOrCfPersPers().add(factory.createCfPersTypeCfPersOrgUnit(orgUnit));
-			}		
+		if(!StringUtils.isEmpty(universityCode)){
+			CfPersType.CfPersOrgUnit orgUnit = new CfPersType.CfPersOrgUnit();
+			orgUnit.setCfOrgUnitId(universityCode);
+			orgUnit.setCfClassId(UIDS.CLASS_ID.getUNIVERSITY_CODE());
+			orgUnit.setCfClassSchemeId(UIDS.SCHEME_ID.getIDENTIFIER_TYPES());
+			pers.getCfResIntOrCfKeywOrCfPersPers().add(factory.createCfPersTypeCfPersOrgUnit(orgUnit));
+		}		
 	}
 	
 	/**
 	 * 
 	 */
 	private void createPersOrcid(){
-		if(orcid != null)
-			if(!orcid.isEmpty()){
-				CfFedIdEmbType fedId = new CfFedIdEmbType();
-				fedId.setCfFedId(orcid);
-				
-				CfCoreClassWithFractionType fedIdClass = new CfCoreClassWithFractionType();
-					fedIdClass.setCfClassId(UIDS.CLASS_ID.getORCID());
-					fedIdClass.setCfClassSchemeId(UIDS.SCHEME_ID.getIDENTIFIER_TYPES());
-				fedId.getCfFedIdClassOrCfFedIdSrv().add(fedIdClass);
-				pers.getCfResIntOrCfKeywOrCfPersPers().add(factory.createCfPersTypeCfFedId(fedId));
-			}
+		if(!StringUtils.isEmpty(orcid)){
+			CfFedIdEmbType fedId = new CfFedIdEmbType();
+			fedId.setCfFedId(orcid);
+			
+			CfCoreClassWithFractionType fedIdClass = new CfCoreClassWithFractionType();
+				fedIdClass.setCfClassId(UIDS.CLASS_ID.getORCID());
+				fedIdClass.setCfClassSchemeId(UIDS.SCHEME_ID.getIDENTIFIER_TYPES());
+			fedId.getCfFedIdClassOrCfFedIdSrv().add(fedIdClass);
+			pers.getCfResIntOrCfKeywOrCfPersPers().add(factory.createCfPersTypeCfFedId(fedId));
+		}
 	}
 	
 	/**
 	 * 
 	 */
-	private void createPersEmail(){	
-		if(ae != null)
-			if(!ae.isEmpty()){
-				CfPersEAddr email = new CfPersEAddr();
-					email.setCfEAddrId(ae);
-					email.setCfClassId(UIDS.CLASS_ID.getEMAIL());
-					email.setCfClassSchemeId(UIDS.SCHEME_ID.getPERSON_CONTACT_DETAILS());
-					pers.getCfResIntOrCfKeywOrCfPersPers().add(factory.createCfPersTypeCfPersEAddr(email));
-			}
+	private void createPersEmail(){		
+		if(!StringUtils.isEmpty(ae)){
+			CfPersEAddr email = new CfPersEAddr();
+				email.setCfEAddrId(ae);
+				email.setCfClassId(UIDS.CLASS_ID.getEMAIL());
+				email.setCfClassSchemeId(UIDS.SCHEME_ID.getPERSON_CONTACT_DETAILS());
+				pers.getCfResIntOrCfKeywOrCfPersPers().add(factory.createCfPersTypeCfPersEAddr(email));
+		}
 	}
 	
 	public String get_ID() {

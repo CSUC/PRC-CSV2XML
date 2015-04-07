@@ -2231,7 +2231,7 @@ public class CfProjType{
         @XmlElement(required = true)
         protected String cfPersId;
         @XmlSchemaType(name = "date")
-        protected XMLGregorianCalendar cfStartDate;
+        protected String cfStartDate;
 
         /**
          * Gets the value of the cfClassId property.
@@ -2301,7 +2301,7 @@ public class CfProjType{
          *     {@link XMLGregorianCalendar }
          *     
          */
-        public XMLGregorianCalendar getCfStartDate() {
+        public String getCfStartDate() {
             return cfStartDate;
         }
 
@@ -2373,7 +2373,7 @@ public class CfProjType{
          *     {@link XMLGregorianCalendar }
          *     
          */
-        public void setCfStartDate(XMLGregorianCalendar value) {
+        public void setCfStartDate(String value) {
             this.cfStartDate = value;
         }
 

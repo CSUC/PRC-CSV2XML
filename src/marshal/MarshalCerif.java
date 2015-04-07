@@ -18,6 +18,11 @@ import javax.xml.datatype.XMLGregorianCalendar;
 
 import org.apache.log4j.Logger;
 
+import csv.CSVDepartment;
+import csv.CSVGroup;
+import csv.CSVProject;
+import csv.CSVPublication;
+import csv.CSVResearcher;
 import cerif.CERIF;
 import cerif.ObjectFactory;
 
@@ -77,7 +82,21 @@ public class MarshalCerif {
 		}
     }
     
-    
+    /**
+     * Apila a l'objecte CERIF les llistes d'entitats.
+     * 
+     * @param res
+     * @param dep
+     * @param gr
+     * @param proj
+     * @param publ
+     * @return
+     */
+    public List<List<? extends Object>> extracted(CSVResearcher res,
+			CSVDepartment dep, CSVGroup gr, CSVProject proj, CSVPublication publ) {
+		return Arrays.asList(res.getListPersType(), dep.getListDepType(),
+										gr.getListGrType(), proj.getListProjType(), publ.getListPublType());
+	}
         
     /************************************************** GETTERS / SETTERS ***************************************************/
     

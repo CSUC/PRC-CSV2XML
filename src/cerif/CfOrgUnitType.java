@@ -3897,7 +3897,7 @@ public class CfOrgUnitType{
         protected String cfClassSchemeId;
         protected String cfConditions;
         @XmlSchemaType(name = "date")
-        protected XMLGregorianCalendar cfEndDate;
+        protected String cfEndDate;
         protected Float cfFraction;
         protected CfAmountType cfPrice;
         @XmlElement(required = true)
@@ -3961,7 +3961,7 @@ public class CfOrgUnitType{
          *     {@link XMLGregorianCalendar }
          *     
          */
-        public XMLGregorianCalendar getCfEndDate() {
+        public String getCfEndDate() {
             return cfEndDate;
         }
 
@@ -4069,7 +4069,7 @@ public class CfOrgUnitType{
          *     {@link XMLGregorianCalendar }
          *     
          */
-        public void setCfEndDate(XMLGregorianCalendar value) {
+        public void setCfEndDate(String value) {
             this.cfEndDate = value;
         }
 
