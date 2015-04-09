@@ -5,9 +5,10 @@ package test;
 
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
-import java.util.List;
+import java.io.UnsupportedEncodingException;
 
 import javax.xml.bind.JAXBException;
+import javax.xml.datatype.DatatypeConfigurationException;
 
 import marshal.MarshalCerif;
 
@@ -19,6 +20,7 @@ import csv.CSVGroup;
 import csv.CSVProject;
 import csv.CSVPublication;
 import csv.CSVResearcher;
+
 
 /**
  * @author amartinez
@@ -35,30 +37,50 @@ public class TestMarshal {
 	private static String PUBL;
 	private static String PUBL_INV;
 	
-	private static String fileOutPut = "./files/output/output.xml";
+	private static String OUT = "./files/output/output.xml";
 	
 	/**
-	 * @param args
+	 * Codi RUCT: https://www.educacion.gob.es/ruct/consultacentros?actual=centros
 	 */
-	public static void main(String[] args) {		
-		MarshalCerif marshalCERIF = new MarshalCerif("1");
-		try {
-			CSVResearcher res = new CSVResearcher(INV, marshalCERIF);			
-			CSVDepartment dep = new CSVDepartment(DEPT, marshalCERIF, DEPT_INV, res.getMapResearcher());				
-			CSVGroup gr = new CSVGroup(GR, marshalCERIF, GR_INV, res.getMapResearcher());
-			CSVProject proj = new CSVProject(PROJ, marshalCERIF, PROJ_INV, res.getMapResearcher());			
-			CSVPublication publ = new CSVPublication(PUBL, marshalCERIF, PUBL_INV, res.getMapResearcher());
+	private static String UNIVERSITY = "024";
 			
-			List entities = marshalCERIF.extracted(res, dep, gr, proj, publ);
+	/**
+	 * @param args
+	 * @throws DatatypeConfigurationException 
+	 * @throws UnsupportedEncodingException 
+	 */
+	public static void main(String[] args) throws DatatypeConfigurationException, UnsupportedEncodingException {
+		Marshal();
+	}
+	
+	private static void Marshal() throws UnsupportedEncodingException{
+		MarshalCerif marshalCERIF = new MarshalCerif(UNIVERSITY);
+		try {								
+			CSVResearcher res = new CSVResearcher(INV, marshalCERIF);
+			CSVDepartment dep = new CSVDepartment(DEPT, marshalCERIF, DEPT_INV, res);
+			CSVGroup gr = new CSVGroup(GR, marshalCERIF, GR_INV, res);
+			CSVProject proj = new CSVProject(PROJ, marshalCERIF, PROJ_INV, res);
+			CSVPublication publ = new CSVPublication(PUBL, marshalCERIF, PUBL_INV, res);
+						
+			//Crear llistat d'uncheckeds
+			if(!res.getUNCHECKEDS().isEmpty())	res.addUncheckeds();
 			
-			marshalCERIF.createCerif(entities, 
-								new FileOutputStream(fileOutPut),
-								Boolean.TRUE, Charsets.UTF_8.toString());
+			//Si no es vol generar totes les entitats de cop...
+			//List ent = Arrays.asList(res.getListPersType());
+					
+			marshalCERIF.createCerif(marshalCERIF.extracted(res, dep, gr, proj, publ),
+									new FileOutputStream(OUT),
+									Boolean.TRUE,
+									Charsets.UTF_8.toString());
 			
-		} catch (FileNotFoundException | JAXBException e) {
+		} catch (FileNotFoundException e) {
 			Logger.getLogger(TestMarshal.class.getName()).info(e);
-		}finally{
-			Logger.getLogger(TestMarshal.class.getName()).info("DONE!");
+		} catch (JAXBException e) {
+			Logger.getLogger(TestMarshal.class.getName()).info(e);
 		}
 	}
+	
+	
+	
+
 }

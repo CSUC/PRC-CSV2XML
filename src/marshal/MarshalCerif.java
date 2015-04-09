@@ -4,6 +4,7 @@
 package marshal;
 
 import java.io.OutputStream;
+import java.io.UnsupportedEncodingException;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.GregorianCalendar;
@@ -31,18 +32,18 @@ import cerif.ObjectFactory;
  *
  */
 public class MarshalCerif {
-	
+	private final String SCHEMA_LOCATION = "urn:xmlns:org:eurocris:cerif-1.6-2 http://www.eurocris.org/Uploads/Web%20pages/CERIF-1.6/CERIF_1.6_2.xsd";
 	private ObjectFactory factory;
     private CERIF cerif;
     
     /**
      * 
      */
-    public MarshalCerif(String version) {
+    public MarshalCerif(String sourceDataBase) {
     	factory = new ObjectFactory();
         cerif = factory.createCERIF();
         cerif.setDate(newDate());
-        cerif.setSourceDatabase(version);
+        cerif.setSourceDatabase(sourceDataBase);
 	}	
     
     /**
@@ -50,22 +51,25 @@ public class MarshalCerif {
      * @param out Nom amb ruta absoluta del fitxer que crearà i volcarà tot el contingut XML.
      * @param formattedOutput True si es vol el format tabulat, False minimitzat.
      * @param charset Format de sortida. CERIF especifica a l'XSD que el format ha de set UTF-8
+     * 
+     * 
      * @throws JAXBException
+     * @throws UnsupportedEncodingException 
      */
-    public void createCerif(List<List<? extends Object>> list, OutputStream out, boolean formattedOutput, String charset) throws JAXBException {
+    public void createCerif(List<List<? extends Object>> list, OutputStream out, boolean formattedOutput, String charset) throws JAXBException, UnsupportedEncodingException {
     	if(list!=null)	for(List<? extends Object> objs : list)	for(Object obj : objs)	cerif.getCfClassOrCfClassSchemeOrCfClassSchemeDescr().add(obj);
-        JAXBContext context = JAXBContext.newInstance(CERIF.class);
+        
+    	JAXBContext context = JAXBContext.newInstance(CERIF.class);
         Marshaller marshaller = context.createMarshaller();
 
-        marshaller.setProperty(Marshaller.JAXB_SCHEMA_LOCATION, "urn:xmlns:org:eurocris:cerif-1.6-2 http://www.eurocris.org/Uploads/Web%20pages/CERIF-1.6/CERIF_1.6_2.xsd");
+        marshaller.setProperty(Marshaller.JAXB_SCHEMA_LOCATION, SCHEMA_LOCATION);
         marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, formattedOutput);
         marshaller.setProperty(Marshaller.JAXB_FRAGMENT, Boolean.TRUE);
-        marshaller.setProperty(Marshaller.JAXB_ENCODING, charset);      
-        marshaller.marshal(cerif,out);
+        marshaller.setProperty(Marshaller.JAXB_ENCODING, charset);
+        marshaller.marshal(cerif, out);
     }
     
    
-    
     /**
      * Data del moment que es crea l'XML
      * 
@@ -85,6 +89,7 @@ public class MarshalCerif {
     /**
      * Apila a l'objecte CERIF les llistes d'entitats.
      * 
+     * 
      * @param res
      * @param dep
      * @param gr
@@ -92,10 +97,10 @@ public class MarshalCerif {
      * @param publ
      * @return
      */
-    public List<List<? extends Object>> extracted(CSVResearcher res,
-			CSVDepartment dep, CSVGroup gr, CSVProject proj, CSVPublication publ) {
+    public List<List<? extends Object>> extracted(CSVResearcher res, CSVDepartment dep, CSVGroup gr, 
+    					CSVProject proj, CSVPublication publ) {
 		return Arrays.asList(res.getListPersType(), dep.getListDepType(),
-										gr.getListGrType(), proj.getListProjType(), publ.getListPublType());
+					gr.getListGrType(), proj.getListProjType(), publ.getListPublType());
 	}
         
     /************************************************** GETTERS / SETTERS ***************************************************/

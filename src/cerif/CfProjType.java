@@ -2231,7 +2231,7 @@ public class CfProjType{
         @XmlElement(required = true)
         protected String cfPersId;
         @XmlSchemaType(name = "date")
-        protected String cfStartDate;
+        protected XMLGregorianCalendar cfStartDate;
 
         /**
          * Gets the value of the cfClassId property.
@@ -2301,7 +2301,7 @@ public class CfProjType{
          *     {@link XMLGregorianCalendar }
          *     
          */
-        public String getCfStartDate() {
+        public XMLGregorianCalendar getCfStartDate() {
             return cfStartDate;
         }
 
@@ -2373,7 +2373,7 @@ public class CfProjType{
          *     {@link XMLGregorianCalendar }
          *     
          */
-        public void setCfStartDate(String value) {
+        public void setCfStartDate(XMLGregorianCalendar value) {
             this.cfStartDate = value;
         }
 
@@ -3681,7 +3681,7 @@ public class CfProjType{
 
 
     @XmlSchemaType(name = "date")
-    protected XMLGregorianCalendar cfEndDate;
+    protected String cfEndDate;
 
 
     @XmlElement(required = true)
@@ -3689,7 +3689,7 @@ public class CfProjType{
 
 
     @XmlSchemaType(name = "date")
-    protected XMLGregorianCalendar cfStartDate;
+    protected String cfStartDate;
 
 
     @XmlElementRefs({
@@ -3742,7 +3742,7 @@ public class CfProjType{
      *     {@link XMLGregorianCalendar }
      *     
      */
-    public XMLGregorianCalendar getCfEndDate() {
+    public String getCfEndDate() {
         return cfEndDate;
     }
 
@@ -3768,7 +3768,7 @@ public class CfProjType{
      *     {@link XMLGregorianCalendar }
      *     
      */
-    public XMLGregorianCalendar getCfStartDate() {
+    public String getCfStartDate() {
         return cfStartDate;
     }
 
@@ -3857,7 +3857,7 @@ public class CfProjType{
      *     {@link XMLGregorianCalendar }
      *     
      */
-    public void setCfEndDate(XMLGregorianCalendar value) {
+    public void setCfEndDate(String value) {
         this.cfEndDate = value;
     }
 
@@ -3883,7 +3883,7 @@ public class CfProjType{
      *     {@link XMLGregorianCalendar }
      *     
      */
-    public void setCfStartDate(XMLGregorianCalendar value) {
+    public void setCfStartDate(String value) {
         this.cfStartDate = value;
     }
 

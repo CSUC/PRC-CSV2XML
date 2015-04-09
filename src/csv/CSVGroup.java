@@ -3,14 +3,15 @@
  */
 package csv;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
-import org.apache.commons.io.Charsets;
+import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.log4j.Logger;
+import org.javatuples.Quartet;
 
 import com.csvreader.CsvReader;
 
@@ -28,12 +29,8 @@ public class CSVGroup {
 	 * Llista que conté tots els Grups de recerca (cfOrgUnit)
 	 */
 	private List<CfOrgUnitType> listGrType = new ArrayList<CfOrgUnitType>(); 
-	
-	/**
-	 * HasMap amb clau orcid i valor l'identificador que se li ha donat amb el Singleton (newId)
-	 */
-	private HashMap<String, String> mapResearcher;
-	
+
+		
 	/**
 	 * 
 	 * @param path Fitxer dels Grups de recerca.
@@ -41,34 +38,64 @@ public class CSVGroup {
 	 * @param pathRelation Fitxer amb les relacions Grup de recerca/Investigador
 	 * @param map	HasMap amb clau Orcid i valor identificador únic.
 	 */
-	public CSVGroup(String path, MarshalCerif marshalCERIF, String pathRelation, HashMap<String, String> map){
-		CsvReader reader = new CSVReader(path, Charsets.UTF_8).getReader();
-		this.mapResearcher = map;		
-		try {
-			while(reader.readRecord()){
-				String nom = StringEscapeUtils.escapeXml10(reader.get(0));
-				String sigles = StringEscapeUtils.escapeXml10(reader.get(1));
-				String url = StringEscapeUtils.escapeXml10(reader.get(2));
-				String ae = StringEscapeUtils.escapeXml10(reader.get(3));
-				String code = StringEscapeUtils.escapeXml10(reader.get(4));
-				String sgr = StringEscapeUtils.escapeXml10(reader.get(5));
-				String cu = StringEscapeUtils.escapeXml10(reader.get(6));
-				String date = StringEscapeUtils.escapeXml10(reader.get(7));
-				String domain = StringEscapeUtils.escapeXml10(reader.get(8));
-
-				CfOrgUnitType mGr = new MarshalGroups(marshalCERIF.getFactory(),
-						nom, sigles, url, ae, code, sgr, cu, date, domain, pathRelation,
-						mapResearcher).getGROUP();				
-				listGrType.add(mGr);
-			}					
-			Logger.getLogger(CSVGroup.class.getName()).info("done");
-		} catch (IOException e) {
-			Logger.getLogger(CSVGroup.class.getName()).info(e);
-		}finally{
-			reader.close();
+	public CSVGroup(String path, MarshalCerif marshalCERIF, String pathRelation, CSVResearcher researcher){
+		Quartet<List<String>, List<String>, List<String>, List<String>> quartet = null;
+		if(new File(pathRelation).exists())	quartet = createQuartet(pathRelation);
+		if(new File(path).exists()){
+			CsvReader reader = new CSVReader(path).getReader();
+			try {
+				while(reader.readRecord()){
+					listGrType.add(new MarshalGroups(
+										marshalCERIF.getFactory(),
+										StringEscapeUtils.escapeXml10(reader.get(0)), 
+										StringEscapeUtils.escapeXml10(reader.get(1)), 
+										StringEscapeUtils.escapeXml10(reader.get(2)), 
+										StringEscapeUtils.escapeXml10(reader.get(3)), 
+										StringEscapeUtils.escapeXml10(reader.get(4)), 
+										StringEscapeUtils.escapeXml10(reader.get(5)), 
+										StringEscapeUtils.escapeXml10(reader.get(6)), 
+										StringEscapeUtils.escapeXml10(reader.get(7)), 
+										quartet, 
+										researcher).getGROUP());
+				}					
+				Logger.getLogger(CSVGroup.class.getName()).info("done");
+			} catch (IOException e) {
+				Logger.getLogger(CSVGroup.class.getName()).info(e);
+			}finally{
+				reader.close();
+			}
+		}else{
+			Logger.getLogger(CSVGroup.class.getName()).info("No existeix el fitxer " + FilenameUtils.getName(path));
 		}
+		
 	}
 
+	/**
+	 * 
+	 * @param pathRelation
+	 * @return
+	 */
+	private Quartet<List<String>, List<String>, List<String>, List<String>> createQuartet(String pathRelation){
+		CsvReader reader = new CSVReader(pathRelation).getReader();
+		List<String> listGr = new ArrayList<String>();
+		List<String> listSig = new ArrayList<String>();
+		List<String> listOrcid = new ArrayList<String>();
+		List<String> listIP = new ArrayList<String>();
+		try {
+			while(reader.readRecord()){
+				listGr.add(StringEscapeUtils.escapeXml10(reader.get(0)));
+				listSig.add(StringEscapeUtils.escapeXml10(reader.get(1)));
+				listOrcid.add(StringEscapeUtils.escapeXml10(reader.get(2)));
+				listIP.add(StringEscapeUtils.escapeXml10(reader.get(3)));					
+			}
+			return new Quartet<List<String>, List<String>, List<String>, List<String>>(listGr, listSig, listOrcid, listIP);
+		}catch (IOException e) {
+			return null;
+		}finally{
+			reader.close();			
+		}
+	}
+	
 	/************************************************** GETTERS / SETTERS ***************************************************/
 	
 	public List<CfOrgUnitType> getListGrType() {

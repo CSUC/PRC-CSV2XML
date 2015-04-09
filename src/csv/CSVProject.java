@@ -3,14 +3,15 @@
  */
 package csv;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
-import org.apache.commons.io.Charsets;
+import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.log4j.Logger;
+import org.javatuples.Quartet;
 
 import com.csvreader.CsvReader;
 
@@ -30,40 +31,60 @@ public class CSVProject {
 	private List<CfProjType> listProjType = new ArrayList<CfProjType>(); 
 	
 	/**
-	 * HasMap amb clau orcid i valor l'identificador que se li ha donat amb el Singleton (newId)
-	 */
-	private HashMap<String, String> mapResearcher;
-	
-	/**
 	 * 
 	 * @param path Fitxer dels Projectes.
 	 * @param marshalCERIF
 	 * @param pathRelation Fitxer amb les relacions Projectes/Investigador
 	 * @param map  HasMap amb clau Orcid i valor identificador únic.
 	 */
-	public CSVProject(String path, MarshalCerif marshalCERIF, String pathRelation, HashMap<String, String> map){
-		CsvReader reader = new CSVReader(path, Charsets.UTF_8).getReader();
-		this.mapResearcher = map;		
+	public CSVProject(String path, MarshalCerif marshalCERIF, String pathRelation, CSVResearcher researcher){
+		Quartet<List<String>, List<String>, List<String>, List<String>> quartet = null;
+		if(new File(pathRelation).exists())	quartet = createQuartet(pathRelation);
+		if(new File(path).exists()){
+			CsvReader reader = new CSVReader(path).getReader();
+			try {
+				while(reader.readRecord()){
+					listProjType.add(new MarshalProjects(
+										marshalCERIF.getFactory(),
+										StringEscapeUtils.escapeXml10(reader.get(0)), 
+										StringEscapeUtils.escapeXml10(reader.get(1)), 
+										StringEscapeUtils.escapeXml10(reader.get(2)), 
+										StringEscapeUtils.escapeXml10(reader.get(3)), 
+										StringEscapeUtils.escapeXml10(reader.get(4)), 
+										StringEscapeUtils.escapeXml10(reader.get(5)), 
+										StringEscapeUtils.escapeXml10(reader.get(6)), 
+										quartet, 
+										researcher).getPROJECT());							
+				}					
+				Logger.getLogger(CSVProject.class.getName()).info("done");
+			} catch (IOException e) {
+				Logger.getLogger(CSVProject.class.getName()).info(e);
+			}finally{
+				reader.close();
+			}
+		}else{
+			Logger.getLogger(CSVProject.class.getName()).info("No existeix el fitxer " + FilenameUtils.getName(path));
+		}
+	}
+	
+	private Quartet<List<String>, List<String>, List<String>, List<String>> createQuartet(String pathRelation){
+		CsvReader reader = new CSVReader(pathRelation).getReader();
+		List<String> listCode = new ArrayList<String>();
+		List<String> listSig = new ArrayList<String>();
+		List<String> listOrcid = new ArrayList<String>();
+		List<String> listIP = new ArrayList<String>();
 		try {
 			while(reader.readRecord()){
-				String titol = StringEscapeUtils.escapeXml10(reader.get(0));
-				String url = StringEscapeUtils.escapeXml10(reader.get(1));
-				String official_code = StringEscapeUtils.escapeXml10(reader.get(2));
-				String code = StringEscapeUtils.escapeXml10(reader.get(3));
-				String funding = StringEscapeUtils.escapeXml10(reader.get(4));
-				String dateInici = StringEscapeUtils.escapeXml10(reader.get(5));
-				String dateFi = StringEscapeUtils.escapeXml10(reader.get(6));
-				
-				CfProjType mProj = new MarshalProjects(marshalCERIF.getFactory(),
-						titol, url, official_code, code, funding, dateInici, dateFi, pathRelation,
-						mapResearcher).getPROJECT();
-				listProjType.add(mProj);							
-			}					
-			Logger.getLogger(CSVProject.class.getName()).info("done");
-		} catch (IOException e) {
-			Logger.getLogger(CSVProject.class.getName()).info(e);
+				listCode.add(StringEscapeUtils.escapeXml10(reader.get(0)));
+				listSig.add(StringEscapeUtils.escapeXml10(reader.get(1)));
+				listOrcid.add(StringEscapeUtils.escapeXml10(reader.get(2)));
+				listIP.add(StringEscapeUtils.escapeXml10(reader.get(3)));					
+			}
+			return new Quartet<List<String>, List<String>, List<String>, List<String>>(listCode, listSig, listOrcid, listIP);
+		}catch (IOException e) {
+			return null;
 		}finally{
-			reader.close();
+			reader.close();			
 		}
 	}
 
