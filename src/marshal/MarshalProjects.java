@@ -72,7 +72,7 @@ public class MarshalProjects extends MarshalPRC{
 		createCode(CODE,UIDS.CLASS_ID.getINTERNAL_PROJECT_CODE(), FACTORY, PROJECT);
 		createCode(OFFICIAL_CODE, UIDS.CLASS_ID.getOFFICIAL_PROJECT_CODE(), FACTORY, PROJECT);
 		createFundingProgramme(PROGRAMME, FACTORY, PROJECT);
-		createRelationCfPers(FACTORY, PROJECT, QUARTET, CODE, mapResearcher, mapResearcher);
+		createRelationCfPers(FACTORY, PROJECT, QUARTET, CODE, mapResearcher, mapUncheckeds);
 	}
 
 	/************************************************** GETTERS / SETTERS ***************************************************/
