@@ -70,7 +70,7 @@ public class MarshalInvestigators extends MarshalPRC{
 		this.signatureFirstNames = signatureFirstNames;
 		this.ae = ae;
 		this.typeClass = type;
-				
+		
 	}
 	
 	/**
@@ -81,8 +81,8 @@ public class MarshalInvestigators extends MarshalPRC{
 		if(_ID == null)	this._ID = RandomNumeric.getInstance().newId();
         pers.setCfPersId(_ID);        
 		createEntityClass(typeClass, factory, pers);
-		createPersNamePers(familyNames, firstNames, factory, pers);
-		createPersSignaturePers(signatureFamilyNames, signatureFirstNames, factory, pers);
+		createPersNamePers(familyNames, firstNames, UIDS.CLASS_ID.getPRESENTED_NAME(), factory, pers);
+		createPersNamePers(signatureFamilyNames, signatureFirstNames, UIDS.CLASS_ID.getSIGNATURE(), factory, pers);		
 		createCode(orcid, UIDS.CLASS_ID.getORCID(), factory, pers);
 		createEmail(ae, factory, pers);				
 	}

@@ -23,13 +23,14 @@ import cerif.CfProjType;
  * @author amartinez
  *
  */
-public class CSVProject {
+public class CSVProject implements Entity {
 	
 	/**
 	 * Llista que conté tots els Projectes (cfProj)
 	 */
 	private List<CfProjType> listProjType = new ArrayList<CfProjType>(); 
-	
+	private Quartet<List<String>, List<String>, List<String>, List<String>> quartet = null;
+	private CsvReader reader = null;
 	/**
 	 * 
 	 * @param path Fitxer dels Projectes.
@@ -37,34 +38,38 @@ public class CSVProject {
 	 * @param pathRelation Fitxer amb les relacions Projectes/Investigador
 	 * @param map  HasMap amb clau Orcid i valor identificador únic.
 	 */
-	public CSVProject(String path, MarshalCerif marshalCERIF, String pathRelation, CSVResearcher researcher){
-		Quartet<List<String>, List<String>, List<String>, List<String>> quartet = null;
+	public CSVProject(String path, MarshalCerif marshalCERIF, String pathRelation){		
 		if(new File(pathRelation).exists())	quartet = createQuartet(pathRelation);
 		if(new File(path).exists()){
-			CsvReader reader = new CSVReader(path).getReader();
-			try {
-				while(reader.readRecord()){
-					listProjType.add(new MarshalProjects(
-										marshalCERIF.getFactory(),
-										StringEscapeUtils.escapeXml10(reader.get(0)), 
-										StringEscapeUtils.escapeXml10(reader.get(1)), 
-										StringEscapeUtils.escapeXml10(reader.get(2)), 
-										StringEscapeUtils.escapeXml10(reader.get(3)), 
-										StringEscapeUtils.escapeXml10(reader.get(4)), 
-										StringEscapeUtils.escapeXml10(reader.get(5)), 
-										StringEscapeUtils.escapeXml10(reader.get(6)), 
-										quartet, 
-										researcher).getPROJECT());							
-				}					
-				Logger.getLogger(CSVProject.class.getName()).info("done");
-			} catch (IOException e) {
-				Logger.getLogger(CSVProject.class.getName()).info(e);
-			}finally{
-				reader.close();
-			}
+			reader = new CSVReader(path).getReader();
+			
 		}else{
 			Logger.getLogger(CSVProject.class.getName()).info("No existeix el fitxer " + FilenameUtils.getName(path));
 		}
+	}
+	
+	@Override
+	public void ReadCSV(MarshalCerif marshal, CSVResearcher researcher) {
+		try {
+			while(reader.readRecord()){
+				listProjType.add(new MarshalProjects(
+									marshal.getFactory(),
+									StringEscapeUtils.escapeXml10(reader.get(0)), 
+									StringEscapeUtils.escapeXml10(reader.get(1)), 
+									StringEscapeUtils.escapeXml10(reader.get(2)), 
+									StringEscapeUtils.escapeXml10(reader.get(3)), 
+									StringEscapeUtils.escapeXml10(reader.get(4)), 
+									StringEscapeUtils.escapeXml10(reader.get(5)), 
+									StringEscapeUtils.escapeXml10(reader.get(6)), 
+									quartet, 
+									researcher).getPROJECT());							
+			}					
+			Logger.getLogger(CSVProject.class.getName()).info("done");
+		} catch (IOException e) {
+			Logger.getLogger(CSVProject.class.getName()).info(e);
+		}finally{
+			reader.close();
+		}		
 	}
 	
 	private Quartet<List<String>, List<String>, List<String>, List<String>> createQuartet(String pathRelation){
@@ -93,6 +98,5 @@ public class CSVProject {
 	public List<CfProjType> getListProjType() {
 		return listProjType;
 	}
-	
 	
 }

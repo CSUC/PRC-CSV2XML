@@ -12,8 +12,8 @@ import java.util.List;
 import org.javatuples.Quartet;
 
 import cerif.CfProjType;
+import cerif.CfTransType;
 import cerif.ObjectFactory;
-
 import csv.CSVResearcher;
 
 /**
@@ -68,7 +68,7 @@ public class MarshalProjects extends MarshalPRC{
 		
 		createDate(null, DATE_INICI, DATE_FI, FACTORY, PROJECT);
 		createUrl(URI, PROJECT);
-		createTitle(TITLE, FACTORY, PROJECT);
+		createTitle(TITLE, "ca", CfTransType.O, FACTORY, PROJECT);
 		createCode(CODE,UIDS.CLASS_ID.getINTERNAL_PROJECT_CODE(), FACTORY, PROJECT);
 		createCode(OFFICIAL_CODE, UIDS.CLASS_ID.getOFFICIAL_PROJECT_CODE(), FACTORY, PROJECT);
 		createFundingProgramme(PROGRAMME, FACTORY, PROJECT);

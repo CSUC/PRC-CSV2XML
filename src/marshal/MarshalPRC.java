@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import org.apache.commons.lang3.StringUtils;
 import org.javatuples.Pair;
 import org.javatuples.Quartet;
 
@@ -35,6 +36,7 @@ public class MarshalPRC {
 	 * Si la instancia pertany a CfPers es crea un Person Checked/Unckeded -> typeClass ho determina.
 	 * Si la instancia pertany a CfOrgUnit es crea un OrgUNit depatment/group -> typeClass ho determina.
 	 * 
+	 * 
 	 * @param typeClass UUID.
 	 * @param factory 
 	 * @param instance Tipus d'entitat.
@@ -42,58 +44,65 @@ public class MarshalPRC {
 	protected void createEntityClass(String typeClass, ObjectFactory factory, Object instance){
 		CfCoreClassWithFractionType cfCoreClass = new CfCoreClassWithFractionType();
 		cfCoreClass.setCfClassId(typeClass);
-		if(instance.getClass().equals(CfPersType.class)){
+		if(instance.getClass().equals(CfPersType.class)){ //Pers
 			cfCoreClass.setCfClassSchemeId(UIDS.SCHEME_ID.getVERIFICATION_STATUSES());
 			((CfPersType)instance).getCfResIntOrCfKeywOrCfPersPers().add(factory.createCfPersTypeCfPersClass(cfCoreClass));
 		}
-		if(instance.getClass().equals(CfOrgUnitType.class)){
+		if(instance.getClass().equals(CfOrgUnitType.class)){ //OrgUnit
 			cfCoreClass.setCfClassSchemeId(UIDS.SCHEME_ID.getORGANISATION_TYPES());
 			((CfOrgUnitType)instance).getCfNameOrCfResActOrCfKeyw().add(factory.createCfOrgUnitTypeCfOrgUnitClass(cfCoreClass));
 		}
-		
-	}
-	
-	/**
-	 * 
-	 * 
-	 * @param familyNames
-	 * @param firstNames
-	 * @param factory
-	 * @param pers
-	 */
-	protected void createPersNamePers(String familyNames, String firstNames, ObjectFactory factory, CfPersType pers){
-		if(familyNames != null){
-			if(!familyNames.isEmpty()){
-	        	CfPersType.CfPersNamePers persname = new CfPersType.CfPersNamePers();
-		        persname.setCfPersNameId(RandomNumeric.getInstance().newId());
-		        persname.setCfFamilyNames(familyNames);
-		        if(firstNames != null)	persname.setCfFirstNames(firstNames);
-		        persname.setCfClassId(UIDS.CLASS_ID.getPRESENTED_NAME());
-		        persname.setCfClassSchemeId(UIDS.SCHEME_ID.getPERSON_NAMES());	
-		        pers.getCfResIntOrCfKeywOrCfPersPers().add(factory.createCfPersTypeCfPersNamePers(persname));
-			}
-		}		
-	}
-	
-	/**
-	 * 
-	 * @param signatureFamilyNames
-	 * @param signatureFirstNames
-	 * @param factory
-	 * @param pers
-	 */
-	protected void createPersSignaturePers(String signatureFamilyNames, String signatureFirstNames, ObjectFactory factory, CfPersType pers){
-		if(signatureFamilyNames != null){
-			if(!signatureFamilyNames.isEmpty()){
-		    	   CfPersType.CfPersNamePers sig = new CfPersType.CfPersNamePers();
-				   sig.setCfPersNameId(RandomNumeric.getInstance().newId());
-				   sig.setCfFamilyNames(signatureFamilyNames);
-				   if(signatureFirstNames != null)	sig.setCfFirstNames(signatureFirstNames);
-				   sig.setCfClassId(UIDS.CLASS_ID.getSIGNATURE());
-				   sig.setCfClassSchemeId(UIDS.SCHEME_ID.getPERSON_NAMES());
-				   pers.getCfResIntOrCfKeywOrCfPersPers().add(factory.createCfPersTypeCfPersNamePers(sig));
+		if(instance.getClass().equals(CfResPublType.class)){ //Publication
+			if(typeClass != null){
+				if(!typeClass.isEmpty()){						
+					for(int i=0;i<getPair().getValue0().size();i++){						
+						if(StringUtils.deleteWhitespace(typeClass).toLowerCase().equals(getPair().getValue0().get(i))){
+							CfCoreClassWithFractionType classGroup = new CfCoreClassWithFractionType();
+							classGroup.setCfClassId(getPair().getValue1().get(i));
+							classGroup.setCfClassSchemeId(UIDS.SCHEME_ID.getOUTPUT_TYPES());
+							((CfResPublType) instance).getCfTitleOrCfAbstrOrCfKeyw().add(factory.createCfResPublTypeCfResPublClass(classGroup));
+						}
+					}		
 				}
-		}		
+			}	
+		}
+	}
+		
+	/**
+	 * 
+	 * @param family
+	 * @param first
+	 * @param classid
+	 * @param factory
+	 * @param pers
+	 */
+	protected void createPersNamePers(String family, String first, String classid, ObjectFactory factory, CfPersType pers){
+		if(classid.equals(UIDS.CLASS_ID.getPRESENTED_NAME())){ //Name
+			if(family != null){
+				if(!family.isEmpty()){
+		        	CfPersType.CfPersNamePers persname = new CfPersType.CfPersNamePers();
+			        persname.setCfPersNameId(RandomNumeric.getInstance().newId());
+			        persname.setCfFamilyNames(family);
+			        if(first != null)	persname.setCfFirstNames(first);
+			        persname.setCfClassId(UIDS.CLASS_ID.getPRESENTED_NAME());
+			        persname.setCfClassSchemeId(UIDS.SCHEME_ID.getPERSON_NAMES());	
+			        pers.getCfResIntOrCfKeywOrCfPersPers().add(factory.createCfPersTypeCfPersNamePers(persname));
+				}
+			}
+		}
+		if(classid.equals(UIDS.CLASS_ID.getSIGNATURE())){//Signature
+			if(family != null){
+				if(!family.isEmpty()){
+			    	   CfPersType.CfPersNamePers sig = new CfPersType.CfPersNamePers();
+					   sig.setCfPersNameId(RandomNumeric.getInstance().newId());
+					   sig.setCfFamilyNames(family);
+					   if(first != null)	sig.setCfFirstNames(first);
+					   sig.setCfClassId(UIDS.CLASS_ID.getSIGNATURE());
+					   sig.setCfClassSchemeId(UIDS.SCHEME_ID.getPERSON_NAMES());
+					   pers.getCfResIntOrCfKeywOrCfPersPers().add(factory.createCfPersTypeCfPersNamePers(sig));
+					}
+			}
+		}
 	}
 	
 	/**
@@ -110,22 +119,20 @@ public class MarshalPRC {
 	protected void createEmail(String ae, ObjectFactory factory, Object instance){
 		if(ae != null){
 			if(!ae.isEmpty()){
-				if(instance.getClass().equals(CfPersType.class)){
+				if(instance.getClass().equals(CfPersType.class)){ //Pers
 					CfPersEAddr email = new CfPersEAddr();
 					email.setCfEAddrId(ae);
 					email.setCfClassId(UIDS.CLASS_ID.getEMAIL());
 					email.setCfClassSchemeId(UIDS.SCHEME_ID.getPERSON_CONTACT_DETAILS());					
 					((CfPersType)instance).getCfResIntOrCfKeywOrCfPersPers().add(factory.createCfPersTypeCfPersEAddr(email));
 				}
-				if(instance.getClass().equals(CfOrgUnitType.class)){
+				if(instance.getClass().equals(CfOrgUnitType.class)){ //OrgUnit
 					CfOrgUnitType.CfOrgUnitEAddr email = new CfOrgUnitType.CfOrgUnitEAddr();
 					email.setCfEAddrId(ae);
 					email.setCfClassId(UIDS.CLASS_ID.getEMAIL());
 					email.setCfClassSchemeId(UIDS.SCHEME_ID.getORGANISATION_CONTACT_DETAILS());				
 					((CfOrgUnitType)instance).getCfNameOrCfResActOrCfKeyw().add(factory.createCfOrgUnitTypeCfOrgUnitEAddr(email));
 				}
-				
-				
 			}
 		}
 	}
@@ -161,18 +168,18 @@ public class MarshalPRC {
 	
 	/**
 	 * 
-	 * Es crea TITLE segon l'entitat.
+	 * Es crea TITLE segon l'entitat (OrgUnit, Project o Publication).
 	 * 
 	 * @param title
 	 * @param factory
 	 * @param instance 
 	 */
-	protected void createTitle(String title, ObjectFactory factory, Object instance){
+	protected void createTitle(String title, String langCode, CfTransType transType, ObjectFactory factory, Object instance){
 		if(title != null){
 			if(!title.isEmpty()){
-				CfMLangStringType name = new CfMLangStringType(); 
-					name.setCfLangCode("ca");
-					name.setCfTrans(CfTransType.O);
+				CfMLangStringType name = new CfMLangStringType();
+					name.setCfLangCode(langCode);
+					name.setCfTrans(transType);
 					name.setValue(title);				
 				if(instance.getClass().equals(CfOrgUnitType.class))	((CfOrgUnitType)instance).getCfNameOrCfResActOrCfKeyw().add(factory.createCfOrgUnitTypeCfName(name));				
 				if(instance.getClass().equals(CfProjType.class)) ((CfProjType)instance).getCfTitleOrCfAbstrOrCfKeyw().add(factory.createCfProjTypeCfTitle(name));
@@ -203,22 +210,22 @@ public class MarshalPRC {
 				CfCoreClassWithFractionType fedIdClass = new CfCoreClassWithFractionType();					
 					fedIdClass.setCfClassSchemeId(UIDS.SCHEME_ID.getIDENTIFIER_TYPES());
 				
-				if(instance.getClass().equals(CfPersType.class)){
+				if(instance.getClass().equals(CfPersType.class)){ //Pers
 					fedIdClass.setCfClassId(type);
 					fedId.getCfFedIdClassOrCfFedIdSrv().add(fedIdClass);
 					((CfPersType)instance).getCfResIntOrCfKeywOrCfPersPers().add(factory.createCfPersTypeCfFedId(fedId));
 				}					
-				if(instance.getClass().equals(CfOrgUnitType.class)){
+				if(instance.getClass().equals(CfOrgUnitType.class)){ //OrgUnit
 					fedIdClass.setCfClassId(type);
 					fedId.getCfFedIdClassOrCfFedIdSrv().add(fedIdClass);
 					((CfOrgUnitType)instance).getCfNameOrCfResActOrCfKeyw().add(factory.createCfOrgUnitTypeCfFedId(fedId));
 				}
-				if(instance.getClass().equals(CfProjType.class)){
+				if(instance.getClass().equals(CfProjType.class)){ //Project
 					fedIdClass.setCfClassId(type);
 					fedId.getCfFedIdClassOrCfFedIdSrv().add(fedIdClass);				
 					((CfProjType)instance).getCfTitleOrCfAbstrOrCfKeyw().add(factory.createCfProjTypeCfFedId(fedId));
 				}
-				if(instance.getClass().equals(CfResPublType.class)){
+				if(instance.getClass().equals(CfResPublType.class)){ //Publication
 					fedIdClass.setCfClassId(type);
 					fedId.getCfFedIdClassOrCfFedIdSrv().add(fedIdClass);					
 					((CfResPublType)instance).getCfTitleOrCfAbstrOrCfKeyw().add(factory.createCfResPublTypeCfFedId(fedId));
@@ -237,7 +244,7 @@ public class MarshalPRC {
 	protected void createAddr(String addr, ObjectFactory factory, Object instance){
 		if(addr != null){
 			if(!addr.isEmpty()){
-				if(instance.getClass().equals(CfOrgUnitType.class)){
+				if(instance.getClass().equals(CfOrgUnitType.class)){ //OrgUnit
 					CfOrgUnitType.CfOrgUnitPAddr ad = new CfOrgUnitType.CfOrgUnitPAddr();
 					ad.setCfPAddrId(addr);
 					ad.setCfClassId(UIDS.CLASS_ID.getORGANISATION_LEGAL_POSTAL_ADDRESS());
@@ -258,7 +265,7 @@ public class MarshalPRC {
 	protected void createPhone(String phone, ObjectFactory factory, Object instance){
 		if(phone != null){
 			if(!phone.isEmpty()){
-				if(instance.getClass().equals(CfOrgUnitType.class)){
+				if(instance.getClass().equals(CfOrgUnitType.class)){ //OrgUnit
 					CfOrgUnitType.CfOrgUnitEAddr ph = new CfOrgUnitType.CfOrgUnitEAddr();
 					ph.setCfEAddrId(phone);
 					ph.setCfClassId(UIDS.CLASS_ID.getPHONE());
@@ -269,11 +276,18 @@ public class MarshalPRC {
 		}	
 	}
 	
+	/**
+	 * Es crea l'ambit de recerca (Domain) segons l'entitat.
+	 * 
+	 * @param domain
+	 * @param factory
+	 * @param instance
+	 */
 	protected void createDomain(String domain, ObjectFactory factory, Object instance){
 		if(domain != null){
 			if(domain != null){
 				if(!domain.isEmpty()){
-					if(instance.getClass().equals(CfOrgUnitType.class)){
+					if(instance.getClass().equals(CfOrgUnitType.class)){ //OrgUnit
 						CfMLangStringType key = new CfMLangStringType(); 
 						key.setCfLangCode("ca");
 						key.setCfTrans(CfTransType.O);
@@ -285,10 +299,19 @@ public class MarshalPRC {
 		}		
 	}
 	
+	/**
+	 * 
+	 * 
+	 * @param date
+	 * @param startDate
+	 * @param endDate
+	 * @param factory
+	 * @param instance
+	 */
 	protected void createDate(String date, String startDate, String endDate, ObjectFactory factory, Object instance){
 		if(date != null){
 			if(!date.isEmpty()){
-				if(instance.getClass().equals(CfOrgUnitType.class)){
+				if(instance.getClass().equals(CfOrgUnitType.class)){ //OrgUnit
 					CfOrgUnitSrv srv = new CfOrgUnitSrv();
 					srv.setCfSrvId(RandomNumeric.getInstance().newId());
 					srv.setCfClassId(UIDS.CLASS_ID.getRESEARCH_GROUP_CREATION_DATE());
@@ -300,15 +323,22 @@ public class MarshalPRC {
 			}
 		}
 		if(startDate != null
-				|| endDate != null){
+				|| endDate != null){ //Project and Publicaton
 			if(!startDate.isEmpty())	((CfProjType)instance).setCfStartDate(Time.formatDateTime(startDate,Time.getDATE()));
 			if(!endDate.isEmpty())	((CfProjType)instance).setCfEndDate(Time.formatDateTime(endDate,Time.getDATE()));
 		}		
 	}
 	
+	/**
+	 * 
+	 * 
+	 * @param programme
+	 * @param factory
+	 * @param project
+	 */
 	protected void createFundingProgramme(String programme, ObjectFactory factory, CfProjType project){
 		if(programme != null){
-			if(!programme.isEmpty()){
+			if(!programme.isEmpty()){ //Project
 				CfProjType.CfProjFund fund = new CfProjType.CfProjFund();
 					fund.setCfFundId(programme);
 					fund.setCfClassId(UIDS.CLASS_ID.getFUNDING_PROGRAMME());
@@ -333,29 +363,16 @@ public class MarshalPRC {
 			classid.add(UIDS.CLASS_ID.getJOURNAL_ARTICLE());
 			classid.add(UIDS.CLASS_ID.getCHAPTER_IN_BOOK());
 			classid.add(UIDS.CLASS_ID.getBOOK());
-			classid.add(UIDS.CLASS_ID.getPHD_THESIS());			
-		Pair<List<String>, List<String>> tuple = new Pair<List<String>, List<String>>(cerif, classid);
-		return tuple;
+			classid.add(UIDS.CLASS_ID.getPHD_THESIS());
+		return new Pair<List<String>, List<String>>(cerif, classid);
 	}
 	
-	protected void createPublicationType(String document, ObjectFactory factory, CfResPublType publication){
-		if(document != null){
-			Pair<List<String>, List<String>> pair = getPair();
-			List<String> type = pair.getValue0();
-			List<String> classID = pair.getValue1();			
-			if(!document.isEmpty()){
-				for(int i=0;i<type.size();i++){	
-					if(document.replaceAll(" ", "").toLowerCase().equals(type.get(i))){
-						CfCoreClassWithFractionType classGroup = new CfCoreClassWithFractionType();
-						classGroup.setCfClassId(classID.get(i));
-						classGroup.setCfClassSchemeId(UIDS.SCHEME_ID.getOUTPUT_TYPES());
-						publication.getCfTitleOrCfAbstrOrCfKeyw().add(factory.createCfResPublTypeCfResPublClass(classGroup));
-					}
-				}		
-			}
-		}		
-	}	
-	
+	/**
+	 * 
+	 * @param publicatA
+	 * @param factory
+	 * @param publication
+	 */
 	protected void createOutPutType(String publicatA, ObjectFactory factory, CfResPublType publication){
 		if(publicatA != null){
 			if(!publicatA.isEmpty()){
@@ -369,6 +386,12 @@ public class MarshalPRC {
 		}
 	}
 	
+	/**
+	 * 
+	 * @param publicatPer
+	 * @param factory
+	 * @param publication
+	 */
 	protected void createContributor(String publicatPer, ObjectFactory factory, CfResPublType publication){
 		if(publicatPer != null){
 			if(!publicatPer.isEmpty()){
@@ -382,6 +405,12 @@ public class MarshalPRC {
 		}
 	}
 	
+	/**
+	 * 
+	 * @param groupAthors
+	 * @param factory
+	 * @param publication
+	 */
 	protected void createGroupAuthors(String groupAthors, ObjectFactory factory, CfResPublType publication){
 		if(groupAthors != null){
 			if(!groupAthors.isEmpty()){
@@ -395,38 +424,70 @@ public class MarshalPRC {
 		}		
 	}
 	
+	/**
+	 * 
+	 * @param num
+	 * @param publication
+	 */
 	protected void createNum(String num, CfResPublType publication){
 		if(num != null)	if(!num.isEmpty())	publication.setCfNum(num);
 	}
 
+	/**
+	 * 
+	 * @param vol
+	 * @param publication
+	 */
 	protected void createVol(String vol, CfResPublType publication){
 		if(vol != null)	if(!vol.isEmpty())	publication.setCfVol(vol);
 	}
 	
+	/**
+	 * 
+	 * @param startPage
+	 * @param publication
+	 */
 	protected void createStartPage(String startPage, CfResPublType publication){
 		if(startPage != null)	if(!startPage.isEmpty())	publication.setCfStartPage(startPage);
 	}
 	
+	/**
+	 * 
+	 * @param endPage
+	 * @param publication
+	 */
 	protected void createEndPage(String endPage, CfResPublType publication){
 		if(endPage != null)	if(!endPage.isEmpty())	publication.setCfEndPage(endPage);
 	}
 	
+	/**
+	 * 
+	 * @param isbn
+	 * @param publication
+	 */
 	protected void createISBN(String isbn, CfResPublType publication){
 		if(isbn != null)	if(!isbn.isEmpty())	publication.setCfISBN(isbn);
 	}
 	
+	/**
+	 * 
+	 * @param issn
+	 * @param publication
+	 */
 	protected void createISSN(String issn, CfResPublType publication){
 		if(issn != null)	if(!issn.isEmpty())	publication.setCfISSN(issn);
 	}
 	
 	/**
 	 * 
+	 * Segons la instància (OrgUnit, Project o Publicaction) crea la relació entitat-Pers corresponent.
+	 * 
 	 * @param factory
-	 * @param instance
-	 * @param javaTuple
-	 * @param field
-	 * @param researchers
-	 * @param uncheckeds
+	 * @param instance Entitat: OrgUnit, Project o Publicaction.
+	 * @param javaTuple Tupla amb la informació que conté les relacions entitat-Pers (csv)
+	 * @param field	Atribut clau per trobar la relació.
+	 * @param researchers	Conté com a clau l'orcid i valor l'identificador únic associat.
+	 * @param uncheckeds	Conté coma clau la signatura i valor l'identificador únic associat.
 	 */
 	@SuppressWarnings({ "unchecked" })
 	protected void createRelationCfPers(ObjectFactory factory, Object instance, Object javaTuple, String field, HashMap<String, String> researchers, HashMap<String, String> uncheckeds){		
@@ -510,6 +571,8 @@ public class MarshalPRC {
 	}
 	
 	/**
+	 * 
+	 * S'afegeix el role segons la instància
 	 * 
 	 * @param factory
 	 * @param instance

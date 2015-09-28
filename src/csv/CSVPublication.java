@@ -25,7 +25,7 @@ import com.csvreader.CsvReader;
  * @author amartinez
  *
  */
-public class CSVPublication {
+public class CSVPublication implements Entity{
 	/**
 	 * Llista que conté totes les publicacions (cfResPers)
 	 */
@@ -33,6 +33,7 @@ public class CSVPublication {
 	
 	
 	private Quartet<List<String>,List<String>,List<String>,List<String>> quartet = null;
+	private CsvReader reader = null;
 	
 	/**
 	 * 
@@ -42,42 +43,46 @@ public class CSVPublication {
 	 * @param pathRelation Fitxer amb les relacions.
 	 * @param map HasMap amb clau Orcid i valor identificador únic.
 	 */
-	public CSVPublication(String path, MarshalCerif marshalCERIF, String pathRelation, CSVResearcher researcher){
+	public CSVPublication(String path, MarshalCerif marshalCERIF, String pathRelation){
 		if(new File(pathRelation).exists())	quartet = createQuartet(pathRelation);
 		if(new File(path).exists()){
-			CsvReader reader = new CSVReader(path).getReader();				
-			try {
-				while(reader.readRecord()){					
-					listPublType.add(new MarshalPublications(
-										marshalCERIF.getFactory(),
-										StringEscapeUtils.escapeXml10(reader.get(0)), 
-										StringEscapeUtils.escapeXml10(reader.get(1)), 
-										StringEscapeUtils.escapeXml10(reader.get(2)), 
-										StringEscapeUtils.escapeXml10(reader.get(3)),
-										StringEscapeUtils.escapeXml10(reader.get(4)), 
-										StringEscapeUtils.escapeXml10(reader.get(5)), 
-										StringEscapeUtils.escapeXml10(reader.get(6)), 
-										StringEscapeUtils.escapeXml10(reader.get(7)), 
-										StringEscapeUtils.escapeXml10(reader.get(8)), 
-										StringEscapeUtils.escapeXml10(reader.get(9)),
-										StringEscapeUtils.escapeXml10(reader.get(10)), 
-										StringEscapeUtils.escapeXml10(reader.get(11)), 
-										StringEscapeUtils.escapeXml10(reader.get(12)), 
-										StringEscapeUtils.escapeXml10(reader.get(13)), 
-										StringEscapeUtils.escapeXml10(reader.get(14)),
-										researcher, quartet).getPUBLICATION());
-				}
-				Logger.getLogger(CSVPublication.class.getName()).info("done");
-			} catch (IOException e) {
-				Logger.getLogger(CSVPublication.class.getName()).info(e);
-			}finally{
-				reader.close();
-			}
+			reader = new CSVReader(path).getReader();				
+			
 		}else{
 			Logger.getLogger(CSVPublication.class.getName()).info("No existeix el fitxer " + FilenameUtils.getName(path));
 		}
 	}
 	
+	@Override
+	public void ReadCSV(MarshalCerif marshal, CSVResearcher researcher) {
+		try {
+			while(reader.readRecord()){					
+				listPublType.add(new MarshalPublications(
+									marshal.getFactory(),
+									StringEscapeUtils.escapeXml10(reader.get(0)), 
+									StringEscapeUtils.escapeXml10(reader.get(1)), 
+									StringEscapeUtils.escapeXml10(reader.get(2)), 
+									StringEscapeUtils.escapeXml10(reader.get(3)),
+									StringEscapeUtils.escapeXml10(reader.get(4)), 
+									StringEscapeUtils.escapeXml10(reader.get(5)), 
+									StringEscapeUtils.escapeXml10(reader.get(6)), 
+									StringEscapeUtils.escapeXml10(reader.get(7)), 
+									StringEscapeUtils.escapeXml10(reader.get(8)), 
+									StringEscapeUtils.escapeXml10(reader.get(9)),
+									StringEscapeUtils.escapeXml10(reader.get(10)), 
+									StringEscapeUtils.escapeXml10(reader.get(11)), 
+									StringEscapeUtils.escapeXml10(reader.get(12)), 
+									StringEscapeUtils.escapeXml10(reader.get(13)), 
+									StringEscapeUtils.escapeXml10(reader.get(14)),
+									researcher, quartet).getPUBLICATION());
+			}
+			Logger.getLogger(CSVPublication.class.getName()).info("done");
+		} catch (IOException e) {
+			Logger.getLogger(CSVPublication.class.getName()).info(e);
+		}finally{
+			reader.close();
+		}		
+	}
 	
 	/**
 	 * 

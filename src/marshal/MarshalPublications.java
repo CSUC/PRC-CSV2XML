@@ -11,6 +11,7 @@ import java.util.List;
 import org.javatuples.Quartet;
 
 import cerif.CfResPublType;
+import cerif.CfTransType;
 import cerif.ObjectFactory;
 import csv.CSVResearcher;
 
@@ -93,8 +94,9 @@ public class MarshalPublications extends MarshalPRC {
 		createISBN(ISBN, PUBLICATION);
 		createISSN(ISSN, PUBLICATION);
 		createDate(DATE, null, null, FACTORY, PUBLICATION);
-		createTitle(TITLE, FACTORY, PUBLICATION);		
-		createPublicationType(DOCUMENTTYPES, FACTORY, PUBLICATION);
+		createTitle(TITLE, "ca", CfTransType.O, FACTORY, PUBLICATION);
+		createEntityClass(DOCUMENTTYPES, FACTORY, PUBLICATION);
+		//createPublicationType(DOCUMENTTYPES, FACTORY, PUBLICATION);
 		createCode(DOI, UIDS.CLASS_ID.getDOI(), FACTORY, PUBLICATION);
 		createCode(HANDLE, UIDS.CLASS_ID.getHANDLE(), FACTORY, PUBLICATION);		
 		createOutPutType(PUBLICATA, FACTORY, PUBLICATION);

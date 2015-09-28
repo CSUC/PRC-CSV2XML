@@ -12,6 +12,7 @@ import java.util.List;
 import org.javatuples.Pair;
 
 import cerif.CfOrgUnitType;
+import cerif.CfTransType;
 import cerif.ObjectFactory;
 import csv.CSVResearcher;
 
@@ -65,7 +66,7 @@ public class MarshalDepartments extends MarshalPRC {
 		
 		createAcro(ACRO, department);
 		createUrl(URL, department);
-		createTitle(NAME, factory, department);
+		createTitle(NAME, "ca", CfTransType.O, factory, department);
 		createEntityClass(typeClass, factory, department);
 		createCode(DEPT,UIDS.CLASS_ID.getDEPARTMENT_OR_INSTITUTE_CODE(), factory, department);
 		createEmail(AE, factory, department);

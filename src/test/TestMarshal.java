@@ -3,16 +3,11 @@
  */
 package test;
 
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.UnsupportedEncodingException;
+import java.util.Arrays;
 
-import javax.xml.bind.JAXBException;
 import javax.xml.datatype.DatatypeConfigurationException;
 
-import marshal.MarshalCerif;
-
-import org.apache.commons.io.Charsets;
 import org.apache.log4j.Logger;
 
 import csv.CSVDepartment;
@@ -20,6 +15,8 @@ import csv.CSVGroup;
 import csv.CSVProject;
 import csv.CSVPublication;
 import csv.CSVResearcher;
+import csv.Factory;
+import marshal.MarshalCerif;
 
 
 /**
@@ -50,37 +47,20 @@ public class TestMarshal {
 	 * @throws UnsupportedEncodingException 
 	 */
 	public static void main(String[] args) throws DatatypeConfigurationException, UnsupportedEncodingException {
-		Marshal();
+		Marshal(new MarshalCerif(UNIVERSITY));
 	}
 	
-	private static void Marshal() throws UnsupportedEncodingException{
-		MarshalCerif marshalCERIF = new MarshalCerif(UNIVERSITY);
-		try {								
-			CSVResearcher res = new CSVResearcher(INV, marshalCERIF);
-			CSVDepartment dep = new CSVDepartment(DEPT, marshalCERIF, DEPT_INV, res);
-			CSVGroup gr = new CSVGroup(GR, marshalCERIF, GR_INV, res);
-			CSVProject proj = new CSVProject(PROJ, marshalCERIF, PROJ_INV, res);
-			CSVPublication publ = new CSVPublication(PUBL, marshalCERIF, PUBL_INV, res);
-						
-			//Crear llistat d'uncheckeds
-			if(!res.getUNCHECKEDS().isEmpty())	res.addUncheckeds();
-			
-			//Si no es vol generar totes les entitats de cop...
-			//List ent = Arrays.asList(res.getListPersType());
-					
-			marshalCERIF.createCerif(marshalCERIF.extracted(res, dep, gr, proj, publ),
-									new FileOutputStream(OUT),
-									Boolean.TRUE,
-									Charsets.UTF_8.toString());
-			
-		} catch (FileNotFoundException e) {
-			Logger.getLogger(TestMarshal.class.getName()).info(e);
-		} catch (JAXBException e) {
-			Logger.getLogger(TestMarshal.class.getName()).info(e);
+	private static void Marshal(MarshalCerif marshalCERIF) throws UnsupportedEncodingException{
+		try {	
+			new Factory(Arrays.asList(
+					 			new CSVResearcher(INV, marshalCERIF),
+					 			new CSVDepartment(DEPT, marshalCERIF, DEPT_INV),
+					 			new CSVGroup(GR, marshalCERIF, GR_INV),
+					 			new CSVProject(PROJ, marshalCERIF, PROJ_INV),
+					 			new CSVPublication(PUBL, marshalCERIF, PUBL_INV)
+					)).MakeXML(marshalCERIF, OUT);			
+		}finally{
+			Logger.getLogger(TestMarshal.class.getName()).info("Done!");
 		}
 	}
-	
-	
-	
-
 }

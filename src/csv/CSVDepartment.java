@@ -24,12 +24,15 @@ import com.csvreader.CsvReader;
  * @author amartinez
  *
  */
-public class CSVDepartment {
+public class CSVDepartment implements Entity{
 	
 	/**
 	 * Llista que conté tots els departaments (cfOrgUnit)
 	 */
 	private List<CfOrgUnitType> listDepType = new ArrayList<CfOrgUnitType>(); 
+	
+	private Pair<List<String>, List<String>> pair = null;
+	private CsvReader reader = null;
 	
 	/**
 	 * 
@@ -38,34 +41,37 @@ public class CSVDepartment {
 	 * @param pathRelation Fitxer amb les relacions Departament/Investigador
 	 * @param map  HasMap amb clau Orcid i valor identificador únic.
 	 */
-	public CSVDepartment(String path, MarshalCerif marshalCERIF, String pathRelation, CSVResearcher researcher){
-		Pair<List<String>, List<String>> pair = null;
+	public CSVDepartment(String path, MarshalCerif marshal, String pathRelation){
 		if(new File(pathRelation).exists())	pair = createTuple(pathRelation);
 		if(new File(path).exists()){
-			CsvReader reader = new CSVReader(path).getReader();
-			try {
-				while(reader.readRecord()){										
-					listDepType.add(new MarshalDepartments(
-										marshalCERIF.getFactory(),
-										StringEscapeUtils.escapeXml10(reader.get(0)),
-										StringEscapeUtils.escapeXml10(reader.get(1)), 
-										StringEscapeUtils.escapeXml10(reader.get(2)), 
-										StringEscapeUtils.escapeXml10(reader.get(3)), 
-										StringEscapeUtils.escapeXml10(reader.get(4)), 
-										StringEscapeUtils.escapeXml10(reader.get(5)), 
-										StringEscapeUtils.escapeXml10(reader.get(6)), 
-										pair, 
-										researcher).getDepartment());							
-				}					
-				Logger.getLogger(CSVDepartment.class.getName()).info("done");
-			} catch (IOException e) {
-				Logger.getLogger(CSVDepartment.class.getName()).info(e);
-			}finally{
-				reader.close();
-			}
+			reader = new CSVReader(path).getReader();			
 		}else{
 			Logger.getLogger(CSVDepartment.class.getName()).info("No existeix el fitxer " + FilenameUtils.getName(path));
 		}
+	}
+	
+	@Override
+	public void ReadCSV(MarshalCerif marshal, CSVResearcher researcher) {
+		try {
+			while(reader.readRecord()){
+				listDepType.add(new MarshalDepartments(
+									marshal.getFactory(),
+									StringEscapeUtils.escapeXml10(reader.get(0)),
+									StringEscapeUtils.escapeXml10(reader.get(1)), 
+									StringEscapeUtils.escapeXml10(reader.get(2)), 
+									StringEscapeUtils.escapeXml10(reader.get(3)), 
+									StringEscapeUtils.escapeXml10(reader.get(4)), 
+									StringEscapeUtils.escapeXml10(reader.get(5)), 
+									StringEscapeUtils.escapeXml10(reader.get(6)), 
+									pair, 
+									researcher).getDepartment());							
+			}					
+			Logger.getLogger(CSVDepartment.class.getName()).info("done");
+		} catch (IOException e) {
+			Logger.getLogger(CSVDepartment.class.getName()).info(e);
+		}finally{
+			reader.close();
+		}		
 	}
 	
 	/**
@@ -91,7 +97,7 @@ public class CSVDepartment {
 	}
 
 	/************************************************** GETTERS / SETTERS ***************************************************/
-	
+		
 	public List<CfOrgUnitType> getListDepType() {
 		return listDepType;
 	}

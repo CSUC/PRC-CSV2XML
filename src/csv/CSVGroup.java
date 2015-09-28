@@ -23,14 +23,16 @@ import cerif.CfOrgUnitType;
  * @author amartinez
  *
  */
-public class CSVGroup {
+public class CSVGroup implements Entity {
 	
 	/**
 	 * Llista que conté tots els Grups de recerca (cfOrgUnit)
 	 */
 	private List<CfOrgUnitType> listGrType = new ArrayList<CfOrgUnitType>(); 
 
-		
+	private Quartet<List<String>, List<String>, List<String>, List<String>> quartet = null;
+	private CsvReader reader = null;
+	
 	/**
 	 * 
 	 * @param path Fitxer dels Grups de recerca.
@@ -38,38 +40,40 @@ public class CSVGroup {
 	 * @param pathRelation Fitxer amb les relacions Grup de recerca/Investigador
 	 * @param map	HasMap amb clau Orcid i valor identificador únic.
 	 */
-	public CSVGroup(String path, MarshalCerif marshalCERIF, String pathRelation, CSVResearcher researcher){
-		Quartet<List<String>, List<String>, List<String>, List<String>> quartet = null;
+	public CSVGroup(String path, MarshalCerif marshalCERIF, String pathRelation){		
 		if(new File(pathRelation).exists())	quartet = createQuartet(pathRelation);
 		if(new File(path).exists()){
-			CsvReader reader = new CSVReader(path).getReader();
-			try {
-				while(reader.readRecord()){
-					listGrType.add(new MarshalGroups(
-										marshalCERIF.getFactory(),
-										StringEscapeUtils.escapeXml10(reader.get(0)), 
-										StringEscapeUtils.escapeXml10(reader.get(1)), 
-										StringEscapeUtils.escapeXml10(reader.get(2)), 
-										StringEscapeUtils.escapeXml10(reader.get(3)), 
-										StringEscapeUtils.escapeXml10(reader.get(4)), 
-										StringEscapeUtils.escapeXml10(reader.get(5)), 
-										StringEscapeUtils.escapeXml10(reader.get(6)), 
-										StringEscapeUtils.escapeXml10(reader.get(7)), 
-										quartet, 
-										researcher).getGROUP());
-				}					
-				Logger.getLogger(CSVGroup.class.getName()).info("done");
-			} catch (IOException e) {
-				Logger.getLogger(CSVGroup.class.getName()).info(e);
-			}finally{
-				reader.close();
-			}
+			reader = new CSVReader(path).getReader();			
 		}else{
 			Logger.getLogger(CSVGroup.class.getName()).info("No existeix el fitxer " + FilenameUtils.getName(path));
-		}
-		
+		}		
 	}
 
+	@Override
+	public void ReadCSV(MarshalCerif marshal, CSVResearcher researcher) {
+		try {
+			while(reader.readRecord()){
+				listGrType.add(new MarshalGroups(
+						marshal.getFactory(),
+									StringEscapeUtils.escapeXml10(reader.get(0)), 
+									StringEscapeUtils.escapeXml10(reader.get(1)), 
+									StringEscapeUtils.escapeXml10(reader.get(2)), 
+									StringEscapeUtils.escapeXml10(reader.get(3)), 
+									StringEscapeUtils.escapeXml10(reader.get(4)), 
+									StringEscapeUtils.escapeXml10(reader.get(5)), 
+									StringEscapeUtils.escapeXml10(reader.get(6)), 
+									StringEscapeUtils.escapeXml10(reader.get(7)), 
+									quartet, 
+									researcher).getGROUP());
+			}					
+			Logger.getLogger(CSVGroup.class.getName()).info("done");
+		} catch (IOException e) {
+			Logger.getLogger(CSVGroup.class.getName()).info(e);
+		}finally{
+			reader.close();
+		}		
+	}
+	
 	/**
 	 * 
 	 * @param pathRelation
@@ -100,5 +104,5 @@ public class CSVGroup {
 	
 	public List<CfOrgUnitType> getListGrType() {
 		return listGrType;
-	}
+	}	
 }

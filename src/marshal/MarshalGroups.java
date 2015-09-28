@@ -12,6 +12,7 @@ import java.util.List;
 import org.javatuples.Quartet;
 
 import cerif.CfOrgUnitType;
+import cerif.CfTransType;
 import cerif.ObjectFactory;
 import csv.CSVResearcher;
 
@@ -70,7 +71,7 @@ public class MarshalGroups extends MarshalPRC {
 		GROUP.setCfOrgUnitId(RandomNumeric.getInstance().newId());
 		createAcro(ACRO, GROUP);
 		createUrl(URL, GROUP);
-		createTitle(NAME, FACTORY, GROUP);
+		createTitle(NAME, "ca", CfTransType.O, FACTORY, GROUP);
 		createDomain(DOMAIN, FACTORY, GROUP);
 		createEntityClass(typeClass, FACTORY, GROUP);
 		createCode(CODE, UIDS.CLASS_ID.getRESEARCH_GROUP_INTERNAL_CODE(), FACTORY, GROUP);
@@ -85,6 +86,5 @@ public class MarshalGroups extends MarshalPRC {
 	
 	public CfOrgUnitType getGROUP() {
 		return GROUP;
-	}
-		
+	}	
 }
