@@ -1,0 +1,22 @@
+# Eclipse project files
+.classpath
+.project
+.settings/
+.externalToolBuilders/
+.metadata/
+
+#IntelliJ project files
+.idea
+*.iml
+
+# Maven
+target/
+
+# Temp files
+*~
+*.bak
+.DS_Store
+
+bin/
+[Ll]ogs/
+[tT]mp/
