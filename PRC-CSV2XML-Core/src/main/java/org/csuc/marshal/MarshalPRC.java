@@ -15,6 +15,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.javatuples.Pair;
 import org.javatuples.Quartet;
 
+import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -347,21 +348,22 @@ public class MarshalPRC {
         if (date != null) {
             if (!date.isEmpty()) {
                 if (instance.getClass().equals(CfOrgUnitType.class)) { //OrgUnit
+
                     CfOrgUnitSrv srv = new CfOrgUnitSrv();
                     srv.setCfSrvId(RandomNumeric.getInstance().newId());
                     srv.setCfClassId(Semantics.getClassId(ClassId.RESEARCH_GROUP_CREATION_DATE));
                     srv.setCfClassSchemeId(Semantics.getSchemaId(SchemeId.ORGANISATION_RESEARCH_INFRASTRUCTURE_ROLES));
-                    srv.setCfStartDate(Time.formatDateTime(date, Time.getDATE_TIME()));
+                    srv.setCfStartDate(Time.formatDateTime(date));
                     ((CfOrgUnitType) instance).getCfNameOrCfResActOrCfKeyw().add(factory.createCfOrgUnitTypeCfOrgUnitSrv(srv));
                 }
                 if (instance.getClass().equals(CfResPublType.class))
-                    ((CfResPublType) instance).setCfResPublDate(Time.formatDateTime(date, Time.getDATE()));
+                    ((CfResPublType) instance).setCfResPublDate(Time.formatDate(date));
             }
         }
         if (startDate != null
                 || endDate != null) { //Project and Publicaton
-            if (!startDate.isEmpty())   ((CfProjType) instance).setCfStartDate(Time.formatDateTime(startDate, Time.getDATE()));
-            if (!endDate.isEmpty()) ((CfProjType) instance).setCfEndDate(Time.formatDateTime(endDate, Time.getDATE()));
+            if (!startDate.isEmpty())   ((CfProjType) instance).setCfStartDate(Time.formatDateTime(startDate));
+            if (!endDate.isEmpty()) ((CfProjType) instance).setCfEndDate(Time.formatDateTime(endDate));
         }
 
     }

@@ -52,7 +52,6 @@ public class CSVResearcher implements Entity {
     private HashMap<String, String> UNCHECKEDS = new HashMap<>();
 
 
-    private ObjectFactory FACTORY;
     private CsvReader reader;
 
     public CSVResearcher(String path) {

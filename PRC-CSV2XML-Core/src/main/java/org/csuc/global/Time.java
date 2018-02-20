@@ -14,6 +14,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.GregorianCalendar;
+import java.util.Locale;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -27,30 +28,6 @@ public class Time {
 	private static String DATE = "yyyy-MM-dd";
 	private static String DATE_TIME = "yyyy-MM-dd'T'HH:mm:ss";
 	
-	/**
-     * Long que conté la durada des de que entra la petició fins que envia la resposta
-     * JSON.
-     * 
-     * @param inici
-     * @return
-     */
-    public static long getTime(Date inici){
-    	Date fi = new Date();
-  		long diff = fi.getTime() - inici.getTime();
-  		return TimeUnit.MILLISECONDS.toSeconds(diff);
-    }  
-    
-    public static void getTime(final Date inici, final String Strategy) {
-    	Date fi = new Date();
-  		long diff = fi.getTime() - inici.getTime();
-
-		long s = TimeUnit.MILLISECONDS.toSeconds(diff);
-		long m = TimeUnit.MILLISECONDS.toMinutes(diff);
-		long h	= TimeUnit.MILLISECONDS.toHours(diff);
-
-		logger.info("Time "+Strategy+":\t"
-				+ h + "h:"+ m + "m:"+ s + "s");
-	}
 
     /**
      *
@@ -58,31 +35,43 @@ public class Time {
      * per a poder invalidad la data.
      *
      * @param inputDate
-     * @param formatOut
      * @return
      */
-	public static XMLGregorianCalendar formatDateTime(String inputDate, String formatOut){
+	public static XMLGregorianCalendar formatDateTime(String inputDate){
 		if(inputDate == null) return null;
         try {
-            return DatatypeFactory.newInstance().newXMLGregorianCalendar(inputDate);
+            DateFormat format = new SimpleDateFormat(DATE_TIME);
+
+            Date d = format.parse(inputDate);
+            return DatatypeFactory.newInstance().newXMLGregorianCalendar(format.format(d));
+        } catch (ParseException e) {
+            logger.error(e);
         } catch (DatatypeConfigurationException e) {
             logger.error(e);
-            return null;
         }
+        return null;
     }
-		
-	public static Boolean isDateValid(XMLGregorianCalendar xmlGregorianCalendar) throws DatatypeConfigurationException{
-		if(xmlGregorianCalendar.getYear()
-					<= DatatypeFactory.newInstance().newXMLGregorianCalendar(new GregorianCalendar()).getYear())	return true;
-		return false;
-	}
-	
-	public static String getDATE() {
-		return DATE;
-	}
 
-	public static String getDATE_TIME() {
-		return DATE_TIME;
-	}
-	
+    /**
+     *
+     * Canvia el format d'una data de tipus Date a Date Time (ISO-8601). Qualsevol error retorna un String null
+     * per a poder invalidad la data.
+     *
+     * @param inputDate
+     * @return
+     */
+    public static XMLGregorianCalendar formatDate(String inputDate){
+        if(inputDate == null) return null;
+        try {
+            DateFormat format = new SimpleDateFormat(DATE);
+
+            Date d = format.parse(inputDate);
+            return DatatypeFactory.newInstance().newXMLGregorianCalendar(format.format(d));
+        } catch (ParseException e) {
+            logger.error(e);
+        } catch (DatatypeConfigurationException e) {
+            logger.error(e);
+        }
+        return null;
+    }
 }

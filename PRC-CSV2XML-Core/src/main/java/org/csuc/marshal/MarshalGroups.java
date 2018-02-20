@@ -75,7 +75,6 @@ public class MarshalGroups extends MarshalPRC {
 		createEmail(AE, GROUP);
 		createRelationCfPers(GROUP, QUARTET, CODE, mapResearcher, mapUncheckeds);
 	}
-	
 
 	/************************************************* GETTERS / SETTERS ***********************************************************/
 	
