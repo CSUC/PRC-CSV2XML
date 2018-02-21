@@ -3,7 +3,7 @@
     <parent>
         <artifactId>PRC-CSV2XML</artifactId>
         <groupId>org.csuc</groupId>
-        <version>0.0.1</version>
+        <version>2.4</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
@@ -27,13 +27,13 @@
         <dependency>
             <groupId>org.csuc</groupId>
             <artifactId>Binding-Core</artifactId>
-            <version>0.0.1</version>
+            <version>1.0</version>
         </dependency>
 
         <dependency>
             <groupId>org.csuc</groupId>
             <artifactId>euroCRIS-cerif-definitions</artifactId>
-            <version>0.0.1</version>
+            <version>1.6.2</version>
         </dependency>
 
         <!-- https://mvnrepository.com/artifact/org.javatuples/javatuples -->
@@ -87,16 +87,18 @@
                     </execution>
                 </executions>
                 <configuration>
+                    <outputDirectory>../bin</outputDirectory>
                     <archive>
                         <manifest>
                             <addClasspath>true</addClasspath>
                             <mainClass>org.csuc.cli.App</mainClass>
                         </manifest>
                     </archive>
-                    <finalName>CSV2XML</finalName>
+                    <finalName>CSV2XML-${version}</finalName>
                     <descriptorRefs>
                         <descriptorRef>jar-with-dependencies</descriptorRef>
                     </descriptorRefs>
+                    <appendAssemblyId>false</appendAssemblyId>
                 </configuration>
             </plugin>
             <plugin>

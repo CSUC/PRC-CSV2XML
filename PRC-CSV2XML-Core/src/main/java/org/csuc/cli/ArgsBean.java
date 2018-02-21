@@ -77,7 +77,7 @@ public class ArgsBean {
         return researcher;
     }
 
-    @Option(name = "-r", aliases = "--researcher", usage= "file or folder input", required = true, metaVar = "<Path>")
+    @Option(name = "-r", aliases = "--researcher", usage= "Researcher file", required = true, metaVar = "<Path>")
     public void setResearcher(Path researcher) throws FileNotFoundException {
         if(Files.notExists(researcher)) throw new FileNotFoundException(MessageFormat.format("{0} File not Found!", researcher));
         this.researcher = researcher;
@@ -87,7 +87,7 @@ public class ArgsBean {
         return department;
     }
 
-    @Option(name = "-d", aliases = "--department", usage= "file or folder input", required = true, metaVar = "<Path>")
+    @Option(name = "-d", aliases = "--department", usage= "Department file", required = true, metaVar = "<Path>")
     public void setDepartment(Path department) throws FileNotFoundException {
         if(Files.notExists(department)) throw new FileNotFoundException(MessageFormat.format("{0} File not Found!", department));
         this.department = department;
@@ -97,7 +97,7 @@ public class ArgsBean {
         return researcherGroup;
     }
 
-    @Option(name = "-rg", aliases = "--researchgroup", usage= "file or folder input", required = true, metaVar = "<Path>")
+    @Option(name = "-rg", aliases = "--researchgroup", usage= "Research Group file", required = true, metaVar = "<Path>")
     public void setResearcherGroup(Path researcherGroup) throws FileNotFoundException {
         if(Files.notExists(researcherGroup)) throw new FileNotFoundException(MessageFormat.format("{0} File not Found!", researcherGroup));
         this.researcherGroup = researcherGroup;
@@ -107,7 +107,7 @@ public class ArgsBean {
         return project;
     }
 
-    @Option(name = "-pj", aliases = "--project", usage= "file or folder input", required = true, metaVar = "<Path>")
+    @Option(name = "-pj", aliases = "--project", usage= "Project file", required = true, metaVar = "<Path>")
     public void setProject(Path project) throws FileNotFoundException {
         if(Files.notExists(project)) throw new FileNotFoundException(MessageFormat.format("{0} File not Found!", project));
         this.project = project;
@@ -117,7 +117,7 @@ public class ArgsBean {
         return publication;
     }
 
-    @Option(name = "-p", aliases = "--publication", usage= "file or folder input", required = true, metaVar = "<Path>")
+    @Option(name = "-p", aliases = "--publication", usage= "Publication file", required = true, metaVar = "<Path>")
     public void setPublication(Path publication) throws FileNotFoundException {
         if(Files.notExists(publication)) throw new FileNotFoundException(MessageFormat.format("{0} File not Found!", publication));
         this.publication = publication;
@@ -127,7 +127,7 @@ public class ArgsBean {
         return ruct;
     }
 
-    @Option(name = "-ruct", aliases = "--ruct", usage= "ruct", required = true)
+    @Option(name = "-ruct", aliases = "--ruct", usage= "ruct code", required = true)
     public void setRuct(String ruct) throws Exception {
         if(!Ruct.isValidRuct(ruct)) throw new Exception(MessageFormat.format("{0} invalid ruct code!", ruct));
         this.ruct = ruct;
@@ -137,7 +137,7 @@ public class ArgsBean {
         return relationDepartment;
     }
 
-    @Option(name = "-rd", aliases = "--relationDepartment", usage= "file or folder input", required = true, metaVar = "<Path>")
+    @Option(name = "-rd", aliases = "--relationDepartment", usage= "Relation Department  file", required = true, metaVar = "<Path>")
     public void setRelationDepartment(Path relationDepartment) throws FileNotFoundException {
         if(Files.notExists(relationDepartment)) throw new FileNotFoundException(MessageFormat.format("{0} File not Found!", relationDepartment));
         this.relationDepartment = relationDepartment;
@@ -147,7 +147,7 @@ public class ArgsBean {
         return relationResearcherGroup;
     }
 
-    @Option(name = "-rrg", aliases = "--relationResearchGroup", usage= "file or folder input", required = true, metaVar = "<Path>")
+    @Option(name = "-rrg", aliases = "--relationResearchGroup", usage= "Relation Research Group file", required = true, metaVar = "<Path>")
     public void setRelationResearcherGroup(Path relationResearcherGroup) throws FileNotFoundException {
         if(Files.notExists(relationResearcherGroup)) throw new FileNotFoundException(MessageFormat.format("{0} File not Found!", relationResearcherGroup));
         this.relationResearcherGroup = relationResearcherGroup;
@@ -157,7 +157,7 @@ public class ArgsBean {
         return relationProject;
     }
 
-    @Option(name = "-rpj", aliases = "--relationProject", usage= "file or folder input", required = true, metaVar = "<Path>")
+    @Option(name = "-rpj", aliases = "--relationProject", usage= "Relation Project file", required = true, metaVar = "<Path>")
     public void setRelationProject(Path relationProject) throws FileNotFoundException {
         if(Files.notExists(relationProject)) throw new FileNotFoundException(MessageFormat.format("{0} File not Found!", relationProject));
         this.relationProject = relationProject;
@@ -167,7 +167,7 @@ public class ArgsBean {
         return relationPublication;
     }
 
-    @Option(name = "-rp", aliases = "--relationPublication", usage= "file or folder input", required = true, metaVar = "<Path>")
+    @Option(name = "-rp", aliases = "--relationPublication", usage= "Relation Publication file", required = true, metaVar = "<Path>")
     public void setRelationPublication(Path relationPublication) throws FileNotFoundException {
         if(Files.notExists(relationPublication)) throw new FileNotFoundException(MessageFormat.format("{0} File not Found!", relationPublication));
         this.relationPublication = relationPublication;
