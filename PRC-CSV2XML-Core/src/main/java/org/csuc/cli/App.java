@@ -53,93 +53,105 @@ public class App {
             //Researchers
             new CSVResearcher(bean.getResearcher()).readCSV().forEach(researcher -> {
                 MarshalReseracher marshalReseracher =
-                                new MarshalReseracher(null, (String) researcher.get(0),
-                                        null, (String) researcher.get(1),
-                                        (String) researcher.get(2), null,
-                                        (String) researcher.get(3), Semantics.getClassId(ClassId.CHECKED));
+                        new MarshalReseracher(null, (String) researcher.get(0),
+                                null, (String) researcher.get(1),
+                                (String) researcher.get(2), null,
+                                (String) researcher.get(3), Semantics.getClassId(ClassId.CHECKED));
                 cfPersTypeList.add(marshalReseracher);
             });
 
             //OrgUnits (Department)
             CSVDepartment csvDepartment = new CSVDepartment(bean.getDepartment(),
                     bean.getRelationDepartment());
-            csvDepartment.readCSV().forEach(researcher -> {
-                MarshalDepartment marshalDepartment =
-                                new MarshalDepartment(
-                                        (String) researcher.get(0),
-                                        (String) researcher.get(1),
-                                        (String) researcher.get(2),
-                                        (String) researcher.get(3),
-                                        (String) researcher.get(4),
-                                        (String) researcher.get(5),
-                                        (String) researcher.get(6),
-                                        csvDepartment.readCSVRelation(),
-                                        cfPersTypeList
-                                );
-                cerif.getCfClassOrCfClassSchemeOrCfClassSchemeDescr().add(marshalDepartment);
+
+            Optional.ofNullable(csvDepartment.readCSV()).ifPresent(present->{
+                present.forEach(researcher -> {
+                    MarshalDepartment marshalDepartment =
+                            new MarshalDepartment(
+                                    (String) researcher.get(0),
+                                    (String) researcher.get(1),
+                                    (String) researcher.get(2),
+                                    (String) researcher.get(3),
+                                    (String) researcher.get(4),
+                                    (String) researcher.get(5),
+                                    (String) researcher.get(6),
+                                    csvDepartment.readCSVRelation(),
+                                    cfPersTypeList
+                            );
+                    cerif.getCfClassOrCfClassSchemeOrCfClassSchemeDescr().add(marshalDepartment);
+                });
             });
 
             //OrgUnits (Research Group)
             CSVResearchGroup csvResearchGroup = new CSVResearchGroup(bean.getResearcherGroup(),
                     bean.getRelationResearcherGroup());
-            csvResearchGroup.readCSV().forEach(researcher -> {
-                MarshalResearchGroup marshalResearchGroup = new MarshalResearchGroup(
-                        (String) researcher.get(0),
-                        (String) researcher.get(1),
-                        (String) researcher.get(2),
-                        (String) researcher.get(3),
-                        (String) researcher.get(4),
-                        (String) researcher.get(5),
-                        (String) researcher.get(6),
-                        csvResearchGroup.readCSVRelation(),
-                        cfPersTypeList
-                );
-                cerif.getCfClassOrCfClassSchemeOrCfClassSchemeDescr().add(marshalResearchGroup);
-                cfPersTypeList.addAll(marshalResearchGroup.getNewCfPersType());
+
+            Optional.ofNullable(csvResearchGroup.readCSV()).ifPresent(present->{
+                present.forEach(researcher -> {
+                    MarshalResearchGroup marshalResearchGroup = new MarshalResearchGroup(
+                            (String) researcher.get(0),
+                            (String) researcher.get(1),
+                            (String) researcher.get(2),
+                            (String) researcher.get(3),
+                            (String) researcher.get(4),
+                            (String) researcher.get(5),
+                            (String) researcher.get(6),
+                            csvResearchGroup.readCSVRelation(),
+                            cfPersTypeList
+                    );
+                    cerif.getCfClassOrCfClassSchemeOrCfClassSchemeDescr().add(marshalResearchGroup);
+                    cfPersTypeList.addAll(marshalResearchGroup.getNewCfPersType());
+                });
             });
+
 
             //Projects
             CSVProject csvProject = new CSVProject(bean.getProject(), bean.getRelationProject());
-            csvProject.readCSV().forEach(researcher -> {
-                MarshalProject marshalProject = new MarshalProject(
-                        (String) researcher.get(0),
-                        (String) researcher.get(1),
-                        (String) researcher.get(2),
-                        (String) researcher.get(3),
-                        (String) researcher.get(4),
-                        (String) researcher.get(5),
-                        (String) researcher.get(6),
-                        csvProject.readCSVRelation(),
-                        cfPersTypeList
-                );
-                cerif.getCfClassOrCfClassSchemeOrCfClassSchemeDescr().add(marshalProject);
-                cfPersTypeList.addAll(marshalProject.getNewCfPersType());
+            Optional.ofNullable(csvProject.readCSV()).ifPresent(present->{
+                present.forEach(researcher -> {
+                    MarshalProject marshalProject = new MarshalProject(
+                            (String) researcher.get(0),
+                            (String) researcher.get(1),
+                            (String) researcher.get(2),
+                            (String) researcher.get(3),
+                            (String) researcher.get(4),
+                            (String) researcher.get(5),
+                            (String) researcher.get(6),
+                            csvProject.readCSVRelation(),
+                            cfPersTypeList
+                    );
+                    cerif.getCfClassOrCfClassSchemeOrCfClassSchemeDescr().add(marshalProject);
+                    cfPersTypeList.addAll(marshalProject.getNewCfPersType());
+                });
             });
 
             //Publications
             CSVPublication csvPublication = new CSVPublication(bean.getPublication(), bean.getRelationPublication());
-            csvPublication.readCSV().forEach(researcher -> {
-                MarshalPublication marshalPublication = new MarshalPublication(
-                        (String) researcher.get(0),
-                        (String) researcher.get(1),
-                        (String) researcher.get(2),
-                        (String) researcher.get(3),
-                        (String) researcher.get(4),
-                        (String) researcher.get(5),
-                        (String) researcher.get(6),
-                        (String) researcher.get(7),
-                        (String) researcher.get(8),
-                        (String) researcher.get(9),
-                        (String) researcher.get(10),
-                        (String) researcher.get(11),
-                        (String) researcher.get(12),
-                        (String) researcher.get(13),
-                        (String) researcher.get(14),
-                        csvPublication.readCSVRelation(),
-                        cfPersTypeList
-                );
-                cerif.getCfClassOrCfClassSchemeOrCfClassSchemeDescr().add(marshalPublication);
-                cfPersTypeList.addAll(marshalPublication.getNewCfPersType());
+
+            Optional.ofNullable(csvPublication.readCSV()).ifPresent(present->{
+                present.forEach(researcher -> {
+                    MarshalPublication marshalPublication = new MarshalPublication(
+                            (String) researcher.get(0),
+                            (String) researcher.get(1),
+                            (String) researcher.get(2),
+                            (String) researcher.get(3),
+                            (String) researcher.get(4),
+                            (String) researcher.get(5),
+                            (String) researcher.get(6),
+                            (String) researcher.get(7),
+                            (String) researcher.get(8),
+                            (String) researcher.get(9),
+                            (String) researcher.get(10),
+                            (String) researcher.get(11),
+                            (String) researcher.get(12),
+                            (String) researcher.get(13),
+                            (String) researcher.get(14),
+                            csvPublication.readCSVRelation(),
+                            cfPersTypeList
+                    );
+                    cerif.getCfClassOrCfClassSchemeOrCfClassSchemeDescr().add(marshalPublication);
+                    cfPersTypeList.addAll(marshalPublication.getNewCfPersType());
+                });
             });
 
             cerif.getCfClassOrCfClassSchemeOrCfClassSchemeDescr().addAll(cfPersTypeList);
