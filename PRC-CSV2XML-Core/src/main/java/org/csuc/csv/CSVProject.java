@@ -1,96 +1,67 @@
-/**
- *
- */
 package org.csuc.csv;
 
-import com.csvreader.CsvReader;
-import org.apache.commons.text.StringEscapeUtils;
-import org.csuc.marshal.MarshalProjects;
-import org.apache.commons.io.FilenameUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.javatuples.Quartet;
-import xmlns.org.eurocris.cerif_1.CfProjType;
 
-import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
+import java.text.MessageFormat;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * @author amartinez
  */
-public class CSVProject implements Entity {
+public class CSVProject implements Read<List<List<Object>>> {
 
     private static Logger logger = LogManager.getLogger(CSVProject.class);
 
-    /**
-     * Llista que conté tots els Projectes (cfProj)
-     */
-    private List<CfProjType> listProjType = new ArrayList<CfProjType>();
-    private Quartet<List<String>, List<String>, List<String>, List<String>> quartet = null;
-    private CsvReader reader = null;
+    private List<List<Object>> data;
+    private List<List<Object>> dataRelation;
 
-    /**
-     * @param path         Fitxer dels Projectes.
-     * @param pathRelation Fitxer amb les relacions Projectes/Investigador
-     */
-    public CSVProject(String path, String pathRelation) {
-        if (new File(pathRelation).exists()) quartet = createQuartet(pathRelation);
-        if (new File(path).exists()) {
-            reader = new CSVReader(path).getReader();
-        } else {
-            logger.info("No existeix el fitxer {}", FilenameUtils.getName(path));
-        }
+    private String file;
+    private String fileRelation;
+
+
+    public CSVProject(String file, String relation) throws IOException {
+        this.file = file;
+        this.fileRelation = relation;
+
+        logger.debug("Project file:           {}", this.file);
+        logger.debug("Project Relation file:  {}", this.fileRelation);
+
+        data = Reading.readWithCsvListReader(this.file, Processors.getProcessorsProject());
+        dataRelation = Reading.readWithCsvListReader(this.fileRelation, Processors.getProcessorsProjectRelation());
     }
 
     @Override
-    public void ReadCSV(CSVResearcher researcher) {
-        try {
-            while (reader.readRecord()) {
-                listProjType.add(new MarshalProjects(
-                        StringEscapeUtils.escapeXml11(reader.get(0)),
-                        StringEscapeUtils.escapeXml11(reader.get(1)),
-                        StringEscapeUtils.escapeXml11(reader.get(2)),
-                        StringEscapeUtils.escapeXml11(reader.get(3)),
-                        StringEscapeUtils.escapeXml11(reader.get(4)),
-                        StringEscapeUtils.escapeXml11(reader.get(5)),
-                        StringEscapeUtils.escapeXml11(reader.get(6)),
-                        quartet,
-                        researcher).getPROJECT());
-            }
-        } catch (IOException e) {
-            logger.error(e);
-        } finally {
-            reader.close();
+    public List<List<Object>> readCSV() {
+        if(Objects.nonNull(data)){
+            data.forEach(consumer -> {
+                try {
+                    if (consumer.size() != 7) throw new Exception(MessageFormat.format("{0} invalid format!", file));
+                    logger.debug("title: \"{}\"  url:  \"{}\"   Official Code: \"{}\"     Code:  \"{}\"     Funding program:  \"{}\"     Date inici:  \"{}\"     Date fi:  \"{}\"",
+                            consumer.get(0), consumer.get(1), consumer.get(2), consumer.get(3), consumer.get(4), consumer.get(5), consumer.get(6));
+                } catch (Exception e) {
+                    logger.error(e);
+                }
+            });
         }
+        return data;
     }
 
-    private Quartet<List<String>, List<String>, List<String>, List<String>> createQuartet(String pathRelation) {
-        CsvReader reader = new CSVReader(pathRelation).getReader();
-        List<String> listCode = new ArrayList<String>();
-        List<String> listSig = new ArrayList<String>();
-        List<String> listOrcid = new ArrayList<String>();
-        List<String> listIP = new ArrayList<String>();
-        try {
-            while (reader.readRecord()) {
-                listCode.add(StringEscapeUtils.escapeXml11(reader.get(0)));
-                listSig.add(StringEscapeUtils.escapeXml11(reader.get(1)));
-                listOrcid.add(StringEscapeUtils.escapeXml11(reader.get(2)));
-                listIP.add(StringEscapeUtils.escapeXml11(reader.get(3)));
-            }
-            return new Quartet<>(listCode, listSig, listOrcid, listIP);
-        } catch (IOException e) {
-            return null;
-        } finally {
-            reader.close();
+    @Override
+    public List<List<Object>> readCSVRelation() {
+        if(Objects.nonNull(dataRelation)){
+            dataRelation.forEach(consumer -> {
+                try {
+                    if (consumer.size() != 4) throw new Exception(MessageFormat.format("{0} invalid format!", fileRelation));
+                    logger.debug("codi: \"{}\"  name:  \"{}\"  orcid:  \"{}\"  ip:  \"{}\"",
+                            consumer.get(0), consumer.get(1), consumer.get(2), consumer.get(3));
+                } catch (Exception e) {
+                    logger.error(e);
+                }
+            });
         }
+        return dataRelation;
     }
-
-    /************************************************** GETTERS / SETTERS ***************************************************/
-
-    public List<CfProjType> getListProjType() {
-        return listProjType;
-    }
-
 }

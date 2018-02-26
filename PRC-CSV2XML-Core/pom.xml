@@ -3,7 +3,7 @@
     <parent>
         <artifactId>PRC-CSV2XML</artifactId>
         <groupId>org.csuc</groupId>
-        <version>2.4</version>
+        <version>2.4.2</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
@@ -42,19 +42,6 @@
             <artifactId>javatuples</artifactId>
         </dependency>
 
-        <!-- https://mvnrepository.com/artifact/net.sourceforge.javacsv/javacsv -->
-        <dependency>
-            <groupId>net.sourceforge.javacsv</groupId>
-            <artifactId>javacsv</artifactId>
-        </dependency>
-
-        <!-- https://mvnrepository.com/artifact/org.apache.tika/tika-parsers -->
-        <dependency>
-            <groupId>org.apache.tika</groupId>
-            <artifactId>tika-parsers</artifactId>
-            <version>1.17</version>
-        </dependency>
-
         <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-text</artifactId>
@@ -69,6 +56,17 @@
         <dependency>
             <groupId>args4j</groupId>
             <artifactId>args4j</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>net.sf.supercsv</groupId>
+            <artifactId>super-csv</artifactId>
+        </dependency>
+
+        <!-- https://mvnrepository.com/artifact/org.apache.logging.log4j/log4j-iostreams -->
+        <dependency>
+            <groupId>org.apache.logging.log4j</groupId>
+            <artifactId>log4j-iostreams</artifactId>
         </dependency>
     </dependencies>
 
@@ -122,6 +120,23 @@
                             </resources>
                         </configuration>
                     </execution>
+                    <execution>
+                        <id>copy-resources2</id>
+                        <!-- here the phase you need -->
+                        <phase>validate</phase>
+                        <goals>
+                            <goal>copy-resources</goal>
+                        </goals>
+                        <configuration>
+                            <outputDirectory>${basedir}/target/classes</outputDirectory>
+                            <resources>
+                                <resource>
+                                    <directory>src/main/resources</directory>
+                                    <filtering>true</filtering>
+                                </resource>
+                            </resources>
+                        </configuration>
+                    </execution>
                 </executions>
             </plugin>
         </plugins>
@@ -134,6 +149,7 @@
                     <include>**/*.conf</include>
                     <include>**/*.json</include>
                     <include>**/*.xml</include>
+                    <include>**/*.csv</include>
                 </includes>
             </resource>
         </resources>

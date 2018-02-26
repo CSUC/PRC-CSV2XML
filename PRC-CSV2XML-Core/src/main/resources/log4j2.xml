@@ -2,7 +2,7 @@
 <Configuration>
     <Appenders>
         <!-- All -->
-        <RollingFile name="RollingFile" fileName="${prc.java.xml.logs}/${name}-${date:yyyy-MM-dd}.log" filePattern="${prc.java.xml.logs}/${name}-%d{yyyy-MM-dd}-%i.log">
+        <RollingFile name="RollingFile" fileName="${prc.java.xml.logs}/${parent.name}-${date:yyyy-MM-dd}.log" filePattern="${prc.java.xml.logs}/${parent.name}-%d{yyyy-MM-dd}-%i.log">
             <PatternLayout>
                 <Pattern>%d{yyyy-MM-dd HH:mm:ss} %-5level %logger{36} - %msg%n</Pattern>
             </PatternLayout>
@@ -17,7 +17,7 @@
         </Console>
     </Appenders>
     <Loggers>
-        <Logger name="org.csuc" level="debug" additivity="true">
+        <Logger name="org.csuc" level="info" additivity="true">
             <appender-ref ref="RollingFile" level="info" />
         </Logger>
 
