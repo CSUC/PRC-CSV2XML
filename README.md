@@ -1,4 +1,4 @@
-# PRCJava2XML   [![Build Status](https://travis-ci.org/CSUC/PRC-CSV2XML.svg?branch=master)](https://travis-ci.org/CSUC/PRC-CSV2XML)
+# PRCJava2XML   [![Build Status](https://travis-ci.org/CSUC/PRC-CSV2XML.svg?branch=develop)](https://travis-ci.org/CSUC/PRC-CSV2XML)
 
 ## Resources
 * [Release Notes](../../releases)
