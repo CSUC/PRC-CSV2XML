@@ -1,4 +1,4 @@
-ID intern;ORCID;En cas de tesis, intervé en la seva direcció?
-publ1;0000-0002-3843-3472;si
-publ1;0000-0001-5982-5953;no
-publ1;0000-0001-5001-2438;no
+ID intern;Nom;ORCID;En cas de tesis, intervé en la seva direcció?
+publ1;;0000-0002-3843-3472;si
+publ1;;0000-0001-5982-5953;no
+publ1;;0000-0001-5001-2438;no
