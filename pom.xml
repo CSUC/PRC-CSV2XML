@@ -32,6 +32,7 @@
         <typesafe.config.version>1.3.2</typesafe.config.version>
         <log4j.version>2.10.0</log4j.version>
         <args4j.version>2.33</args4j.version>
+        <super.csv.version>2.4.0</super.csv.version>
 
         <prc.java.xml.logs>/tmp/prc</prc.java.xml.logs>
     </properties>
@@ -81,6 +82,13 @@
                 <version>${log4j.version}</version>
             </dependency>
 
+            <!-- https://mvnrepository.com/artifact/org.apache.logging.log4j/log4j-iostreams -->
+            <dependency>
+                <groupId>org.apache.logging.log4j</groupId>
+                <artifactId>log4j-iostreams</artifactId>
+                <version>${log4j.version}</version>
+            </dependency>
+
             <dependency>
                 <groupId>org.apache.commons</groupId>
                 <artifactId>commons-text</artifactId>
@@ -98,6 +106,12 @@
                 <groupId>args4j</groupId>
                 <artifactId>args4j</artifactId>
                 <version>${args4j.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>net.sf.supercsv</groupId>
+                <artifactId>super-csv</artifactId>
+                <version>${super.csv.version}</version>
             </dependency>
 
         </dependencies>

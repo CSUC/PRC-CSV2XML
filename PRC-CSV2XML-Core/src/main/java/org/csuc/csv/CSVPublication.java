@@ -1,111 +1,77 @@
-/**
- *
- */
 package org.csuc.csv;
 
 import org.apache.commons.text.StringEscapeUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import xmlns.org.eurocris.cerif_1.CfResPublType;
-import com.csvreader.CsvReader;
-import org.csuc.marshal.MarshalPublications;
-import org.apache.commons.io.FilenameUtils;
 
-import org.javatuples.Quartet;
-
-import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
+import java.text.MessageFormat;
 import java.util.List;
-
+import java.util.Objects;
 
 /**
  * @author amartinez
  */
-public class CSVPublication implements Entity {
+public class CSVPublication implements Read<List<List<Object>>> {
 
-    private Logger logger = LogManager.getLogger(CSVPublication.class);
+    private static Logger logger = LogManager.getLogger(CSVPublication.class);
 
-    /**
-     * Llista que conté totes les publicacions (cfResPers)
-     */
-    private List<CfResPublType> listPublType = new ArrayList<CfResPublType>();
+    private List<List<Object>> data;
+    private List<List<Object>> dataRelation;
+
+    private String file;
+    private String fileRelation;
 
 
-    private Quartet<List<String>, List<String>, List<String>, List<String>> quartet = null;
-    private CsvReader reader = null;
+    public CSVPublication(String file, String relation) throws IOException {
+        this.file = file;
+        this.fileRelation = relation;
 
-    /**
-     * @param path         Fitxer de publicacions.
-     * @param pathRelation Fitxer amb les relacions.
-     */
-    public CSVPublication(String path, String pathRelation) {
-        if (new File(pathRelation).exists()) quartet = createQuartet(pathRelation);
-        if (new File(path).exists()) {
-            reader = new CSVReader(path).getReader();
-        } else {
-            logger.info("No existeix el fitxer  {}", FilenameUtils.getName(path));
-        }
+        logger.debug("Publication file:           {}", this.file);
+        logger.debug("Publication Relation file:  {}", this.fileRelation);
+
+        data = Reading.readWithCsvListReader(this.file, Processors.getProcessorsPublication());
+        dataRelation = Reading.readWithCsvListReader(this.fileRelation, Processors.getProcessorsPublicationRelation());
     }
 
     @Override
-    public void ReadCSV(CSVResearcher researcher) {
-        try {
-            while (reader.readRecord()) {
-                listPublType.add(new MarshalPublications(
-                        StringEscapeUtils.escapeXml11(reader.get(0)),
-                        StringEscapeUtils.escapeXml11(reader.get(1)),
-                        StringEscapeUtils.escapeXml11(reader.get(2)),
-                        StringEscapeUtils.escapeXml11(reader.get(3)),
-                        StringEscapeUtils.escapeXml11(reader.get(4)),
-                        StringEscapeUtils.escapeXml11(reader.get(5)),
-                        StringEscapeUtils.escapeXml11(reader.get(6)),
-                        StringEscapeUtils.escapeXml11(reader.get(7)),
-                        StringEscapeUtils.escapeXml11(reader.get(8)),
-                        StringEscapeUtils.escapeXml11(reader.get(9)),
-                        StringEscapeUtils.escapeXml11(reader.get(10)),
-                        StringEscapeUtils.escapeXml11(reader.get(11)),
-                        StringEscapeUtils.escapeXml11(reader.get(12)),
-                        StringEscapeUtils.escapeXml11(reader.get(13)),
-                        StringEscapeUtils.escapeXml11(reader.get(14)),
-                        researcher, quartet).getPUBLICATION());
-            }
-        } catch (IOException e) {
-            logger.error(e);
-        } finally {
-            reader.close();
+    public List<List<Object>> readCSV() {
+        if (Objects.nonNull(data)) {
+            data.forEach(consumer -> {
+                try {
+                    if (consumer.size() != 15) throw new Exception(MessageFormat.format("{0} invalid format!", file));
+                    logger.debug("title: \"{}\"  ID:  \"{}\"   DOI: \"{}\"     Handle:  \"{}\"     Num:  \"{}\"     Vol:  \"{}\"     startPage:  \"{}\"" +
+                                    "endPage:  \"{}\"     isbn:  \"{}\"     issn:  \"{}\"     Data publicació:  \"{}\"     Publicat a:  \"{}\"" +
+                                    "     Publicat per:  \"{}\"     Tipus document:  \"{}\"     Cadena d'autors:  \"{}\"",
+                            consumer.get(0), consumer.get(1), consumer.get(2), consumer.get(3), consumer.get(4), consumer.get(5), consumer.get(6), consumer.get(7),
+                            consumer.get(8), consumer.get(9), consumer.get(10), consumer.get(11), consumer.get(12), consumer.get(13), consumer.get(14));
+                } catch (Exception e) {
+                    logger.error(e);
+                }
+            });
         }
+        return data;
     }
 
-    /**
-     * @param pathRelation
-     * @return
-     */
-    private Quartet<List<String>, List<String>, List<String>, List<String>> createQuartet(String pathRelation) {
-        CsvReader readerRelation = new CSVReader(pathRelation).getReader();
-        List<String> listId = new ArrayList<>();
-        List<String> listSignature = new ArrayList<>();
-        List<String> listOrcid = new ArrayList<>();
-        List<String> listInterve = new ArrayList<>();
-        try {
-            while (readerRelation.readRecord()) {
-                listId.add(StringEscapeUtils.escapeXml11(readerRelation.get(0)));
-                listSignature.add(StringEscapeUtils.escapeXml11(readerRelation.get(1)));
-                listOrcid.add(StringEscapeUtils.escapeXml11(readerRelation.get(2)));
-                listInterve.add(StringEscapeUtils.escapeXml11(readerRelation.get(3)));
-            }
-            return new Quartet<>(listId, listSignature, listOrcid, listInterve);
-        } catch (IOException e) {
-            logger.error(e);
-            return null;
-        } finally {
-            readerRelation.close();
+    @Override
+    public List<List<Object>> readCSVRelation() {
+        if (Objects.nonNull(dataRelation)) {
+            dataRelation.forEach(consumer -> {
+                try {
+                    if (consumer.size() != 4)
+                        throw new Exception(MessageFormat.format("{0} invalid format!", fileRelation));
+                    String codi = StringEscapeUtils.escapeXml11((String) consumer.get(0));
+                    String name = StringEscapeUtils.escapeXml11((String) consumer.get(1));
+                    String orcid = StringEscapeUtils.escapeXml11((String) consumer.get(2));
+                    String ip = StringEscapeUtils.escapeXml11((String) consumer.get(3));
+
+
+                    logger.debug("codi: \"{}\"  name:  \"{}\"  orcid:  \"{}\"  ip:  \"{}\"", codi, name, orcid, ip);
+                } catch (Exception e) {
+                    logger.error(e);
+                }
+            });
         }
-    }
-
-    /************************************************** GETTERS / SETTERS ***************************************************/
-
-    public List<CfResPublType> getListPublType() {
-        return listPublType;
+        return dataRelation;
     }
 }
