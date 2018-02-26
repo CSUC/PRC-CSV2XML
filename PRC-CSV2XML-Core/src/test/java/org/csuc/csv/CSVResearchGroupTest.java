@@ -34,7 +34,7 @@ public class CSVResearchGroupTest {
         CSVResearchGroup data = new CSVResearchGroup(file.toString(), fileRelation.toString());
 
         assertEquals(1, data.readCSV().size());
-        assertEquals(3, data.readCSVRelation().size());
+        assertEquals(4, data.readCSVRelation().size());
     }
 
     @Test
