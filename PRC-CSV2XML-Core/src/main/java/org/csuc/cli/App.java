@@ -65,16 +65,16 @@ public class App {
                     bean.getRelationDepartment());
 
             Optional.ofNullable(csvDepartment.readCSV()).ifPresent(present->{
-                present.forEach(researcher -> {
+                present.forEach(department -> {
                     MarshalDepartment marshalDepartment =
                             new MarshalDepartment(
-                                    (String) researcher.get(0),
-                                    (String) researcher.get(1),
-                                    (String) researcher.get(2),
-                                    (String) researcher.get(3),
-                                    (String) researcher.get(4),
-                                    (String) researcher.get(5),
-                                    (String) researcher.get(6),
+                                    (String) department.get(0),
+                                    (String) department.get(1),
+                                    (String) department.get(2),
+                                    (String) department.get(3),
+                                    (String) department.get(4),
+                                    (String) department.get(5),
+                                    (String) department.get(6),
                                     csvDepartment.readCSVRelation(),
                                     cfPersTypeList
                             );
@@ -87,15 +87,15 @@ public class App {
                     bean.getRelationResearcherGroup());
 
             Optional.ofNullable(csvResearchGroup.readCSV()).ifPresent(present->{
-                present.forEach(researcher -> {
+                present.forEach(group -> {
                     MarshalResearchGroup marshalResearchGroup = new MarshalResearchGroup(
-                            (String) researcher.get(0),
-                            (String) researcher.get(1),
-                            (String) researcher.get(2),
-                            (String) researcher.get(3),
-                            (String) researcher.get(4),
-                            (String) researcher.get(5),
-                            (String) researcher.get(6),
+                            (String) group.get(0),
+                            (String) group.get(1),
+                            (String) group.get(2),
+                            (String) group.get(3),
+                            (String) group.get(4),
+                            (String) group.get(5),
+                            (String) group.get(6),
                             csvResearchGroup.readCSVRelation(),
                             cfPersTypeList
                     );
@@ -108,15 +108,15 @@ public class App {
             //Projects
             CSVProject csvProject = new CSVProject(bean.getProject(), bean.getRelationProject());
             Optional.ofNullable(csvProject.readCSV()).ifPresent(present->{
-                present.forEach(researcher -> {
+                present.forEach(project -> {
                     MarshalProject marshalProject = new MarshalProject(
-                            (String) researcher.get(0),
-                            (String) researcher.get(1),
-                            (String) researcher.get(2),
-                            (String) researcher.get(3),
-                            (String) researcher.get(4),
-                            (String) researcher.get(5),
-                            (String) researcher.get(6),
+                            (String) project.get(0),
+                            (String) project.get(1),
+                            (String) project.get(2),
+                            (String) project.get(3),
+                            (String) project.get(4),
+                            (String) project.get(5),
+                            (String) project.get(6),
                             csvProject.readCSVRelation(),
                             cfPersTypeList
                     );
@@ -129,23 +129,23 @@ public class App {
             CSVPublication csvPublication = new CSVPublication(bean.getPublication(), bean.getRelationPublication());
 
             Optional.ofNullable(csvPublication.readCSV()).ifPresent(present->{
-                present.forEach(researcher -> {
+                present.forEach(publication -> {
                     MarshalPublication marshalPublication = new MarshalPublication(
-                            (String) researcher.get(0),
-                            (String) researcher.get(1),
-                            (String) researcher.get(2),
-                            (String) researcher.get(3),
-                            (String) researcher.get(4),
-                            (String) researcher.get(5),
-                            (String) researcher.get(6),
-                            (String) researcher.get(7),
-                            (String) researcher.get(8),
-                            (String) researcher.get(9),
-                            (String) researcher.get(10),
-                            (String) researcher.get(11),
-                            (String) researcher.get(12),
-                            (String) researcher.get(13),
-                            (String) researcher.get(14),
+                            (String) publication.get(0),
+                            (String) publication.get(1),
+                            (String) publication.get(2),
+                            (String) publication.get(3),
+                            (String) publication.get(4),
+                            (String) publication.get(5),
+                            (String) publication.get(6),
+                            (String) publication.get(7),
+                            (String) publication.get(8),
+                            (String) publication.get(9),
+                            (String) publication.get(10),
+                            (String) publication.get(11),
+                            (String) publication.get(12),
+                            (String) publication.get(13),
+                            (String) publication.get(14),
                             csvPublication.readCSVRelation(),
                             cfPersTypeList
                     );

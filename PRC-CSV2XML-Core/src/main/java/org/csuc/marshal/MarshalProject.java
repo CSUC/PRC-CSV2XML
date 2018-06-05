@@ -98,10 +98,10 @@ public class MarshalProject extends CfProjType implements Factory{
                 if(Objects.nonNull(cfPersTypeList) && code.equals(consumer.get(0).toString())){
                     if(Objects.nonNull(consumer.get(2))){
                         CfPersType id = getIdentifier(cfPersTypeList, consumer.get(2).toString());
-                        researcher(id.getCfPersId(), consumer.get(3).toString());
+                        researcher(id.getCfPersId(), (Objects.nonNull(consumer.get(3))) ? consumer.get(3).toString() : "");
                     }else{
                         String random = RandomNumeric.getInstance().newId();
-                        researcher(random, consumer.get(3).toString());
+                        researcher(random, (Objects.nonNull(consumer.get(3))) ? consumer.get(3).toString() : "");
                         newCfPersType.add(new MarshalReseracher(random, null, null,null, consumer.get(1).toString(),
                                 null, null, Semantics.getClassId(ClassId.UNCHECKED)));
                     }

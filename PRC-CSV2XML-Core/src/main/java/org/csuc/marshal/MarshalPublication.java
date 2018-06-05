@@ -110,8 +110,8 @@ public class MarshalPublication extends CfResPublType implements Factory {
     private void createEntityClass() {
         if(Objects.nonNull(documentTypes)){
             CfCoreClassWithFractionType classGroup = new CfCoreClassWithFractionType();
-            if(Objects.nonNull(DocumentTypes.convert(documentTypes)))
-                classGroup.setCfClassId(Semantics.getClassId(ClassId.valueOf(DocumentTypes.convert(documentTypes).toString())));
+            DocumentTypes type = DocumentTypes.convert(documentTypes);
+            classGroup.setCfClassId((Objects.nonNull(type)) ? Semantics.getClassId(ClassId.valueOf(type.toString())) : "");
             classGroup.setCfClassSchemeId(Semantics.getSchemaId(SchemeId.OUTPUT_TYPES));
             getCfTitleOrCfAbstrOrCfKeyw().add(FACTORY.createCfResPublTypeCfResPublClass(classGroup));
         }
@@ -172,10 +172,10 @@ public class MarshalPublication extends CfResPublType implements Factory {
                 if(Objects.nonNull(cfPersTypeList) && _id.equals(consumer.get(0).toString())){
                     if(Objects.nonNull(consumer.get(2))){
                         CfPersType id = getIdentifier(cfPersTypeList, consumer.get(2).toString());
-                        researcher(id.getCfPersId(), consumer.get(3).toString());
+                        researcher(id.getCfPersId(), (Objects.nonNull(consumer.get(3))) ? consumer.get(3).toString() : "");
                     }else{
                         String random = RandomNumeric.getInstance().newId();
-                        researcher(random, consumer.get(3).toString());
+                        researcher(random, (Objects.nonNull(consumer.get(3))) ? consumer.get(3).toString() : "");
                         newCfPersType.add(new MarshalReseracher(random, null, null,null, consumer.get(1).toString(),
                                 null, null, Semantics.getClassId(ClassId.UNCHECKED)));
                     }
@@ -188,14 +188,10 @@ public class MarshalPublication extends CfResPublType implements Factory {
         CfResPublType.CfPersResPubl pers = new CfResPublType.CfPersResPubl();
         pers.setCfPersId(id);
         if (direccio.toLowerCase().equals("si")
-                || direccio.toLowerCase().equals("s")) {
-            pers.setCfClassId(Semantics.getClassId(ClassId.DISS_DIRECTOR));
-            pers.setCfClassSchemeId(Semantics.getSchemaId(SchemeId.PERSON_PROFESSIONAL_RELATIONSHIPS));
-        } else if (direccio.toLowerCase().equals("no")
-                || direccio.toLowerCase().equals("n")) {
-            pers.setCfClassId(Semantics.getClassId(ClassId.AUTHOR));
-            pers.setCfClassSchemeId(Semantics.getSchemaId(SchemeId.PERSON_PROFESSIONAL_RELATIONSHIPS));
-        }
+                || direccio.toLowerCase().equals("s"))  pers.setCfClassId(Semantics.getClassId(ClassId.DISS_DIRECTOR));
+
+        pers.setCfClassId(Semantics.getClassId(ClassId.AUTHOR));
+        pers.setCfClassSchemeId(Semantics.getSchemaId(SchemeId.PERSON_PROFESSIONAL_RELATIONSHIPS));
         getCfTitleOrCfAbstrOrCfKeyw().add(FACTORY.createCfResPublTypeCfPersResPubl(pers));
     }
 
