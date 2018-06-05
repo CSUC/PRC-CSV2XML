@@ -7,8 +7,10 @@ import org.csuc.typesafe.semantics.SchemeId;
 import org.csuc.typesafe.semantics.Semantics;
 import xmlns.org.eurocris.cerif_1.*;
 
+import javax.xml.bind.JAXBElement;
 import java.util.List;
 import java.util.Objects;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Stream;
 
 /**
@@ -125,7 +127,7 @@ public class MarshalDepartment extends CfOrgUnitType implements Factory {
         if (Objects.nonNull(relation)) {
             relation.stream().forEach(consumer -> {
                 if (Objects.nonNull(cfPersTypeList) && dept.equals(consumer.get(0).toString())) {
-                    CfPersType id = getIdentifier(cfPersTypeList, consumer.get(1).toString());
+                    CfPersType id = getIdentifier(consumer.get(1).toString());
                     if(Objects.nonNull(id)){
                         CfOrgUnitType.CfPersOrgUnit persOrgUnit = new CfOrgUnitType.CfPersOrgUnit();
                         persOrgUnit.setCfPersId(id.getCfPersId());
@@ -155,12 +157,15 @@ public class MarshalDepartment extends CfOrgUnitType implements Factory {
         createRelationCfPers();
     }
 
-    private CfPersType getIdentifier(List<CfPersType> cfPersTypeList, String value) {
-        return cfPersTypeList.stream().filter(cfPersType ->
-            cfPersType.getCfResIntOrCfKeywOrCfPersPers()
-                    .stream().filter(f -> f.getDeclaredType().equals(CfFedIdEmbType.class))
-                    .map(m -> (CfFedIdEmbType) m.getValue())
-                    .filter(f -> f.getCfFedId().equals(value)) != null).findFirst().orElse(null);
+    private CfPersType getIdentifier(String value) {
+        AtomicReference<CfPersType> result = new AtomicReference<>();
+        cfPersTypeList.stream().forEach((CfPersType cfPersType) -> {
+            cfPersType.getCfResIntOrCfKeywOrCfPersPers().forEach((JAXBElement<?> jaxbElement) -> {
+                if(jaxbElement.getDeclaredType().equals(CfFedIdEmbType.class)
+                        && ((CfFedIdEmbType) jaxbElement.getValue()).getCfFedId().equals(value))    result.set(cfPersType);
+            });
+        });
+        return (Objects.isNull(result.get())) ? null : result.get();
     }
 
     public CfOrgUnitType get() {

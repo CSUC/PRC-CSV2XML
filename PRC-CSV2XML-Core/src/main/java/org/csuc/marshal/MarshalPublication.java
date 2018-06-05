@@ -8,10 +8,12 @@ import org.csuc.typesafe.semantics.Semantics;
 import org.csuc.utils.DocumentTypes;
 import xmlns.org.eurocris.cerif_1.*;
 
+import javax.xml.bind.JAXBElement;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -171,8 +173,8 @@ public class MarshalPublication extends CfResPublType implements Factory {
             relation.stream().forEach(consumer->{
                 if(Objects.nonNull(cfPersTypeList) && _id.equals(consumer.get(0).toString())){
                     if(Objects.nonNull(consumer.get(2))){
-                        CfPersType id = getIdentifier(cfPersTypeList, consumer.get(2).toString());
-                        researcher(id.getCfPersId(), (Objects.nonNull(consumer.get(3))) ? consumer.get(3).toString() : "");
+                        CfPersType id = getIdentifier(consumer.get(2).toString());
+                        if(Objects.nonNull(id)) researcher(id.getCfPersId(), (Objects.nonNull(consumer.get(3))) ? consumer.get(3).toString() : "");
                     }else{
                         String random = RandomNumeric.getInstance().newId();
                         researcher(random, (Objects.nonNull(consumer.get(3))) ? consumer.get(3).toString() : "");
@@ -189,8 +191,8 @@ public class MarshalPublication extends CfResPublType implements Factory {
         pers.setCfPersId(id);
         if (direccio.toLowerCase().equals("si")
                 || direccio.toLowerCase().equals("s"))  pers.setCfClassId(Semantics.getClassId(ClassId.DISS_DIRECTOR));
+        else    pers.setCfClassId(Semantics.getClassId(ClassId.AUTHOR));
 
-        pers.setCfClassId(Semantics.getClassId(ClassId.AUTHOR));
         pers.setCfClassSchemeId(Semantics.getSchemaId(SchemeId.PERSON_PROFESSIONAL_RELATIONSHIPS));
         getCfTitleOrCfAbstrOrCfKeyw().add(FACTORY.createCfResPublTypeCfPersResPubl(pers));
     }
@@ -217,12 +219,15 @@ public class MarshalPublication extends CfResPublType implements Factory {
         createRelationCfPers();
     }
 
-    private CfPersType getIdentifier(List<CfPersType> cfPersTypeList, String value) {
-        return cfPersTypeList.stream().filter(cfPersType ->
-                cfPersType.getCfResIntOrCfKeywOrCfPersPers()
-                        .stream().filter(f -> f.getDeclaredType().equals(CfFedIdEmbType.class))
-                        .map(m -> (CfFedIdEmbType) m.getValue())
-                        .filter(f -> f.getCfFedId().equals(value)) != null).findFirst().orElse(null);
+    private CfPersType getIdentifier(String value) {
+        AtomicReference<CfPersType> result = new AtomicReference<>();
+        cfPersTypeList.stream().forEach((CfPersType cfPersType) -> {
+            cfPersType.getCfResIntOrCfKeywOrCfPersPers().forEach((JAXBElement<?> jaxbElement) -> {
+                if(jaxbElement.getDeclaredType().equals(CfFedIdEmbType.class)
+                        && ((CfFedIdEmbType) jaxbElement.getValue()).getCfFedId().equals(value))    result.set(cfPersType);
+            });
+        });
+        return (Objects.isNull(result.get())) ? null : result.get();
     }
 
     public ArrayList<CfPersType> getNewCfPersType() {

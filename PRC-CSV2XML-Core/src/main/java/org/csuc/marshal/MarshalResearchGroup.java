@@ -8,10 +8,12 @@ import org.csuc.typesafe.semantics.SchemeId;
 import org.csuc.typesafe.semantics.Semantics;
 import xmlns.org.eurocris.cerif_1.*;
 
+import javax.xml.bind.JAXBElement;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -121,8 +123,8 @@ public class MarshalResearchGroup extends CfOrgUnitType implements Factory{
             relation.stream().forEach(consumer->{
                 if(Objects.nonNull(cfPersTypeList) && code.equals(consumer.get(0).toString())){
                     if(Objects.nonNull(consumer.get(2))){
-                        CfPersType id = getIdentifier(cfPersTypeList, consumer.get(2).toString());
-                        researcher(id.getCfPersId(), consumer.get(3).toString());
+                        CfPersType id = getIdentifier(consumer.get(2).toString());
+                        if(Objects.nonNull(id)) researcher(id.getCfPersId(), consumer.get(3).toString());
                     }else{
                         String random = RandomNumeric.getInstance().newId();
                         researcher(random, consumer.get(3).toString());
@@ -138,14 +140,11 @@ public class MarshalResearchGroup extends CfOrgUnitType implements Factory{
         CfOrgUnitType.CfPersOrgUnit persOrgUnit = new CfOrgUnitType.CfPersOrgUnit();
         persOrgUnit.setCfPersId(id);
         if (interve.toLowerCase().equals("si")
-                || interve.toLowerCase().equals("s")) {
-            persOrgUnit.setCfClassId(Semantics.getClassId(ClassId.GROUP_LEADER));
-            persOrgUnit.setCfClassSchemeId(Semantics.getSchemaId(SchemeId.PERSON_ORGANISATION_ROLES));
-        } else if (interve.toLowerCase().equals("no")
-                || interve.toLowerCase().equals("n")) {
-            persOrgUnit.setCfClassId(Semantics.getClassId(ClassId.MEMBER));
-            persOrgUnit.setCfClassSchemeId(Semantics.getSchemaId(SchemeId.PERSON_ORGANISATION_ROLES));
-        }
+                || interve.toLowerCase().equals("s"))   persOrgUnit.setCfClassId(Semantics.getClassId(ClassId.GROUP_LEADER));
+        else if (interve.toLowerCase().equals("no")
+                || interve.toLowerCase().equals("n"))   persOrgUnit.setCfClassId(Semantics.getClassId(ClassId.MEMBER));
+
+        persOrgUnit.setCfClassSchemeId(Semantics.getSchemaId(SchemeId.PERSON_ORGANISATION_ROLES));
         getCfNameOrCfResActOrCfKeyw().add(FACTORY.createCfOrgUnitTypeCfPersOrgUnit(persOrgUnit));
     }
 
@@ -165,12 +164,15 @@ public class MarshalResearchGroup extends CfOrgUnitType implements Factory{
         createRelationCfPers();
     }
 
-    private CfPersType getIdentifier(List<CfPersType> cfPersTypeList, String value) {
-        return cfPersTypeList.stream().filter(cfPersType ->
-                cfPersType.getCfResIntOrCfKeywOrCfPersPers()
-                        .stream().filter(f -> f.getDeclaredType().equals(CfFedIdEmbType.class))
-                        .map(m -> (CfFedIdEmbType) m.getValue())
-                        .filter(f -> f.getCfFedId().equals(value)) != null).findFirst().orElse(null);
+    private CfPersType getIdentifier(String value) {
+        AtomicReference<CfPersType> result = new AtomicReference<>();
+        cfPersTypeList.stream().forEach((CfPersType cfPersType) -> {
+            cfPersType.getCfResIntOrCfKeywOrCfPersPers().forEach((JAXBElement<?> jaxbElement) -> {
+                if(jaxbElement.getDeclaredType().equals(CfFedIdEmbType.class)
+                        && ((CfFedIdEmbType) jaxbElement.getValue()).getCfFedId().equals(value))    result.set(cfPersType);
+            });
+        });
+        return (Objects.isNull(result.get())) ? null : result.get();
     }
 
     public ArrayList<CfPersType> getNewCfPersType() {
