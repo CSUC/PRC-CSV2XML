@@ -8,10 +8,12 @@ import org.csuc.typesafe.semantics.SchemeId;
 import org.csuc.typesafe.semantics.Semantics;
 import xmlns.org.eurocris.cerif_1.*;
 
+import javax.xml.bind.JAXBElement;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 
 /**
@@ -97,8 +99,8 @@ public class MarshalProject extends CfProjType implements Factory{
             relation.stream().forEach(consumer->{
                 if(Objects.nonNull(cfPersTypeList) && code.equals(consumer.get(0).toString())){
                     if(Objects.nonNull(consumer.get(2))){
-                        CfPersType id = getIdentifier(cfPersTypeList, consumer.get(2).toString());
-                        researcher(id.getCfPersId(), (Objects.nonNull(consumer.get(3))) ? consumer.get(3).toString() : "");
+                        CfPersType id = getIdentifier(consumer.get(2).toString());
+                        if(Objects.nonNull(id)) researcher(id.getCfPersId(), (Objects.nonNull(consumer.get(3))) ? consumer.get(3).toString() : "");
                     }else{
                         String random = RandomNumeric.getInstance().newId();
                         researcher(random, (Objects.nonNull(consumer.get(3))) ? consumer.get(3).toString() : "");
@@ -114,14 +116,11 @@ public class MarshalProject extends CfProjType implements Factory{
         CfProjType.CfProjPers pers = new CfProjType.CfProjPers();
         pers.setCfPersId(id);
         if (ip.toLowerCase().equals("si")
-                || ip.toLowerCase().equals("s")) {
-            pers.setCfClassId(Semantics.getClassId(ClassId.PRINCIPAL_INVESTIGATOR));
-            pers.setCfClassSchemeId(Semantics.getSchemaId(SchemeId.PERSON_PROJECT_ENGAGEMENTS));
-        } else if (ip.toLowerCase().equals("no")
-                || ip.toLowerCase().equals("n")) {
-            pers.setCfClassId(Semantics.getClassId(ClassId.CO_INVESTIGATOR));
-            pers.setCfClassSchemeId(Semantics.getSchemaId(SchemeId.PERSON_PROJECT_ENGAGEMENTS));
-        }
+                || ip.toLowerCase().equals("s"))    pers.setCfClassId(Semantics.getClassId(ClassId.PRINCIPAL_INVESTIGATOR));
+        else if (ip.toLowerCase().equals("no")
+                || ip.toLowerCase().equals("n")) pers.setCfClassId(Semantics.getClassId(ClassId.CO_INVESTIGATOR));
+
+        pers.setCfClassSchemeId(Semantics.getSchemaId(SchemeId.PERSON_PROJECT_ENGAGEMENTS));
         getCfTitleOrCfAbstrOrCfKeyw().add(FACTORY.createCfProjTypeCfProjPers(pers));
     }
 
@@ -138,12 +137,15 @@ public class MarshalProject extends CfProjType implements Factory{
         createRelationCfPers();
     }
 
-    private CfPersType getIdentifier(List<CfPersType> cfPersTypeList, String value) {
-        return cfPersTypeList.stream().filter(cfPersType ->
-                cfPersType.getCfResIntOrCfKeywOrCfPersPers()
-                        .stream().filter(f -> f.getDeclaredType().equals(CfFedIdEmbType.class))
-                        .map(m -> (CfFedIdEmbType) m.getValue())
-                        .filter(f -> f.getCfFedId().equals(value)) != null).findFirst().orElse(null);
+    private CfPersType getIdentifier(String value) {
+        AtomicReference<CfPersType> result = new AtomicReference<>();
+        cfPersTypeList.stream().forEach((CfPersType cfPersType) -> {
+            cfPersType.getCfResIntOrCfKeywOrCfPersPers().forEach((JAXBElement<?> jaxbElement) -> {
+                if(jaxbElement.getDeclaredType().equals(CfFedIdEmbType.class)
+                        && ((CfFedIdEmbType) jaxbElement.getValue()).getCfFedId().equals(value))    result.set(cfPersType);
+            });
+        });
+        return (Objects.isNull(result.get())) ? null : result.get();
     }
 
     public ArrayList<CfPersType> getNewCfPersType() {
