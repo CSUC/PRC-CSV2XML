@@ -21,6 +21,10 @@
             <appender-ref ref="RollingFile" level="info" />
         </Logger>
 
+        <Logger name="PRC-CSV2XML" level="info" additivity="true">
+            <appender-ref ref="RollingFile" level="info" />
+        </Logger>
+
         <Root level="info" additivity="true">
             <appender-ref ref="Console" />
         </Root>

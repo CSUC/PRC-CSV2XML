@@ -1,5 +1,6 @@
 package org.csuc.cli;
 
+import org.apache.commons.io.FilenameUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.csuc.typesafe.ruct.Ruct;
@@ -36,6 +37,7 @@ public class ArgsBean {
     private Path publication;
     private Path relationPublication;
 
+    private Path input;
     private Path output;
     private String charset = StandardCharsets.UTF_8.name();
     private Boolean formatted = false;
@@ -85,7 +87,6 @@ public class ArgsBean {
         return (Objects.isNull(researcher)) ? null : researcher.toString();
     }
 
-    @Option(name = "-r", aliases = "--researcher", usage= "Researcher file", required = true, metaVar = "<Path>")
     public void setResearcher(Path researcher) throws FileNotFoundException {
         if(Files.notExists(researcher)) throw new FileNotFoundException(MessageFormat.format("{0} File not Found!", researcher));
         this.researcher = researcher;
@@ -95,7 +96,6 @@ public class ArgsBean {
         return (Objects.isNull(department)) ? null : department.toString();
     }
 
-    @Option(name = "-d", aliases = "--department", usage= "Department file", metaVar = "<Path>")
     public void setDepartment(Path department) throws FileNotFoundException {
         if(Files.notExists(department)) throw new FileNotFoundException(MessageFormat.format("{0} File not Found!", department));
         this.department = department;
@@ -105,7 +105,6 @@ public class ArgsBean {
         return (Objects.isNull(researcherGroup)) ? null : researcherGroup.toString();
     }
 
-    @Option(name = "-rg", aliases = "--researchgroup", usage= "Research Group file", metaVar = "<Path>")
     public void setResearcherGroup(Path researcherGroup) throws FileNotFoundException {
         if(Files.notExists(researcherGroup)) throw new FileNotFoundException(MessageFormat.format("{0} File not Found!", researcherGroup));
         this.researcherGroup = researcherGroup;
@@ -115,7 +114,6 @@ public class ArgsBean {
         return (Objects.isNull(project)) ? null : project.toString();
     }
 
-    @Option(name = "-pj", aliases = "--project", usage= "Project file", metaVar = "<Path>")
     public void setProject(Path project) throws FileNotFoundException {
         if(Files.notExists(project)) throw new FileNotFoundException(MessageFormat.format("{0} File not Found!", project));
         this.project = project;
@@ -125,7 +123,6 @@ public class ArgsBean {
         return (Objects.isNull(publication)) ? null : publication.toString();
     }
 
-    @Option(name = "-p", aliases = "--publication", usage= "Publication file", metaVar = "<Path>")
     public void setPublication(Path publication) throws FileNotFoundException {
         if(Files.notExists(publication)) throw new FileNotFoundException(MessageFormat.format("{0} File not Found!", publication));
         this.publication = publication;
@@ -145,7 +142,6 @@ public class ArgsBean {
         return (Objects.isNull(relationDepartment)) ? null : relationDepartment.toString();
     }
 
-    @Option(name = "-rd", aliases = "--relationDepartment", usage= "Relation Department  file", metaVar = "<Path>")
     public void setRelationDepartment(Path relationDepartment) throws FileNotFoundException {
         if(Files.notExists(relationDepartment)) throw new FileNotFoundException(MessageFormat.format("{0} File not Found!", relationDepartment));
         this.relationDepartment = relationDepartment;
@@ -155,7 +151,6 @@ public class ArgsBean {
         return (Objects.isNull(relationResearcherGroup)) ? null : relationResearcherGroup.toString();
     }
 
-    @Option(name = "-rrg", aliases = "--relationResearchGroup", usage= "Relation Research Group file", metaVar = "<Path>")
     public void setRelationResearcherGroup(Path relationResearcherGroup) throws FileNotFoundException {
         if(Files.notExists(relationResearcherGroup)) throw new FileNotFoundException(MessageFormat.format("{0} File not Found!", relationResearcherGroup));
         this.relationResearcherGroup = relationResearcherGroup;
@@ -165,7 +160,6 @@ public class ArgsBean {
         return (Objects.isNull(relationProject)) ? null : relationProject.toString();
     }
 
-    @Option(name = "-rpj", aliases = "--relationProject", usage= "Relation Project file", metaVar = "<Path>")
     public void setRelationProject(Path relationProject) throws FileNotFoundException {
         if(Files.notExists(relationProject)) throw new FileNotFoundException(MessageFormat.format("{0} File not Found!", relationProject));
         this.relationProject = relationProject;
@@ -175,7 +169,6 @@ public class ArgsBean {
         return (Objects.isNull(relationPublication)) ? null : relationPublication.toString();
     }
 
-    @Option(name = "-rp", aliases = "--relationPublication", usage= "Relation Publication file", metaVar = "<Path>")
     public void setRelationPublication(Path relationPublication) throws FileNotFoundException {
         if(Files.notExists(relationPublication)) throw new FileNotFoundException(MessageFormat.format("{0} File not Found!", relationPublication));
         this.relationPublication = relationPublication;
@@ -186,8 +179,22 @@ public class ArgsBean {
     }
 
     @Option(name = "-o", aliases = "--output", usage= "output file", metaVar = "<Path>")
-    public void setOutput(Path output) {
+    public void setOutput(Path output) throws IllegalArgumentException {
+        if(!FilenameUtils.getExtension(output.toString()).equalsIgnoreCase("xml"))
+            throw new IllegalArgumentException(MessageFormat.format("{0} illegal extension!", FilenameUtils.getExtension(output.toString())));
         this.output = output;
+    }
+
+    public Path getInput() {
+        return input;
+    }
+
+    @Option(name = "-i", aliases = "--input", usage= "input file", metaVar = "<Path>")
+    public void setInput(Path input) throws FileNotFoundException {
+        if(Files.notExists(input)) throw new FileNotFoundException(MessageFormat.format("{0} File not Found!", input));
+        if(!FilenameUtils.getExtension(input.toString()).equalsIgnoreCase("xlsx"))
+            throw new IllegalArgumentException(MessageFormat.format("{0} illegal extension!", FilenameUtils.getExtension(input.toString())));
+        this.input = input;
     }
 
     public Charset getCharset() {
@@ -209,16 +216,8 @@ public class ArgsBean {
     }
 
     public void run(){
-        logger.info("Researcher                  :   {}", researcher);
-        logger.info("Department                  :   {}", department);
-        logger.info("Relation Department         :   {}", relationDepartment);
-        logger.info("Researcher Group            :   {}", researcherGroup);
-        logger.info("Relation Researcher Group   :   {}", relationResearcherGroup);
-        logger.info("Project                     :   {}", project);
-        logger.info("Relation Project            :   {}", relationProject);
-        logger.info("Publication                 :   {}", publication);
-        logger.info("Relation Publication        :   {}", relationPublication);
         logger.info("Ruct                        :   {}", ruct);
+        logger.info("Input file                  :   {}", input);
         logger.info("Output file                 :   {}", output);
         logger.info("Charset file                :   {}", charset);
         logger.info("Formatted file              :   {}", formatted);
