@@ -1,6 +1,5 @@
 package org.csuc.csv;
 
-import org.apache.commons.text.StringEscapeUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -60,13 +59,8 @@ public class CSVPublication implements Read<List<List<Object>>> {
                 try {
                     if (consumer.size() != 4)
                         throw new Exception(MessageFormat.format("{0} invalid format!", fileRelation));
-                    String codi = StringEscapeUtils.escapeXml11((String) consumer.get(0));
-                    String name = StringEscapeUtils.escapeXml11((String) consumer.get(1));
-                    String orcid = StringEscapeUtils.escapeXml11((String) consumer.get(2));
-                    String ip = StringEscapeUtils.escapeXml11((String) consumer.get(3));
-
-
-                    logger.debug("codi: \"{}\"  name:  \"{}\"  orcid:  \"{}\"  ip:  \"{}\"", codi, name, orcid, ip);
+                    logger.debug("codi: \"{}\"  name:  \"{}\"  orcid:  \"{}\"  ip:  \"{}\"",
+                            (String) consumer.get(0), (String) consumer.get(1), (String) consumer.get(2), (String) consumer.get(3));
                 } catch (Exception e) {
                     logger.error(e);
                 }

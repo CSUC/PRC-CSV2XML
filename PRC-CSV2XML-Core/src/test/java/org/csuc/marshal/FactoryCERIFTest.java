@@ -47,7 +47,7 @@ public class FactoryCERIFTest {
         csvDepartment.readCSV().forEach(researcher -> {
             MarshalDepartment marshalDepartment =
                     new MarshalDepartment(
-                            (String) researcher.get(0),
+                            new NameOrTitle((String) researcher.get(0), null, null),
                             (String) researcher.get(1),
                             (String) researcher.get(2),
                             (String) researcher.get(3),
@@ -66,7 +66,7 @@ public class FactoryCERIFTest {
                 new File(classLoader.getResource("RelationResearchGroup.csv").getFile()).toString());
         csvResearchGroup.readCSV().forEach(researcher -> {
             MarshalResearchGroup marshalResearchGroup = new MarshalResearchGroup(
-                    (String) researcher.get(0),
+                    new NameOrTitle((String) researcher.get(0), null, null),
                     (String) researcher.get(1),
                     (String) researcher.get(2),
                     (String) researcher.get(3),
@@ -86,7 +86,7 @@ public class FactoryCERIFTest {
                 new File(classLoader.getResource("RelationProject.csv").getFile()).toString()).readCSV().forEach(researcher -> {
             MarshalProject marshalProject =
                     new MarshalProject(
-                            (String) researcher.get(0),
+                            new NameOrTitle((String) researcher.get(0), null, null),
                             (String) researcher.get(1),
                             (String) researcher.get(2),
                             (String) researcher.get(3),
@@ -106,7 +106,7 @@ public class FactoryCERIFTest {
                 new File(classLoader.getResource("RelationPublication.csv").getFile()).toString()).readCSV().forEach(researcher -> {
             MarshalPublication marshalPublication =
                     new MarshalPublication(
-                            (String) researcher.get(0),
+                            new NameOrTitle((String) researcher.get(0), null, null),
                             (String) researcher.get(1),
                             (String) researcher.get(2),
                             (String) researcher.get(3),

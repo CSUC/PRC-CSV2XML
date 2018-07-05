@@ -27,7 +27,7 @@ public class MarshalDepartmentTest {
             CfOrgUnitType dept =
                     FactoryCERIF.createFactory(
                             new MarshalDepartment(
-                                    (String) department.get(0),
+                                   new NameOrTitle( (String) department.get(0), null , null),
                                     (String) department.get(1),
                                     (String) department.get(2),
                                     (String) department.get(3),

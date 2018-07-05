@@ -1,6 +1,5 @@
 package org.csuc.marshal;
 
-import org.apache.commons.text.StringEscapeUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.csuc.global.RandomNumeric;
@@ -28,7 +27,7 @@ public class MarshalResearchGroup extends CfOrgUnitType implements Factory{
 
     private ObjectFactory FACTORY = new ObjectFactory();
 
-    private String name;
+    private NameOrTitle name;
     private String sigles;
     private String url;
     private String ae;
@@ -40,16 +39,16 @@ public class MarshalResearchGroup extends CfOrgUnitType implements Factory{
     private CopyOnWriteArrayList<CfPersType> cfPersTypeList;
     private CopyOnWriteArrayList<CfPersType> newCfPersType = new CopyOnWriteArrayList<>();
 
-    public MarshalResearchGroup(String name, String acro, String url, String ae, String code,
+    public MarshalResearchGroup(NameOrTitle name, String acro, String url, String ae, String code,
                                 String sgr, String date, List relation, List<CfPersType> cfPersType) {
 
-        this.name = StringEscapeUtils.escapeXml11(name);
-        this.sigles = StringEscapeUtils.escapeXml11(acro);
-        this.url = StringEscapeUtils.escapeXml11(url);
-        this.ae = StringEscapeUtils.escapeXml11(ae);
-        this.code = StringEscapeUtils.escapeXml11(code);
-        this.sgr = StringEscapeUtils.escapeXml11(sgr);
-        this.date = StringEscapeUtils.escapeXml11(date);
+        this.name = name;
+        this.sigles = acro;
+        this.url = url;
+        this.ae = ae;
+        this.code = code;
+        this.sgr = sgr;
+        this.date = date;
 
         this.relation = relation;
         this.cfPersTypeList = Objects.nonNull(cfPersType) ? new CopyOnWriteArrayList(cfPersType) : null;
@@ -65,12 +64,12 @@ public class MarshalResearchGroup extends CfOrgUnitType implements Factory{
         if(Objects.nonNull(url)) setCfURI(url);
     }
 
-    private void createTitle(String langCode, CfTransType transType){
+    private void createTitle(){
         if(Objects.nonNull(name)){
             CfMLangStringType title = new CfMLangStringType();
-            title.setCfLangCode(langCode);
-            title.setCfTrans(transType);
-            title.setValue(name);
+            title.setCfLangCode(name.getLangCode());
+            title.setCfTrans(name.getTrans());
+            title.setValue(name.getValue());
 
             getCfNameOrCfResActOrCfKeyw().add(FACTORY.createCfOrgUnitTypeCfName(title));
         }
@@ -162,7 +161,7 @@ public class MarshalResearchGroup extends CfOrgUnitType implements Factory{
 
         createAcro();
         createUrl();
-        createTitle("ca", CfTransType.O);
+        createTitle();
         createEntityClass(ClassId.RESEARCH_GROUP);
         createCode(code, ClassId.RESEARCH_GROUP_INTERNAL_CODE);
         createCode(sgr, ClassId.REGIONAL_RESEARCH_GROUP_CODE);

@@ -24,7 +24,7 @@ public class MarshalProjectTest {
             CfProjType project =
                     FactoryCERIF.createFactory(
                             new MarshalProject(
-                                    (String) researcher.get(0),
+                                    new NameOrTitle((String) researcher.get(0), null, null),
                                     (String) researcher.get(1),
                                     (String) researcher.get(2),
                                     (String) researcher.get(3),

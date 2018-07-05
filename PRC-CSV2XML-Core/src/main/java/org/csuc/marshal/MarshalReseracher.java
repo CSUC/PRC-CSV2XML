@@ -1,6 +1,5 @@
 package org.csuc.marshal;
 
-import org.apache.commons.text.StringEscapeUtils;
 import org.csuc.global.RandomNumeric;
 import org.csuc.typesafe.semantics.ClassId;
 import org.csuc.typesafe.semantics.SchemeId;
@@ -34,13 +33,13 @@ public class MarshalReseracher extends CfPersType implements Factory{
                              String signatureFamilyNames, String signatureFirstNames, String ae, String type) {
 
         this._id = id;
-        this.familyNames = StringEscapeUtils.escapeXml11(familyNames);
-        this.firstNames = StringEscapeUtils.escapeXml11(firstNames);
-        this.orcid = StringEscapeUtils.escapeXml11(orcid);
-        this.signatureFamilyNames = StringEscapeUtils.escapeXml11(signatureFamilyNames);
-        this.signatureFirstNames = StringEscapeUtils.escapeXml11(signatureFirstNames);
-        this.ae = StringEscapeUtils.escapeXml11(ae);
-        this.typeClass = StringEscapeUtils.escapeXml11(type);
+        this.familyNames = familyNames;
+        this.firstNames = firstNames;
+        this.orcid = orcid;
+        this.signatureFamilyNames = signatureFamilyNames;
+        this.signatureFirstNames = signatureFirstNames;
+        this.ae = ae;
+        this.typeClass = type;
 
         execute();
     }

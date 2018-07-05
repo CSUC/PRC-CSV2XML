@@ -1,6 +1,5 @@
 package org.csuc.marshal;
 
-import org.apache.commons.text.StringEscapeUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.csuc.global.RandomNumeric;
@@ -27,7 +26,7 @@ public class MarshalProject extends CfProjType implements Factory{
 
     private ObjectFactory FACTORY = new ObjectFactory();
 
-    private String title;
+    private NameOrTitle title;
     private String url;
     private String official;
     private String code;
@@ -39,16 +38,16 @@ public class MarshalProject extends CfProjType implements Factory{
     private CopyOnWriteArrayList<CfPersType> cfPersTypeList;
     private CopyOnWriteArrayList<CfPersType> newCfPersType = new CopyOnWriteArrayList<>();
 
-    public MarshalProject(String title, String uri, String officialCode,
+    public MarshalProject(NameOrTitle title, String uri, String officialCode,
                            String code, String programme, String dateInici, String dateFi, List relation, List<CfPersType> cfPersType){
 
-        this.title = StringEscapeUtils.escapeXml11(title);
-        this.url = StringEscapeUtils.escapeXml11(uri);
-        this.official = StringEscapeUtils.escapeXml11(officialCode);
-        this.code = StringEscapeUtils.escapeXml11(code);
-        this.funding = StringEscapeUtils.escapeXml11(programme);
-        this.inici = StringEscapeUtils.escapeXml11(dateInici);
-        this.fi = StringEscapeUtils.escapeXml11(dateFi);
+        this.title = title;
+        this.url = uri;
+        this.official = officialCode;
+        this.code = code;
+        this.funding = programme;
+        this.inici = dateInici;
+        this.fi = dateFi;
 
         this.relation = relation;
         this.cfPersTypeList = Objects.nonNull(cfPersType) ? new CopyOnWriteArrayList(cfPersType) : null;
@@ -56,12 +55,12 @@ public class MarshalProject extends CfProjType implements Factory{
         execute();
     }
 
-    private void createTitle(String langCode, CfTransType transType){
+    private void createTitle(){
         if(Objects.nonNull(title)){
             CfMLangStringType name = new CfMLangStringType();
-            name.setCfLangCode(langCode);
-            name.setCfTrans(transType);
-            name.setValue(title);
+            name.setCfLangCode(title.getLangCode());
+            name.setCfTrans(title.getTrans());
+            name.setValue(title.getValue());
                 getCfTitleOrCfAbstrOrCfKeyw().add(FACTORY.createCfProjTypeCfTitle(name));
         }
     }
@@ -144,7 +143,7 @@ public class MarshalProject extends CfProjType implements Factory{
     public void execute() {
         setCfProjId(RandomNumeric.getInstance().newId());
 
-        createTitle("ca", CfTransType.O);
+        createTitle();
         createUrl();
         createDate();
         createCode(code, ClassId.INTERNAL_PROJECT_CODE);
