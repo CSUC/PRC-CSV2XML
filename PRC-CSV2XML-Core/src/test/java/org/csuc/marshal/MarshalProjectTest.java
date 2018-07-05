@@ -12,7 +12,7 @@ import static org.junit.Assert.*;
 public class MarshalProjectTest {
 
     @Test
-    public void execute() throws IOException {
+    public void execute() throws Exception {
         ClassLoader classLoader = getClass().getClassLoader();
         File file = new File(classLoader.getResource("Project.csv").getFile());
         File fileRelation = new File(classLoader.getResource("RelationProject.csv").getFile());

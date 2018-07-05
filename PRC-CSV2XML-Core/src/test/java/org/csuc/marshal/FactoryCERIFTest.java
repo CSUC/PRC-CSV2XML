@@ -21,7 +21,7 @@ import static org.junit.Assert.*;
 public class FactoryCERIFTest {
 
     @Test
-    public void createFactory() throws JAXBException, IOException {
+    public void createFactory() throws Exception {
         ClassLoader classLoader = getClass().getClassLoader();
 
         CERIF cerif = new CERIF();

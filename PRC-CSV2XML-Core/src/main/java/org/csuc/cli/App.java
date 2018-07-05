@@ -94,7 +94,10 @@ public class App {
 
             //Researchers
             logger.info("{}", bean.getResearcher());
-            new CSVResearcher(bean.getResearcher()).readCSV().forEach(researcher -> {
+            CSVResearcher csvResearcher = new CSVResearcher(bean.getResearcher());
+            if(Objects.isNull(csvResearcher.readCSV()))   throw new Exception("Researchers not content!");
+
+            csvResearcher.readCSV().forEach(researcher -> {
                 MarshalReseracher marshalReseracher =
                         new MarshalReseracher(null, (String) researcher.get(0),
                                 null, (String) researcher.get(1),

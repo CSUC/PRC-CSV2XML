@@ -10,7 +10,7 @@ import static org.junit.Assert.*;
 public class CSVResearcherTest {
 
     @Test
-    public void readCSV() throws IOException {
+    public void readCSV() throws Exception {
         ClassLoader classLoader = getClass().getClassLoader();
         File file = new File(classLoader.getResource("Researcher.csv").getFile());
 

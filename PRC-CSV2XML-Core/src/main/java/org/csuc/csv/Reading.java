@@ -10,6 +10,7 @@ import org.supercsv.prefs.CsvPreference;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -27,7 +28,7 @@ public class Reading {
      * @param cellProcessors
      * @throws IOException
      */
-    public static List<List<Object>> readWithCsvListReader(String file, CellProcessor[] cellProcessors) throws IOException {
+    public static List<List<Object>> readWithCsvListReader(String file, CellProcessor[] cellProcessors, int sizeCol) throws Exception {
         ICsvListReader listReader = null;
         List<List<Object>> result = new ArrayList<>();
 
@@ -38,6 +39,7 @@ public class Reading {
 
                 List<Object> customerList;
                 while( (customerList = listReader.read(cellProcessors)) != null ) {
+                    if(customerList.size() != sizeCol)    throw new Exception(MessageFormat.format("{0} invalid format!", file));
                     result.add(customerList);
                     logger.debug("Line: {}  Row: {}  Data:  {}", listReader.getLineNumber(), listReader.getRowNumber(), customerList);
                 }
@@ -55,7 +57,7 @@ public class Reading {
      * @param cellProcessors
      * @throws IOException
      */
-    public static List<List<Object>> readWithCsvListReader(File file, CellProcessor[] cellProcessors) throws IOException {
+    public static List<List<Object>> readWithCsvListReader(File file, CellProcessor[] cellProcessors, int sizeCol) throws Exception {
         ICsvListReader listReader = null;
         List<List<Object>> result = new ArrayList<>();
 
@@ -66,6 +68,7 @@ public class Reading {
 
             List<Object> customerList;
             while( (customerList = listReader.read(cellProcessors)) != null ) {
+                if(customerList.size() != sizeCol)    throw new Exception(MessageFormat.format("{0} invalid format!", file));
                 result.add(customerList);
                 logger.debug("Line: {}  Row: {}  Data:  {}", listReader.getLineNumber(), listReader.getRowNumber(), customerList);
             }
