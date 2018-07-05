@@ -1,6 +1,8 @@
 package org.csuc.marshal;
 
 import org.apache.commons.text.StringEscapeUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.csuc.global.RandomNumeric;
 import org.csuc.global.Time;
 import org.csuc.typesafe.semantics.ClassId;
@@ -21,6 +23,8 @@ import java.util.stream.Stream;
  * @author amartinez
  */
 public class MarshalResearchGroup extends CfOrgUnitType implements Factory{
+
+    private static Logger logger = LogManager.getLogger(MarshalResearchGroup.class);
 
     private ObjectFactory FACTORY = new ObjectFactory();
 
@@ -113,7 +117,11 @@ public class MarshalResearchGroup extends CfOrgUnitType implements Factory{
             srv.setCfSrvId(RandomNumeric.getInstance().newId());
             srv.setCfClassId(Semantics.getClassId(ClassId.RESEARCH_GROUP_CREATION_DATE));
             srv.setCfClassSchemeId(Semantics.getSchemaId(SchemeId.ORGANISATION_RESEARCH_INFRASTRUCTURE_ROLES));
-            srv.setCfStartDate(Time.formatDateTime(date));
+            try {
+                srv.setCfStartDate(Time.formatDateTime(date));
+            } catch (Exception e) {
+                logger.warn(e);
+            }
             getCfNameOrCfResActOrCfKeyw().add(FACTORY.createCfOrgUnitTypeCfOrgUnitSrv(srv));
         }
     }

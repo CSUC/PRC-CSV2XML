@@ -1,6 +1,8 @@
 package org.csuc.marshal;
 
 import org.apache.commons.text.StringEscapeUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.csuc.global.RandomNumeric;
 import org.csuc.global.Time;
 import org.csuc.typesafe.semantics.ClassId;
@@ -20,6 +22,8 @@ import java.util.stream.Collectors;
  * @author amartinez
  */
 public class MarshalProject extends CfProjType implements Factory{
+
+    private static Logger logger = LogManager.getLogger(MarshalProject.class);
 
     private ObjectFactory FACTORY = new ObjectFactory();
 
@@ -67,8 +71,20 @@ public class MarshalProject extends CfProjType implements Factory{
     }
 
     private void createDate(){
-        if(Objects.nonNull(inici)) setCfStartDate(Time.formatDateTime(inici));
-        if(Objects.nonNull(fi)) setCfEndDate(Time.formatDateTime(fi));
+        if(Objects.nonNull(inici)) {
+            try {
+                setCfStartDate(Time.formatDateTime(inici));
+            } catch (Exception e) {
+                logger.warn(e);
+            }
+        }
+        if(Objects.nonNull(fi)) {
+            try {
+                setCfEndDate(Time.formatDateTime(fi));
+            } catch (Exception e) {
+                logger.warn(e);
+            }
+        }
     }
 
     private void createCode(String value, ClassId classId){

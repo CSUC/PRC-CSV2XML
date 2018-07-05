@@ -1,5 +1,7 @@
 package org.csuc.marshal;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.csuc.global.RandomNumeric;
 import org.csuc.global.Time;
 import org.csuc.typesafe.semantics.ClassId;
@@ -9,6 +11,8 @@ import org.csuc.utils.DocumentTypes;
 import xmlns.org.eurocris.cerif_1.*;
 
 import javax.xml.bind.JAXBElement;
+import javax.xml.datatype.DatatypeConfigurationException;
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -21,6 +25,8 @@ import java.util.stream.Stream;
  * @author amartinez
  */
 public class MarshalPublication extends CfResPublType implements Factory {
+
+    private static Logger logger = LogManager.getLogger(MarshalPublication.class);
 
     private ObjectFactory FACTORY = new ObjectFactory();
 
@@ -96,7 +102,13 @@ public class MarshalPublication extends CfResPublType implements Factory {
     }
 
     private void createDate(){
-        if(Objects.nonNull(date))   setCfResPublDate(Time.formatDate(date));
+        if(Objects.nonNull(date)) {
+            try {
+                setCfResPublDate(Time.formatDate(date));
+            } catch (Exception e) {
+                logger.warn(e);
+            }
+        }
     }
 
     private void createTitle(String langCode, CfTransType transType){
