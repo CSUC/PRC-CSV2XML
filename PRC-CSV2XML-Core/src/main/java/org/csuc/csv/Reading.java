@@ -3,6 +3,7 @@ package org.csuc.csv;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.supercsv.cellprocessor.ift.CellProcessor;
+import org.supercsv.exception.SuperCsvCellProcessorException;
 import org.supercsv.io.CsvListReader;
 import org.supercsv.io.ICsvListReader;
 import org.supercsv.prefs.CsvPreference;
@@ -39,12 +40,15 @@ public class Reading {
 
                 List<Object> customerList;
                 while( (customerList = listReader.read(cellProcessors)) != null ) {
-                    if(customerList.size() != sizeCol)    throw new Exception(MessageFormat.format("{0} invalid format!", file));
+                    if(!Objects.equals(customerList.size(), sizeCol))
+                        throw new Exception(String.format("Line: %s, RownNumber: %s value: %s invalid size row %s",
+                            listReader.getLineNumber(), listReader.getRowNumber(), customerList, customerList.size()));
                     result.add(customerList);
                     logger.debug("Line: {}  Row: {}  Data:  {}", listReader.getLineNumber(), listReader.getRowNumber(), customerList);
                 }
-            }
-            finally {
+            }catch (SuperCsvCellProcessorException e) {
+                logger.error(e);
+            }finally {
                 if( listReader != null )    listReader.close();
             }
         }
@@ -68,7 +72,10 @@ public class Reading {
 
             List<Object> customerList;
             while( (customerList = listReader.read(cellProcessors)) != null ) {
-                if(customerList.size() != sizeCol)    throw new Exception(MessageFormat.format("{0} invalid format!", file));
+                if(!Objects.equals(customerList.size(), sizeCol))
+                    throw new Exception(String.format("Line: %s, RownNumber: %s value: %s invalid size row %s",
+                            listReader.getLineNumber(), listReader.getRowNumber(), customerList, customerList.size()));
+                result.add(customerList);
                 result.add(customerList);
                 logger.debug("Line: {}  Row: {}  Data:  {}", listReader.getLineNumber(), listReader.getRowNumber(), customerList);
             }
