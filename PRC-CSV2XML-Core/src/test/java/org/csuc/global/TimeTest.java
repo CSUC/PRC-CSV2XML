@@ -7,7 +7,7 @@ import static org.junit.Assert.assertEquals;
 public class TimeTest {
 
     @Test
-    public void formatDateTime() {
+    public void formatDateTime() throws Exception {
         String d = "2018-02-20T16:39:13";
         String d2 = "2015-01-30";
 

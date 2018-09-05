@@ -14,7 +14,7 @@ import static org.junit.Assert.*;
 public class MarshalReseracherTest {
 
     @Test
-    public void execute() throws IOException {
+    public void execute() throws Exception {
         ClassLoader classLoader = getClass().getClassLoader();
         File file = new File(classLoader.getResource("Researcher.csv").getFile());
 

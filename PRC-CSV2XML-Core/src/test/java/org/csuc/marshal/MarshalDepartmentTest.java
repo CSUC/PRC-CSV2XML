@@ -13,7 +13,7 @@ import static org.junit.Assert.assertTrue;
 public class MarshalDepartmentTest {
 
     @Test
-    public void execute() throws IOException {
+    public void execute() throws Exception {
         ClassLoader classLoader = getClass().getClassLoader();
         File file = new File(classLoader.getResource("Organisation.csv").getFile());
         File fileRelation = new File(classLoader.getResource("RelationOrganitsation.csv").getFile());
@@ -27,7 +27,7 @@ public class MarshalDepartmentTest {
             CfOrgUnitType dept =
                     FactoryCERIF.createFactory(
                             new MarshalDepartment(
-                                    (String) department.get(0),
+                                   new NameOrTitle( (String) department.get(0), null , null),
                                     (String) department.get(1),
                                     (String) department.get(2),
                                     (String) department.get(3),

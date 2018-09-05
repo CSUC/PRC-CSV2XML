@@ -1,6 +1,5 @@
 package org.csuc.marshal;
 
-import org.apache.commons.text.StringEscapeUtils;
 import org.csuc.global.RandomNumeric;
 import org.csuc.typesafe.semantics.ClassId;
 import org.csuc.typesafe.semantics.SchemeId;
@@ -20,7 +19,7 @@ public class MarshalDepartment extends CfOrgUnitType implements Factory {
 
     private ObjectFactory FACTORY = new ObjectFactory();
 
-    private String name;
+    private NameOrTitle name;
     private String acro;
     private String addr;
     private String url;
@@ -31,16 +30,16 @@ public class MarshalDepartment extends CfOrgUnitType implements Factory {
     private List<List<Object>> relation;
     private List<CfPersType> cfPersTypeList;
 
-    public MarshalDepartment(String name, String acro, String addr, String url, String ae, String dept,
+    public MarshalDepartment(NameOrTitle name, String acro, String addr, String url, String ae, String dept,
                              String phone, List relation, List<CfPersType> cfPersType) {
 
-        this.name = StringEscapeUtils.escapeXml11(name);
-        this.acro = StringEscapeUtils.escapeXml11(acro);
-        this.addr = StringEscapeUtils.escapeXml11(addr);
-        this.url = StringEscapeUtils.escapeXml11(url);
-        this.ae = StringEscapeUtils.escapeXml11(ae);
-        this.dept = StringEscapeUtils.escapeXml11(dept);
-        this.phone = StringEscapeUtils.escapeXml11(phone);
+        this.name = name;
+        this.acro = acro;
+        this.addr = addr;
+        this.url = url;
+        this.ae = ae;
+        this.dept = dept;
+        this.phone = phone;
 
         this.relation = relation;
         this.cfPersTypeList = cfPersType;
@@ -56,12 +55,12 @@ public class MarshalDepartment extends CfOrgUnitType implements Factory {
         if (Objects.nonNull(url)) setCfURI(url);
     }
 
-    private void createTitle(String langCode, CfTransType transType) {
+    private void createTitle() {
         if (Objects.nonNull(name)) {
             CfMLangStringType title = new CfMLangStringType();
-            title.setCfLangCode(langCode);
-            title.setCfTrans(transType);
-            title.setValue(name);
+            title.setCfLangCode(name.getLangCode());
+            title.setCfTrans(name.getTrans());
+            title.setValue(name.getValue());
 
             getCfNameOrCfResActOrCfKeyw().add(FACTORY.createCfOrgUnitTypeCfName(title));
         }
@@ -147,7 +146,7 @@ public class MarshalDepartment extends CfOrgUnitType implements Factory {
 
         createAcro();
         createUrl();
-        createTitle("ca", CfTransType.O);
+        createTitle();
         createEntityClass(ClassId.DEPARTMENT_OR_INSTITUTE);
         createCode();
         createEmail();

@@ -1,5 +1,7 @@
 package org.csuc.marshal;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.csuc.global.RandomNumeric;
 import org.csuc.global.Time;
 import org.csuc.typesafe.semantics.ClassId;
@@ -22,10 +24,12 @@ import java.util.stream.Stream;
  */
 public class MarshalPublication extends CfResPublType implements Factory {
 
+    private static Logger logger = LogManager.getLogger(MarshalPublication.class);
+
     private ObjectFactory FACTORY = new ObjectFactory();
 
     private String _id;
-    private String title;
+    private NameOrTitle title;
     private String doi;
     private String handle;
     private String num;
@@ -44,7 +48,7 @@ public class MarshalPublication extends CfResPublType implements Factory {
     private CopyOnWriteArrayList<CfPersType> cfPersTypeList;
     private CopyOnWriteArrayList<CfPersType> newCfPersType = new CopyOnWriteArrayList<>();
 
-    public MarshalPublication(String title, String id, String doi, String handle, String num, String vol,
+    public MarshalPublication(NameOrTitle title, String id, String doi, String handle, String num, String vol,
                               String startPage, String endPage, String isbn, String issn, String date, String publicatA,
                               String publicatPer, String documentTypes, String groupAuthors,
                               List relation, List<CfPersType> cfPersType) {
@@ -96,15 +100,21 @@ public class MarshalPublication extends CfResPublType implements Factory {
     }
 
     private void createDate(){
-        if(Objects.nonNull(date))   setCfResPublDate(Time.formatDate(date));
+        if(Objects.nonNull(date)) {
+            try {
+                setCfResPublDate(Time.formatDate(date));
+            } catch (Exception e) {
+                logger.warn(e);
+            }
+        }
     }
 
-    private void createTitle(String langCode, CfTransType transType){
+    private void createTitle(){
         if(Objects.nonNull(title)){
             CfMLangStringType name = new CfMLangStringType();
-            name.setCfLangCode(langCode);
-            name.setCfTrans(transType);
-            name.setValue(title);
+            name.setCfLangCode(title.getLangCode());
+            name.setCfTrans(title.getTrans());
+            name.setValue(title.getValue());
             getCfTitleOrCfAbstrOrCfKeyw().add(FACTORY.createCfProjTypeCfTitle(name));
         }
     }
@@ -208,7 +218,7 @@ public class MarshalPublication extends CfResPublType implements Factory {
         createISBN();
         createISSN();
         createDate();
-        createTitle("ca", CfTransType.O);
+        createTitle();
         createEntityClass();
         createCode(doi, ClassId.DOI);
         createCode(handle, ClassId.HANDLE);

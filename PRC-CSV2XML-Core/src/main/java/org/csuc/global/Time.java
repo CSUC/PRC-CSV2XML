@@ -37,19 +37,13 @@ public class Time {
      * @param inputDate
      * @return
      */
-	public static XMLGregorianCalendar formatDateTime(String inputDate){
-		if(inputDate == null) return null;
-        try {
-            DateFormat format = new SimpleDateFormat(DATE_TIME);
+	public static XMLGregorianCalendar formatDateTime(String inputDate) throws Exception {
+        if (inputDate == null) return null;
 
-            Date d = format.parse(inputDate);
-            return DatatypeFactory.newInstance().newXMLGregorianCalendar(format.format(d));
-        } catch (ParseException e) {
-            logger.error(e);
-        } catch (DatatypeConfigurationException e) {
-            logger.error(e);
-        }
-        return null;
+        DateFormat format = new SimpleDateFormat(DATE_TIME);
+
+        Date d = format.parse(inputDate);
+        return DatatypeFactory.newInstance().newXMLGregorianCalendar(format.format(d));
     }
 
     /**
@@ -60,18 +54,11 @@ public class Time {
      * @param inputDate
      * @return
      */
-    public static XMLGregorianCalendar formatDate(String inputDate){
-        if(inputDate == null) return null;
-        try {
-            DateFormat format = new SimpleDateFormat(DATE);
+    public static XMLGregorianCalendar formatDate(String inputDate) throws Exception {
+        if (inputDate == null) return null;
+        DateFormat format = new SimpleDateFormat(DATE);
 
-            Date d = format.parse(inputDate);
-            return DatatypeFactory.newInstance().newXMLGregorianCalendar(format.format(d));
-        } catch (ParseException e) {
-            logger.error(e);
-        } catch (DatatypeConfigurationException e) {
-            logger.error(e);
-        }
-        return null;
+        Date d = format.parse(inputDate);
+        return DatatypeFactory.newInstance().newXMLGregorianCalendar(format.format(d));
     }
 }

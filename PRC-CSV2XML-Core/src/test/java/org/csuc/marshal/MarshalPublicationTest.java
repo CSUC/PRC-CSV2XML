@@ -12,7 +12,7 @@ import static org.junit.Assert.*;
 public class MarshalPublicationTest {
 
     @Test
-    public void execute() throws IOException {
+    public void execute() throws Exception {
         ClassLoader classLoader = getClass().getClassLoader();
         File file = new File(classLoader.getResource("Publication.csv").getFile());
         File fileRelation = new File(classLoader.getResource("RelationPublication.csv").getFile());
@@ -24,7 +24,7 @@ public class MarshalPublicationTest {
             CfResPublType publication =
                     FactoryCERIF.createFactory(
                             new MarshalPublication(
-                                    (String) researcher.get(0),
+                                    new NameOrTitle((String) researcher.get(0), null, null),
                                     (String) researcher.get(1),
                                     (String) researcher.get(2),
                                     (String) researcher.get(3),

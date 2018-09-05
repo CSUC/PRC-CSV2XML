@@ -94,7 +94,10 @@ public class App {
 
             //Researchers
             logger.info("{}", bean.getResearcher());
-            new CSVResearcher(bean.getResearcher()).readCSV().forEach(researcher -> {
+            CSVResearcher csvResearcher = new CSVResearcher(bean.getResearcher());
+            if(Objects.isNull(csvResearcher.readCSV()))   throw new Exception("Researchers not content!");
+
+            csvResearcher.readCSV().forEach(researcher -> {
                 MarshalReseracher marshalReseracher =
                         new MarshalReseracher(null, (String) researcher.get(0),
                                 null, (String) researcher.get(1),
@@ -112,7 +115,7 @@ public class App {
                 logger.info(department.get(0));
                 MarshalDepartment marshalDepartment =
                         new MarshalDepartment(
-                                (String) department.get(0),
+                                new NameOrTitle((String) department.get(0), null, null),
                                 (String) department.get(1),
                                 (String) department.get(2),
                                 (String) department.get(3),
@@ -132,7 +135,7 @@ public class App {
 
             Optional.ofNullable(csvResearchGroup.readCSV()).ifPresent(present-> present.forEach(group -> {
                 MarshalResearchGroup marshalResearchGroup = new MarshalResearchGroup(
-                        (String) group.get(0),
+                        new NameOrTitle((String) group.get(0), null, null),
                         (String) group.get(1),
                         (String) group.get(2),
                         (String) group.get(3),
@@ -152,7 +155,7 @@ public class App {
             CSVProject csvProject = new CSVProject(bean.getProject(), bean.getRelationProject());
             Optional.ofNullable(csvProject.readCSV()).ifPresent(present-> present.forEach(project -> {
                 MarshalProject marshalProject = new MarshalProject(
-                        (String) project.get(0),
+                        new NameOrTitle((String) project.get(0), null, null),
                         (String) project.get(1),
                         (String) project.get(2),
                         (String) project.get(3),
@@ -172,7 +175,7 @@ public class App {
 
             Optional.ofNullable(csvPublication.readCSV()).ifPresent(present-> present.forEach(publication -> {
                 MarshalPublication marshalPublication = new MarshalPublication(
-                        (String) publication.get(0),
+                        new NameOrTitle((String) publication.get(0), null, null),
                         (String) publication.get(1),
                         (String) publication.get(2),
                         (String) publication.get(3),

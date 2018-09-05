@@ -12,7 +12,7 @@ import static org.junit.Assert.*;
 public class CSVDepartmentTest {
 
     @Test
-    public void readCSV() throws IOException {
+    public void readCSV() throws Exception {
         ClassLoader classLoader = getClass().getClassLoader();
         File file = new File(classLoader.getResource("Organisation.csv").getFile());
         File empty = null;
@@ -24,7 +24,7 @@ public class CSVDepartmentTest {
     }
 
     @Test
-    public void readCSVRelation() throws IOException {
+    public void readCSVRelation() throws Exception {
         ClassLoader classLoader = getClass().getClassLoader();
         File file = new File(classLoader.getResource("Organisation.csv").getFile());
         File fileRelation = new File(classLoader.getResource("RelationOrganitsation.csv").getFile());
@@ -38,7 +38,7 @@ public class CSVDepartmentTest {
     }
 
     @Test
-    public void readCSVNull() throws IOException {
+    public void readCSVNull() throws Exception {
         CSVDepartment data = new CSVDepartment(null, null);
 
         assertEquals(null, data.readCSV());
