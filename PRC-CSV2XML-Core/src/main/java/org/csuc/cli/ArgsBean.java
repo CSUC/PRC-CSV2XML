@@ -3,7 +3,6 @@ package org.csuc.cli;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.csuc.typesafe.ruct.Ruct;
 import org.kohsuke.args4j.CmdLineException;
 import org.kohsuke.args4j.CmdLineParser;
 import org.kohsuke.args4j.Option;
@@ -134,7 +133,8 @@ public class ArgsBean {
 
     @Option(name = "-ruct", aliases = "--ruct", usage= "ruct code", required = true, metaVar = "https://www.educacion.gob.es/ruct/home")
     public void setRuct(String ruct) throws Exception {
-        if(!Ruct.isValidRuct(ruct)) throw new Exception(MessageFormat.format("{0} invalid ruct code!", ruct));
+        //if(!Ruct.isValidRuct(ruct) || !Altres.isValidCode(ruct)) throw new Exception(MessageFormat.format("{0} invalid ruct code!", ruct));
+        if(ruct.isEmpty()) throw new Exception(MessageFormat.format("{0} ruct is empty. Invalid ruct code!", ruct));
         this.ruct = ruct;
     }
 
