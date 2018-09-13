@@ -103,8 +103,12 @@
             <artifactId>commons-text</artifactId>
             <version>1.4</version>
         </dependency>
-
-
+        <!-- https://mvnrepository.com/artifact/org.apache.xmlbeans/xmlbeans -->
+        <dependency>
+            <groupId>org.apache.xmlbeans</groupId>
+            <artifactId>xmlbeans</artifactId>
+            <version>3.0.1</version>
+        </dependency>
     </dependencies>
 
     <build>
