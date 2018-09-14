@@ -112,7 +112,6 @@ public class App {
                     bean.getRelationDepartment());
 
             Optional.ofNullable(csvDepartment.readCSV()).ifPresent(present-> present.forEach(department -> {
-                logger.info(department.get(0));
                 MarshalDepartment marshalDepartment =
                         new MarshalDepartment(
                                 new NameOrTitle((String) department.get(0), null, null),
