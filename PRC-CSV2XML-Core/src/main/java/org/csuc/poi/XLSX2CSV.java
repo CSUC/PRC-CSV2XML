@@ -1,7 +1,6 @@
 package org.csuc.poi;
 
 import com.monitorjbl.xlsx.StreamingReader;
-import org.apache.commons.text.StringEscapeUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.poi.ss.usermodel.Sheet;
@@ -11,6 +10,8 @@ import org.csuc.utils.SHEETS;
 import java.io.*;
 import java.nio.file.Files;
 import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 
 /**
@@ -21,11 +22,14 @@ public class XLSX2CSV {
     private static Logger logger = LogManager.getLogger(XLSX2CSV.class);
 
     private Workbook workbook;
-    private String SEPARATOR = ";";
+
+    private char SEPARATOR;
+    private String ENDOFLINESYMBOLS;
+    private Pattern rxquote = Pattern.compile("\"");
 
     private Map<SHEETS, File> files = new HashMap<>();
 
-    public XLSX2CSV(String file) throws FileNotFoundException {
+    public XLSX2CSV(String file, char delimiter, String endOfLineSymbols) throws FileNotFoundException {
         InputStream is = new FileInputStream(file);
         workbook = StreamingReader.builder()
                 .rowCacheSize(100)    // number of rows to keep in memory (defaults to 10)
@@ -33,24 +37,30 @@ public class XLSX2CSV {
                 .open(is);            // InputStream or File for XLSX file (required)
     }
 
-    public XLSX2CSV(File file) throws FileNotFoundException {
+    public XLSX2CSV(File file, char delimiter, String endOfLineSymbols) throws FileNotFoundException {
         InputStream is = new FileInputStream(file);
+        SEPARATOR = delimiter;
+        ENDOFLINESYMBOLS = endOfLineSymbols;
         workbook = StreamingReader.builder()
                 .rowCacheSize(100)    // number of rows to keep in memory (defaults to 10)
                 .bufferSize(4096)     // buffer size to use when reading InputStream to file (defaults to 1024)
                 .open(is);            // InputStream or File for XLSX file (required)
     }
 
-    public XLSX2CSV(String file, int rowCacheSize, int bufferSize) throws FileNotFoundException {
+    public XLSX2CSV(String file, int rowCacheSize, int bufferSize, char delimiter, String endOfLineSymbols) throws FileNotFoundException {
         InputStream is = new FileInputStream(file);
+        SEPARATOR = delimiter;
+        ENDOFLINESYMBOLS = endOfLineSymbols;
         workbook = StreamingReader.builder()
                 .rowCacheSize(rowCacheSize)    // number of rows to keep in memory (defaults to 10)
                 .bufferSize(bufferSize)        // buffer size to use when reading InputStream to file (defaults to 1024)
                 .open(is);                     // InputStream or File for XLSX file (required)
     }
 
-    public XLSX2CSV(File file, int rowCacheSize, int bufferSize) throws FileNotFoundException {
+    public XLSX2CSV(File file, int rowCacheSize, int bufferSize, char delimiter, String endOfLineSymbols) throws FileNotFoundException {
         InputStream is = new FileInputStream(file);
+        SEPARATOR = delimiter;
+        ENDOFLINESYMBOLS = endOfLineSymbols;
         workbook = StreamingReader.builder()
                 .rowCacheSize(rowCacheSize)    // number of rows to keep in memory (defaults to 10)
                 .bufferSize(bufferSize)        // buffer size to use when reading InputStream to file (defaults to 1024)
@@ -88,22 +98,44 @@ public class XLSX2CSV {
         workbook.close();
     }
 
+    /**
+     *
+     * @param sheet
+     * @param max
+     * @return
+     */
     private String foreachCell(Sheet sheet, int max) {
         StringBuffer buffer = new StringBuffer();
         sheet.forEach(row -> {
+            boolean firstCell = true;
             for (int rn = 0; rn < max; rn++) {
-                if (row.getCell(rn) == null || row.getCell(rn).getStringCellValue().isEmpty()) {// This cell is empty
-                    if (isLast(rn, max)) buffer.append("\"\"");
-                    else buffer.append("\"\";");
-                } else {
-                    if (isLast(rn, max)) buffer.append(StringEscapeUtils.escapeCsv(String.format("%s", row.getCell(rn).getStringCellValue())));
-                    else buffer.append(String.format("%s%s", StringEscapeUtils.escapeCsv(String.format("%s", row.getCell(rn).getStringCellValue())), SEPARATOR));
-                }
+                if ( ! firstCell ) buffer.append(SEPARATOR);
+                if (row.getCell(rn) == null || row.getCell(rn).getStringCellValue().isEmpty()) buffer.append("\"\"");
+                else    buffer.append(encodeValue(row.getCell(rn).getStringCellValue(), SEPARATOR));
+                firstCell = false;
             }
-            buffer.append("\n");
+            buffer.append(ENDOFLINESYMBOLS);
         });
-
         return buffer.toString();
+    }
+
+    /**
+     *
+     * @param value
+     * @return
+     */
+    private String encodeValue(String value, char delimiter){
+        boolean needQuotes = false;
+        if ( value.indexOf(',') != -1 || value.indexOf(';') != -1 ||
+                value.indexOf('"') != -1 || value.indexOf('\n') != -1 ||
+                value.indexOf('\r') != -1 || value.indexOf('\t') != -1 ||
+                value.indexOf(delimiter) != -1)
+
+            needQuotes = true;
+        Matcher m = rxquote.matcher(value);
+        if ( m.find() ) needQuotes = true; value = m.replaceAll("\"\"");
+        if ( needQuotes ) return "\"" + value + "\"";
+        else return value;
     }
 
     /**
