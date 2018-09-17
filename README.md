@@ -14,9 +14,12 @@ mvn clean install -DskipTests
 
 ```
 Usage: 
- -c (--charset) [UTF-8, ISO_8859_1, US_ASCII, UTF_16, UTF_16BE, UTF_16LE] : charset output file
- -f (--formatted)                                                         : formatted output file
- -i (--input) <Path>                                                      : input file
- -o (--output) <Path>                                                     : output file
- -ruct (--ruct) https://www.educacion.gob.es/ruct/home                    : ruct code
+ --deleteOnExit (--deleteOnExit)                                          : deleteOnExit temporal files
+  -c (--charset) [UTF-8, ISO_8859_1, US_ASCII, UTF_16, UTF_16BE, UTF_16LE] : charset output file
+  -d (--delimiter) <char>                                                  : delimiter char
+  -f (--formatted)                                                         : formatted output file
+  -i (--input) <Path>                                                      : input file
+  -l (--endOfLine) <String>                                                : End Of Line Symbols
+  -o (--output) <Path>                                                     : output file
+  -ruct (--ruct) https://www.educacion.gob.es/ruct/home                    : ruct code                 : ruct code
 ```
