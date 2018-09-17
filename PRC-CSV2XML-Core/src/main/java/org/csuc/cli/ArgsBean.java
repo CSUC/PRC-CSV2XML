@@ -1,12 +1,15 @@
 package org.csuc.cli;
 
 import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.text.StringEscapeUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.kohsuke.args4j.CmdLineException;
 import org.kohsuke.args4j.CmdLineParser;
 import org.kohsuke.args4j.Option;
 import org.kohsuke.args4j.spi.BooleanOptionHandler;
+import org.kohsuke.args4j.spi.CharOptionHandler;
+import org.kohsuke.args4j.spi.StringOptionHandler;
 
 import java.io.FileNotFoundException;
 import java.nio.charset.Charset;
@@ -40,6 +43,11 @@ public class ArgsBean {
     private Path output;
     private String charset = StandardCharsets.UTF_8.name();
     private Boolean formatted = false;
+
+    private char delimiter = ';';
+    private String endOfLineSymbols = "\n";
+
+    private boolean deleteOnExit = false;
 
     private String ruct;
 
@@ -215,11 +223,41 @@ public class ArgsBean {
         this.formatted = formatted;
     }
 
+    public char getDelimiter() {
+        return delimiter;
+    }
+
+    @Option(name = "-d", aliases = "--delimiter", usage= "delimiter char", metaVar = "<char>", handler = CharOptionHandler.class)
+    public void setDelimiter(char delimiter) {
+        this.delimiter = delimiter;
+    }
+
+    public String getEndOfLineSymbols() {
+        return endOfLineSymbols;
+    }
+
+    @Option(name = "-l", aliases = "--endOfLine", usage= "End Of Line Symbols", metaVar = "<String>", handler = StringOptionHandler.class)
+    public void setEndOfLineSymbols(String endOfLineSymbols) {
+        this.endOfLineSymbols = endOfLineSymbols;
+    }
+
+    public boolean isDeleteOnExit() {
+        return deleteOnExit;
+    }
+
+    @Option(name= "--deleteOnExit", aliases = "--deleteOnExit", handler=BooleanOptionHandler.class, usage= "deleteOnExit temporal files")
+    public void setDeleteOnExit(boolean deleteOnExit) {
+        this.deleteOnExit = deleteOnExit;
+    }
+
     public void run(){
         logger.info("Ruct                        :   {}", ruct);
         logger.info("Input file                  :   {}", input);
         logger.info("Output file                 :   {}", output);
         logger.info("Charset file                :   {}", charset);
         logger.info("Formatted file              :   {}", formatted);
+        logger.info("Delimiter char              :   {}", delimiter);
+        logger.info("EndOfLineSymbols            :   {}", StringEscapeUtils.escapeJava(endOfLineSymbols));
+        logger.info("DeleteOnExit                :   {}", deleteOnExit);
     }
 }

@@ -2,6 +2,7 @@ package org.csuc.csv;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.supercsv.prefs.CsvPreference;
 
 import java.util.List;
 
@@ -20,6 +21,13 @@ public class CSVResearcher implements Read<List<List<Object>>>{
 
         logger.debug("Researcher file:           {}", this.file);
         data = Reading.readWithCsvListReader(this.file, Processors.getProcessorsResearcher(), 4);
+    }
+
+    public CSVResearcher(String file, CsvPreference csvPreference) throws Exception {
+        this.file = file;
+
+        logger.debug("Researcher file:           {}", this.file);
+        data = Reading.readWithCsvListReader(this.file, Processors.getProcessorsResearcher(), 4, csvPreference);
     }
 
     @Override

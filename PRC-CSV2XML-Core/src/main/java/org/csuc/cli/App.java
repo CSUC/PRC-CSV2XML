@@ -12,6 +12,7 @@ import org.csuc.typesafe.semantics.ClassId;
 import org.csuc.typesafe.semantics.Semantics;
 import org.kohsuke.args4j.CmdLineException;
 import org.kohsuke.args4j.CmdLineParser;
+import org.supercsv.prefs.CsvPreference;
 import xmlns.org.eurocris.cerif_1.*;
 
 import javax.xml.datatype.DatatypeFactory;
@@ -44,7 +45,7 @@ public class App {
 
         XLSX2CSV xlsx2CSV = null;
         try {
-            xlsx2CSV = new XLSX2CSV(bean.getInput().toFile());
+            xlsx2CSV = new XLSX2CSV(bean.getInput().toFile(), bean.getDelimiter(), bean.getEndOfLineSymbols());
             xlsx2CSV.execute();
 
             xlsx2CSV.getFiles().forEach((key, value) -> {
@@ -94,7 +95,8 @@ public class App {
 
             //Researchers
             logger.info("{}", bean.getResearcher());
-            CSVResearcher csvResearcher = new CSVResearcher(bean.getResearcher());
+            CSVResearcher csvResearcher = new CSVResearcher(bean.getResearcher(),
+                    (new CsvPreference.Builder('"', bean.getDelimiter(), bean.getEndOfLineSymbols())).build());
             if(Objects.isNull(csvResearcher.readCSV()))   throw new Exception("Researchers not content!");
 
             csvResearcher.readCSV().forEach(researcher -> {
@@ -107,9 +109,11 @@ public class App {
             });
 
             //OrgUnits (Department)
-            logger.info("{} - {}", bean.getDepartment(), bean.getRelationDepartment());
+            logger.info("{} - {}", bean.getDepartment(), bean.getRelationDepartment(),
+                    (new CsvPreference.Builder('"', bean.getDelimiter(), bean.getEndOfLineSymbols())).build());
             CSVDepartment csvDepartment = new CSVDepartment(bean.getDepartment(),
-                    bean.getRelationDepartment());
+                    bean.getRelationDepartment(),
+                    (new CsvPreference.Builder('"', bean.getDelimiter(), bean.getEndOfLineSymbols())).build());
 
             Optional.ofNullable(csvDepartment.readCSV()).ifPresent(present-> present.forEach(department -> {
                 MarshalDepartment marshalDepartment =
@@ -130,7 +134,8 @@ public class App {
             //OrgUnits (Research Group)
             logger.info("{} - {}", bean.getResearcherGroup(), bean.getRelationResearcherGroup());
             CSVResearchGroup csvResearchGroup = new CSVResearchGroup(bean.getResearcherGroup(),
-                    bean.getRelationResearcherGroup());
+                    bean.getRelationResearcherGroup(),
+                    (new CsvPreference.Builder('"', bean.getDelimiter(), bean.getEndOfLineSymbols())).build());
 
             Optional.ofNullable(csvResearchGroup.readCSV()).ifPresent(present-> present.forEach(group -> {
                 MarshalResearchGroup marshalResearchGroup = new MarshalResearchGroup(
@@ -151,7 +156,8 @@ public class App {
 
             //Projects
             logger.info("{} - {}", bean.getProject(), bean.getRelationProject());
-            CSVProject csvProject = new CSVProject(bean.getProject(), bean.getRelationProject());
+            CSVProject csvProject = new CSVProject(bean.getProject(), bean.getRelationProject(),
+                    (new CsvPreference.Builder('"', bean.getDelimiter(), bean.getEndOfLineSymbols())).build());
             Optional.ofNullable(csvProject.readCSV()).ifPresent(present-> present.forEach(project -> {
                 MarshalProject marshalProject = new MarshalProject(
                         new NameOrTitle((String) project.get(0), null, null),
@@ -170,7 +176,8 @@ public class App {
 
             //Publications
             logger.info("{} - {}", bean.getPublication(), bean.getRelationPublication());
-            CSVPublication csvPublication = new CSVPublication(bean.getPublication(), bean.getRelationPublication());
+            CSVPublication csvPublication = new CSVPublication(bean.getPublication(), bean.getRelationPublication(),
+                    (new CsvPreference.Builder('"', bean.getDelimiter(), bean.getEndOfLineSymbols())).build());
 
             Optional.ofNullable(csvPublication.readCSV()).ifPresent(present-> present.forEach(publication -> {
                 MarshalPublication marshalPublication = new MarshalPublication(
@@ -208,7 +215,7 @@ public class App {
         } catch (Exception e) {
             logger.error(e);
         }finally {
-            xlsx2CSV.deleteOnExit();
+            if(bean.isDeleteOnExit())   xlsx2CSV.deleteOnExit();
         }
     }
 }

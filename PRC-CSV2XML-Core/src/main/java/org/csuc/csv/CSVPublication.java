@@ -2,6 +2,7 @@ package org.csuc.csv;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.supercsv.prefs.CsvPreference;
 
 import java.util.List;
 
@@ -28,6 +29,17 @@ public class CSVPublication implements Read<List<List<Object>>> {
 
         data = Reading.readWithCsvListReader(this.file, Processors.getProcessorsPublication(), 15);
         dataRelation = Reading.readWithCsvListReader(this.fileRelation, Processors.getProcessorsPublicationRelation(), 4);
+    }
+
+    public CSVPublication(String file, String relation, CsvPreference csvPreference) throws Exception {
+        this.file = file;
+        this.fileRelation = relation;
+
+        logger.debug("Publication file:           {}", this.file);
+        logger.debug("Publication Relation file:  {}", this.fileRelation);
+
+        data = Reading.readWithCsvListReader(this.file, Processors.getProcessorsPublication(), 15, csvPreference);
+        dataRelation = Reading.readWithCsvListReader(this.fileRelation, Processors.getProcessorsPublicationRelation(), 4, csvPreference);
     }
 
     @Override
