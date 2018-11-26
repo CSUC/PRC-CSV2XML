@@ -15,6 +15,7 @@ import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 /**
  * @author amartinez
@@ -37,6 +38,7 @@ public class Reading {
 
         if(Objects.nonNull(file)){
             try {
+
                 listReader = new CsvListReader(new FileReader(file), csvPreference);
                 listReader.getHeader(true); // skip the header (can't be used with CsvListReader)
 
@@ -45,7 +47,8 @@ public class Reading {
                     if(!Objects.equals(customerList.size(), sizeCol))
                         throw new Exception(String.format("Line: %s, RownNumber: %s value: %s invalid size row %s",
                                 listReader.getLineNumber(), listReader.getRowNumber(), customerList, customerList.size()));
-                    result.add(customerList);
+                    if(!customerList.stream().filter(Objects::nonNull).collect(Collectors.toList()).isEmpty())
+                        result.add(customerList);
                     logger.debug("Line: {}  Row: {}  Data:  {}", listReader.getLineNumber(), listReader.getRowNumber(), customerList);
                 }
             }catch (SuperCsvCellProcessorException e) {
