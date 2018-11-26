@@ -109,8 +109,7 @@ public class App {
             });
 
             //OrgUnits (Department)
-            logger.info("{} - {}", bean.getDepartment(), bean.getRelationDepartment(),
-                    (new CsvPreference.Builder('"', bean.getDelimiter(), bean.getEndOfLineSymbols())).build());
+            logger.info("{} - {}", bean.getDepartment(), bean.getRelationDepartment());
             CSVDepartment csvDepartment = new CSVDepartment(bean.getDepartment(),
                     bean.getRelationDepartment(),
                     (new CsvPreference.Builder('"', bean.getDelimiter(), bean.getEndOfLineSymbols())).build());

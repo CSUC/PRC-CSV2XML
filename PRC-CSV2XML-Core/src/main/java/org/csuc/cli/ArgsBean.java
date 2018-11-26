@@ -16,8 +16,10 @@ import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.text.MessageFormat;
 import java.util.Objects;
+import java.util.Scanner;
 
 /**
  * @author amartinez
@@ -26,7 +28,7 @@ public class ArgsBean {
 
     private static Logger logger = LogManager.getLogger(ArgsBean.class);
 
-    @Option(name="-h", aliases = "--help", help = true, required = false)
+    @Option(name="-h", aliases = "--help", help = true)
     private boolean help = false;
 
     private Path researcher;
@@ -39,16 +41,28 @@ public class ArgsBean {
     private Path publication;
     private Path relationPublication;
 
+    @Option(name = "-i", aliases = "--input", usage= "input file", metaVar = "<Path>")
     private Path input;
-    private Path output;
+
+    @Option(name = "-o", aliases = "--output", usage= "output file", metaVar = "<Path>")
+    private Path output = Paths.get("/tmp/example.xml");
+
+    @Option(name = "-c", aliases = "--charset", usage= "charset output file", metaVar = "[UTF-8, ISO_8859_1, US_ASCII, UTF_16, UTF_16BE, UTF_16LE]")
     private String charset = StandardCharsets.UTF_8.name();
+
+    @Option(name = "-f", aliases = "--formatted", handler=BooleanOptionHandler.class, usage= "formatted output file")
     private Boolean formatted = false;
 
+    @Option(name = "-d", aliases = "--delimiter", usage= "delimiter char", metaVar = "<char>", handler = CharOptionHandler.class)
     private char delimiter = ';';
+
+    @Option(name = "-l", aliases = "--endOfLine", usage= "End Of Line Symbols", metaVar = "<String>", handler = StringOptionHandler.class)
     private String endOfLineSymbols = "\n";
 
+    @Option(name= "--deleteOnExit", aliases = "--deleteOnExit", handler=BooleanOptionHandler.class, usage= "deleteOnExit temporal files")
     private boolean deleteOnExit = false;
 
+    @Option(name = "-ruct", aliases = "--ruct", usage= "ruct code", required = true, metaVar = "https://www.educacion.gob.es/ruct/home")
     private String ruct;
 
     public ArgsBean(String[] args){
@@ -67,6 +81,7 @@ public class ArgsBean {
             }
 
             this.run();
+            promptEnterKey();
         } catch( CmdLineException e ) {
             if(this.help){
                 System.err.println("Usage: ");
@@ -139,9 +154,8 @@ public class ArgsBean {
         return ruct;
     }
 
-    @Option(name = "-ruct", aliases = "--ruct", usage= "ruct code", required = true, metaVar = "https://www.educacion.gob.es/ruct/home")
+
     public void setRuct(String ruct) throws Exception {
-        //if(!Ruct.isValidRuct(ruct) || !Altres.isValidCode(ruct)) throw new Exception(MessageFormat.format("{0} invalid ruct code!", ruct));
         if(ruct.isEmpty()) throw new Exception(MessageFormat.format("{0} ruct is empty. Invalid ruct code!", ruct));
         this.ruct = ruct;
     }
@@ -186,7 +200,6 @@ public class ArgsBean {
         return output;
     }
 
-    @Option(name = "-o", aliases = "--output", usage= "output file", metaVar = "<Path>")
     public void setOutput(Path output) throws IllegalArgumentException {
         if(!FilenameUtils.getExtension(output.toString()).equalsIgnoreCase("xml"))
             throw new IllegalArgumentException(MessageFormat.format("{0} illegal extension!", FilenameUtils.getExtension(output.toString())));
@@ -197,7 +210,6 @@ public class ArgsBean {
         return input;
     }
 
-    @Option(name = "-i", aliases = "--input", usage= "input file", metaVar = "<Path>")
     public void setInput(Path input) throws FileNotFoundException {
         if(Files.notExists(input)) throw new FileNotFoundException(MessageFormat.format("{0} File not Found!", input));
         if(!FilenameUtils.getExtension(input.toString()).equalsIgnoreCase("xlsx"))
@@ -209,7 +221,6 @@ public class ArgsBean {
         return Charset.forName(charset);
     }
 
-    @Option(name = "-c", aliases = "--charset", usage= "charset output file", metaVar = "[UTF-8, ISO_8859_1, US_ASCII, UTF_16, UTF_16BE, UTF_16LE]")
     public void setCharset(String charset) {
         this.charset = Charset.forName(charset).toString();
     }
@@ -218,7 +229,6 @@ public class ArgsBean {
         return formatted;
     }
 
-    @Option(name = "-f", aliases = "--formatted", handler=BooleanOptionHandler.class, usage= "formatted output file")
     public void setFormatted(Boolean formatted) {
         this.formatted = formatted;
     }
@@ -227,7 +237,6 @@ public class ArgsBean {
         return delimiter;
     }
 
-    @Option(name = "-d", aliases = "--delimiter", usage= "delimiter char", metaVar = "<char>", handler = CharOptionHandler.class)
     public void setDelimiter(char delimiter) {
         this.delimiter = delimiter;
     }
@@ -236,7 +245,6 @@ public class ArgsBean {
         return endOfLineSymbols;
     }
 
-    @Option(name = "-l", aliases = "--endOfLine", usage= "End Of Line Symbols", metaVar = "<String>", handler = StringOptionHandler.class)
     public void setEndOfLineSymbols(String endOfLineSymbols) {
         this.endOfLineSymbols = endOfLineSymbols;
     }
@@ -245,10 +253,19 @@ public class ArgsBean {
         return deleteOnExit;
     }
 
-    @Option(name= "--deleteOnExit", aliases = "--deleteOnExit", handler=BooleanOptionHandler.class, usage= "deleteOnExit temporal files")
     public void setDeleteOnExit(boolean deleteOnExit) {
         this.deleteOnExit = deleteOnExit;
     }
+
+    /**
+     *
+     */
+    private static void promptEnterKey() {
+        System.out.println("Press \"ENTER\" to continue...");
+        Scanner scanner = new Scanner(System.in);
+        scanner.nextLine();
+    }
+
 
     public void run(){
         logger.info("Ruct                        :   {}", ruct);
