@@ -10,6 +10,7 @@ import org.csuc.typesafe.semantics.Semantics;
 import xmlns.org.eurocris.cerif_1.*;
 
 import javax.xml.bind.JAXBElement;
+import java.text.Normalizer;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -146,8 +147,11 @@ public class MarshalResearchGroup extends CfOrgUnitType implements Factory{
     private void researcher(String id, String interve){
         CfOrgUnitType.CfPersOrgUnit persOrgUnit = new CfOrgUnitType.CfPersOrgUnit();
         persOrgUnit.setCfPersId(id);
-        if (interve.toLowerCase().equals("si")
-                || interve.toLowerCase().equals("s"))   persOrgUnit.setCfClassId(Semantics.getClassId(ClassId.GROUP_LEADER));
+
+        String normalized = Normalizer.normalize(interve, Normalizer.Form.NFD);
+
+        if (normalized.replaceAll("\\p{InCombiningDiacriticalMarks}+", "").equalsIgnoreCase("si")
+                || normalized.replaceAll("\\p{InCombiningDiacriticalMarks}+", "").equalsIgnoreCase("s"))   persOrgUnit.setCfClassId(Semantics.getClassId(ClassId.GROUP_LEADER));
         else if (interve.toLowerCase().equals("no")
                 || interve.toLowerCase().equals("n"))   persOrgUnit.setCfClassId(Semantics.getClassId(ClassId.MEMBER));
 

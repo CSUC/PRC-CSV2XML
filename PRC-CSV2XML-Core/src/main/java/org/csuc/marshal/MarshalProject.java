@@ -10,6 +10,7 @@ import org.csuc.typesafe.semantics.Semantics;
 import xmlns.org.eurocris.cerif_1.*;
 
 import javax.xml.bind.JAXBElement;
+import java.text.Normalizer;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -130,10 +131,13 @@ public class MarshalProject extends CfProjType implements Factory{
     private void researcher(String id, String ip){
         CfProjType.CfProjPers pers = new CfProjType.CfProjPers();
         pers.setCfPersId(id);
-        if (ip.toLowerCase().equals("si")
-                || ip.toLowerCase().equals("s"))    pers.setCfClassId(Semantics.getClassId(ClassId.PRINCIPAL_INVESTIGATOR));
-        else if (ip.toLowerCase().equals("no")
-                || ip.toLowerCase().equals("n")) pers.setCfClassId(Semantics.getClassId(ClassId.CO_INVESTIGATOR));
+
+        String normalized = Normalizer.normalize(ip, Normalizer.Form.NFD);
+
+        if (normalized.replaceAll("\\p{InCombiningDiacriticalMarks}+", "").equalsIgnoreCase("si")
+                || normalized.replaceAll("\\p{InCombiningDiacriticalMarks}+", "").equalsIgnoreCase("s"))    pers.setCfClassId(Semantics.getClassId(ClassId.PRINCIPAL_INVESTIGATOR));
+        else if (ip.equalsIgnoreCase("no")
+                || ip.equalsIgnoreCase("n")) pers.setCfClassId(Semantics.getClassId(ClassId.CO_INVESTIGATOR));
 
         pers.setCfClassSchemeId(Semantics.getSchemaId(SchemeId.PERSON_PROJECT_ENGAGEMENTS));
         getCfTitleOrCfAbstrOrCfKeyw().add(FACTORY.createCfProjTypeCfProjPers(pers));
