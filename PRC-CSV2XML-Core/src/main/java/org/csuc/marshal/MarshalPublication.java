@@ -11,6 +11,7 @@ import org.csuc.utils.DocumentTypes;
 import xmlns.org.eurocris.cerif_1.*;
 
 import javax.xml.bind.JAXBElement;
+import java.text.Normalizer;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -199,8 +200,11 @@ public class MarshalPublication extends CfResPublType implements Factory {
     private void researcher(String id, String direccio){
         CfResPublType.CfPersResPubl pers = new CfResPublType.CfPersResPubl();
         pers.setCfPersId(id);
-        if (direccio.toLowerCase().equals("si")
-                || direccio.toLowerCase().equals("s"))  pers.setCfClassId(Semantics.getClassId(ClassId.DISS_DIRECTOR));
+
+        String normalized = Normalizer.normalize(direccio, Normalizer.Form.NFD);
+
+        if (normalized.replaceAll("\\p{InCombiningDiacriticalMarks}+", "").equalsIgnoreCase("si")
+                || normalized.replaceAll("\\p{InCombiningDiacriticalMarks}+", "").equalsIgnoreCase("s"))  pers.setCfClassId(Semantics.getClassId(ClassId.DISS_DIRECTOR));
         else    pers.setCfClassId(Semantics.getClassId(ClassId.AUTHOR));
 
         pers.setCfClassSchemeId(Semantics.getSchemaId(SchemeId.PERSON_PROFESSIONAL_RELATIONSHIPS));
