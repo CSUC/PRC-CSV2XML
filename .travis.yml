@@ -1,7 +1,8 @@
 language: java
 sudo: false
+dist: xenial
 jdk:
-- oraclejdk8
+- openjdk8
 script: mvn clean install
 notifications:
   email:
