@@ -1,4 +1,4 @@
-# PRCJava2XML   [![Build Status](https://travis-ci.org/CSUC/PRC-CSV2XML.svg?branch=develop)](https://travis-ci.org/CSUC/PRC-CSV2XML)
+# PRC-CERIF   [![Build Status](https://travis-ci.org/CSUC/PRC-CSV2XML.svg?branch=develop)](https://travis-ci.org/CSUC/PRC-CSV2XML)
 
 ## Resources
 * [Release Notes](../../releases)
@@ -11,15 +11,15 @@ mvn clean install -DskipTests
 ```
 
 ## Command line
-
 ```
-Usage: 
- --deleteOnExit (--deleteOnExit)                                           : deleteOnExit temporal files
-  -c (--charset) [UTF-8, ISO_8859_1, US_ASCII, UTF_16, UTF_16BE, UTF_16LE] : charset output file
-  -d (--delimiter) <char>                                                  : delimiter char
-  -f (--formatted)                                                         : formatted output file
-  -i (--input) <Path>                                                      : input file
-  -l (--endOfLine) <String>                                                : End Of Line Symbols
-  -o (--output) <Path>                                                     : output file
-  -ruct (--ruct) https://www.educacion.gob.es/ruct/home                    : ruct code
+spark-submit --master "local[*]" --class org.csuc.cli.App --packages info.picocli:picocli:4.6.2,com.crealytics:spark-excel_2.12:0.13.7,com.typesafe:config:1.3.4 --jars euroCRIS-cerif-definitions-1.6.2.jar prc-cerif-${version}.jar args
+```
+```
+Usage: prc-cerif [-fhV] -i=<PATH> [-o=<PATH>] -r=<STRING>
+  -f, --formatted       formatted output file (default: false)
+  -h, --help            Show this help message and exit.
+  -i, --input=<PATH>    data file
+  -o, --output=<PATH>   output file (default: /tmp/`ruct`.xml)
+  -r, --ruct=<STRING>   ruct code (https://www.educacion.gob.es/ruct/home)
+  -V, --version         Print version information and exit.
 ```

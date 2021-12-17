@@ -12,8 +12,7 @@
 
     <modules>
         <module>euroCRIS-cerif-definitions</module>
-        <module>Binding-Core</module>
-        <module>PRC-CSV2XML-Core</module>
+        <module>transformation</module>
     </modules>
 
     <properties>
@@ -23,19 +22,11 @@
         <maven.compiler.testSource>1.8</maven.compiler.testSource>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
-        <revision>2.4.16</revision>
+        <revision>2.4.17</revision>
 
         <junit.version>4.12</junit.version>
-        <commons.lang3.version>3.7</commons.lang3.version>
-        <commons.io.version>2.7</commons.io.version>
-        <commons.text.version>1.6</commons.text.version>
-        <javatuples.version>1.2</javatuples.version>
+        <picocli.version>4.6.2</picocli.version>
         <typesafe.config.version>1.3.4</typesafe.config.version>
-        <log4j.version>2.15.0</log4j.version>
-        <args4j.version>2.33</args4j.version>
-        <super.csv.version>2.4.0</super.csv.version>
-
-        <prc.java.xml.logs>/tmp/prc</prc.java.xml.logs>
     </properties>
 
     <dependencyManagement>
@@ -48,45 +39,11 @@
                 <scope>test</scope>
             </dependency>
 
-            <!-- https://mvnrepository.com/artifact/commons-io/commons-io -->
+            <!-- https://mvnrepository.com/artifact/info.picocli/picocli -->
             <dependency>
-                <groupId>commons-io</groupId>
-                <artifactId>commons-io</artifactId>
-                <version>${commons.io.version}</version>
-            </dependency>
-
-            <!-- https://mvnrepository.com/artifact/org.javatuples/javatuples -->
-            <dependency>
-                <groupId>org.javatuples</groupId>
-                <artifactId>javatuples</artifactId>
-                <version>${javatuples.version}</version>
-            </dependency>
-
-            <!-- https://mvnrepository.com/artifact/org.apache.logging.log4j/log4j-core -->
-            <dependency>
-                <groupId>org.apache.logging.log4j</groupId>
-                <artifactId>log4j-core</artifactId>
-                <version>${log4j.version}</version>
-            </dependency>
-
-            <!-- https://mvnrepository.com/artifact/org.apache.logging.log4j/log4j-api -->
-            <dependency>
-                <groupId>org.apache.logging.log4j</groupId>
-                <artifactId>log4j-api</artifactId>
-                <version>${log4j.version}</version>
-            </dependency>
-
-            <!-- https://mvnrepository.com/artifact/org.apache.logging.log4j/log4j-iostreams -->
-            <dependency>
-                <groupId>org.apache.logging.log4j</groupId>
-                <artifactId>log4j-iostreams</artifactId>
-                <version>${log4j.version}</version>
-            </dependency>
-
-            <dependency>
-                <groupId>org.apache.commons</groupId>
-                <artifactId>commons-text</artifactId>
-                <version>${commons.text.version}</version>
+                <groupId>info.picocli</groupId>
+                <artifactId>picocli</artifactId>
+                <version>${picocli.version}</version>
             </dependency>
 
             <dependency>
@@ -94,55 +51,6 @@
                 <artifactId>config</artifactId>
                 <version>${typesafe.config.version}</version>
             </dependency>
-
-            <!-- https://mvnrepository.com/artifact/args4j/args4j -->
-            <dependency>
-                <groupId>args4j</groupId>
-                <artifactId>args4j</artifactId>
-                <version>${args4j.version}</version>
-            </dependency>
-
-            <dependency>
-                <groupId>net.sf.supercsv</groupId>
-                <artifactId>super-csv</artifactId>
-                <version>${super.csv.version}</version>
-            </dependency>
-
         </dependencies>
     </dependencyManagement>
-
-    <build>
-        <pluginManagement>
-            <plugins>
-                <plugin>
-                    <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-compiler-plugin</artifactId>
-                    <configuration>
-                        <source>1.8</source>
-                        <target>1.8</target>
-                    </configuration>
-                </plugin>
-            </plugins>
-        </pluginManagement>
-        <plugins>
-            <plugin>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>cobertura-maven-plugin</artifactId>
-                <version>2.7</version>
-                <configuration>
-                    <formats>
-                        <format>html</format>
-                        <format>xml</format>
-                    </formats>
-                    <check/>
-                </configuration>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-surefire-plugin</artifactId>
-                <version>2.22.1</version>
-            </plugin>
-        </plugins>
-    </build>
-
 </project>
