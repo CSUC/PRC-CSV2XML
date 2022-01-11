@@ -9,6 +9,7 @@ import xmlns.org.eurocris.cerif_1.CfFedIdEmbType;
 import xmlns.org.eurocris.cerif_1.CfPersType;
 import xmlns.org.eurocris.cerif_1.ObjectFactory;
 
+import java.io.Serializable;
 import java.util.Objects;
 import java.util.UUID;
 import java.util.stream.Stream;
@@ -16,7 +17,7 @@ import java.util.stream.Stream;
 /**
  * @author amartinez
  */
-public class Researcher extends CfPersType {
+public class Researcher extends CfPersType implements Serializable {
 
     private ObjectFactory FACTORY = new ObjectFactory();
     private Row row;

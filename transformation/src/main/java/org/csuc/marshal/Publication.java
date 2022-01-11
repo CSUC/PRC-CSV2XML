@@ -9,12 +9,13 @@ import org.csuc.typesafe.semantics.Semantics;
 import org.csuc.utils.DocumentTypes;
 import xmlns.org.eurocris.cerif_1.*;
 
+import java.io.Serializable;
 import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
 import java.util.stream.Stream;
 
-public class Publication extends CfResPublType {
+public class Publication extends CfResPublType implements Serializable {
 
     private ObjectFactory FACTORY = new ObjectFactory();
     private Row row;

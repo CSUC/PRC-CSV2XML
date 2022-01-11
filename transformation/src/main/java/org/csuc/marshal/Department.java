@@ -6,12 +6,13 @@ import org.csuc.typesafe.semantics.SchemeId;
 import org.csuc.typesafe.semantics.Semantics;
 import xmlns.org.eurocris.cerif_1.*;
 
+import java.io.Serializable;
 import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
 import java.util.stream.Stream;
 
-public class Department extends CfOrgUnitType {
+public class Department extends CfOrgUnitType implements Serializable {
 
     private ObjectFactory FACTORY = new ObjectFactory();
     private Row row;
@@ -114,8 +115,10 @@ public class Department extends CfOrgUnitType {
             List<Row> relations = row.getList(8);
 
             relations.forEach(relation -> {
-                if (Objects.nonNull(relation.getAs(2))) {
-                    researcher(relation.getAs(2));
+                if(relations.size() == 2){
+                    if (Objects.nonNull(relation.getAs(2))) {
+                        researcher(relation.getAs(2));
+                    }
                 }
             });
         }

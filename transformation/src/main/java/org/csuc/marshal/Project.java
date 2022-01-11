@@ -8,6 +8,7 @@ import org.csuc.typesafe.semantics.SchemeId;
 import org.csuc.typesafe.semantics.Semantics;
 import xmlns.org.eurocris.cerif_1.*;
 
+import java.io.Serializable;
 import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
@@ -17,7 +18,7 @@ import java.util.UUID;
  * |               Títol|                 URL|  Codi oficial|         Codi intern|           Programa|         Data inici|Data fi|                uuid|
  * +--------------------+--------------------+--------------+--------------------+-------------------+-------------------+-------+--------------------+
  */
-public class Project extends CfProjType {
+public class Project extends CfProjType implements Serializable {
     private ObjectFactory FACTORY = new ObjectFactory();
 
     private Row row;

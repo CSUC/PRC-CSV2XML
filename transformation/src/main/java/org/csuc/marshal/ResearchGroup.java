@@ -8,12 +8,13 @@ import org.csuc.typesafe.semantics.SchemeId;
 import org.csuc.typesafe.semantics.Semantics;
 import xmlns.org.eurocris.cerif_1.*;
 
+import java.io.Serializable;
 import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
 import java.util.stream.Stream;
 
-public class ResearchGroup extends CfOrgUnitType {
+public class ResearchGroup extends CfOrgUnitType implements Serializable {
 
     private ObjectFactory FACTORY = new ObjectFactory();
     private Row row;

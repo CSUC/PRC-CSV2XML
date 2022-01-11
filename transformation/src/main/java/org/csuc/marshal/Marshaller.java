@@ -25,7 +25,7 @@ public class Marshaller {
         cerif.setSourceDatabase(ruct);
     }
 
-    public void buld(String output, boolean formatted, List... objects) throws JAXBException, FileNotFoundException {
+    public void build(String output, boolean formatted, List... objects) throws JAXBException, FileNotFoundException {
         Arrays.stream(objects).forEach(o -> {
             cerif.getCfClassOrCfClassSchemeOrCfClassSchemeDescr().addAll(o);
         });
@@ -34,7 +34,7 @@ public class Marshaller {
         javax.xml.bind.Marshaller jaxbMarshaller = jaxbContext.createMarshaller();
 
         jaxbMarshaller.setProperty(javax.xml.bind.Marshaller.JAXB_ENCODING, StandardCharsets.UTF_8.toString());
-        jaxbMarshaller.setProperty(javax.xml.bind.Marshaller.JAXB_FORMATTED_OUTPUT, false);
+        jaxbMarshaller.setProperty(javax.xml.bind.Marshaller.JAXB_FORMATTED_OUTPUT, formatted);
         jaxbMarshaller.setProperty(javax.xml.bind.Marshaller.JAXB_FRAGMENT, false);
 
         jaxbMarshaller.marshal(cerif, new FileOutputStream(output));

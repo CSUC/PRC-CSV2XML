@@ -17,9 +17,8 @@ import xmlns.org.eurocris.cerif_1.CfResPublType;
 import java.nio.file.Path;
 import java.time.Instant;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Objects;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 import static org.apache.spark.sql.functions.*;
 
@@ -73,6 +72,7 @@ public class App implements Runnable {
                             .format("com.crealytics.spark.excel") // Or .format("excel") for V2 implementation
                             .option("dataAddress", String.format("'%s'!A1", SHEETS.researchers.value())) // Optional, default: "A1"
                             .option("treatEmptyValuesAsNulls", "false") // Optional, default: true
+                            .option("maxRowsInMemory", 20)
                             .option("header", "true")
                             .load(input.toString())
                             .toDF("_c0", "_c1", "_c2", "_c3")
@@ -87,6 +87,7 @@ public class App implements Runnable {
                             .format("com.crealytics.spark.excel") // Or .format("excel") for V2 implementation
                             .option("dataAddress", String.format("'%s'!A1", SHEETS.departments.value())) // Optional, default: "A1"
                             .option("treatEmptyValuesAsNulls", "false") // Optional, default: true
+                            .option("maxRowsInMemory", 20)
                             .option("header", "true")
                             .load(input.toString())
                             .toDF("_c0", "_c1", "_c2", "_c3", "_c4", "_c5", "_c6")
@@ -100,7 +101,8 @@ public class App implements Runnable {
                             .read()
                             .format("com.crealytics.spark.excel") // Or .format("excel") for V2 implementation
                             .option("dataAddress", String.format("'%s'!A1", SHEETS.departments_relations.value())) // Optional, default: "A1"
-                            .option("treatEmptyValuesAsNulls", "false") // Optional, default: true
+                            .option("treatEmptyValuesAsNulls", "false") // Optional, default:
+                            .option("maxRowsInMemory", 20)
                             .option("header", "true")
                             .load(input.toString())
                             .toDF("_c0", "_c1")
@@ -123,6 +125,7 @@ public class App implements Runnable {
                             .format("com.crealytics.spark.excel") // Or .format("excel") for V2 implementation
                             .option("dataAddress", String.format("'%s'!A1", SHEETS.research_groups.value())) // Optional, default: "A1"
                             .option("treatEmptyValuesAsNulls", "false") // Optional, default: true
+                            .option("maxRowsInMemory", 20)
                             .option("header", "true")
                             .load(input.toString())
                             .toDF("_c0", "_c1", "_c2", "_c3", "_c4", "_c5", "_c6")
@@ -137,6 +140,7 @@ public class App implements Runnable {
                             .format("com.crealytics.spark.excel") // Or .format("excel") for V2 implementation
                             .option("dataAddress", String.format("'%s'!A1", SHEETS.research_groups_relations.value())) // Optional, default: "A1"
                             .option("treatEmptyValuesAsNulls", "false") // Optional, default: true
+                            .option("maxRowsInMemory", 20)
                             .option("header", "true")
                             .load(input.toString())
                             .toDF("_c0", "_c1", "_c2", "_c3")
@@ -161,6 +165,7 @@ public class App implements Runnable {
                             .format("com.crealytics.spark.excel") // Or .format("excel") for V2 implementation
                             .option("dataAddress", String.format("'%s'!A1", SHEETS.projects.value())) // Optional, default: "A1"
                             .option("treatEmptyValuesAsNulls", "false") // Optional, default: true
+                            .option("maxRowsInMemory", 20)
                             .option("header", "true")
                             .load(input.toString())
                             .toDF("_c0", "_c1", "_c2", "_c3", "_c4", "_c5", "_c6")
@@ -175,6 +180,7 @@ public class App implements Runnable {
                             .format("com.crealytics.spark.excel") // Or .format("excel") for V2 implementation
                             .option("dataAddress", String.format("'%s'!A1", SHEETS.projects_relations.value())) // Optional, default: "A1"
                             .option("treatEmptyValuesAsNulls", "false") // Optional, default: true
+                            .option("maxRowsInMemory", 20)
                             .option("header", "true")
                             .load(input.toString())
                             .toDF("_c0", "_c1", "_c2", "_c3")
@@ -198,6 +204,7 @@ public class App implements Runnable {
                             .format("com.crealytics.spark.excel") // Or .format("excel") for V2 implementation
                             .option("dataAddress", String.format("'%s'!A1", SHEETS.publications.value())) // Optional, default: "A1"
                             .option("treatEmptyValuesAsNulls", "false") // Optional, default: true
+                            .option("maxRowsInMemory", 20)
                             .option("header", "true")
                             .load(input.toString())
                             .toDF("_c0", "_c1", "_c2", "_c3", "_c4", "_c5", "_c6", "_c7", "_c8", "_c9", "_c10", "_c11", "_c12", "_c13", "_c14")
@@ -212,6 +219,7 @@ public class App implements Runnable {
                             .format("com.crealytics.spark.excel") // Or .format("excel") for V2 implementation
                             .option("dataAddress", String.format("'%s'!A1", SHEETS.publication_relations.value())) // Optional, default: "A1"
                             .option("treatEmptyValuesAsNulls", "false") // Optional, default: true
+                            .option("maxRowsInMemory", 20)
                             .option("header", "true")
                             .load(input.toString())
                             .toDF("_c0", "_c1", "_c2", "_c3")
@@ -234,43 +242,49 @@ public class App implements Runnable {
             Dataset<Row> research_groups_join = research_groups.join(research_groups_relations, col("research_groups._c4").equalTo(col("research_groups_relations._c0")), "left").drop(col("research_groups_relations._c0"));
             Dataset<Row> publication_join = publications.join(publication_relations, col("publications._c1").equalTo(col("publication_relations._c0")), "left").drop(col("publication_relations._c0"));
 
-//        projects_join.show(false);
-//        departments_join.show(false);
-//        research_groups_join.show(false);
-//        publication_join.show(false);
-
             //CERIF
             Marshaller marshaller = new Marshaller(ruct);
 
-            List<CfPersType> cfPersTypeList = new ArrayList<>();
-            List<CfOrgUnitType> cfOrgUnitTypeList = new ArrayList<>();
-            List<CfProjType> cfProjTypeList = new ArrayList<>();
-            List<CfResPublType> cfResPublTypeList = new ArrayList<>();
+            CopyOnWriteArrayList<CfPersType> cfPersTypeList = new CopyOnWriteArrayList<>();
+            CopyOnWriteArrayList<CfOrgUnitType> cfOrgUnitTypeList = new CopyOnWriteArrayList<>();
+            CopyOnWriteArrayList<CfOrgUnitType> cfOrgUnitTypeList_2 = new CopyOnWriteArrayList<>();
+            CopyOnWriteArrayList<CfProjType> cfProjTypeList = new CopyOnWriteArrayList<>();
+            CopyOnWriteArrayList<CfResPublType> cfResPublTypeList = new CopyOnWriteArrayList<>();
 
-            researchers.collectAsList().forEach(row -> {
-                cfPersTypeList.add(new Researcher(row, Semantics.getClassId(ClassId.CHECKED)));
-            });
+            if (researchers.count() > 0) {
+                researchers.collectAsList().forEach(row -> {
+                    cfPersTypeList.add(new Researcher(row, Semantics.getClassId(ClassId.CHECKED)));
+                });
+            }
 
-            departments_join.collectAsList().forEach(row -> {
-                cfOrgUnitTypeList.add(new Department(row, Semantics.getClassId(ClassId.DEPARTMENT_OR_INSTITUTE)));
-            });
+            if (departments_join.count() > 0) {
+                departments_join.collectAsList().forEach(row -> {
+                    cfOrgUnitTypeList.add(new Department(row, Semantics.getClassId(ClassId.DEPARTMENT_OR_INSTITUTE)));
+                });
+            }
 
-            research_groups_join.collectAsList().forEach(row -> {
-                cfOrgUnitTypeList.add(new ResearchGroup(row, Semantics.getClassId(ClassId.RESEARCH_GROUP), cfPersTypeList));
-            });
+            if (research_groups_join.count() > 0) {
+                research_groups_join.collectAsList().forEach(row -> {
+                    cfOrgUnitTypeList_2.add(new ResearchGroup(row, Semantics.getClassId(ClassId.RESEARCH_GROUP), cfPersTypeList));
+                });
+            }
 
-            projects_join.collectAsList().forEach(row -> {
-                cfProjTypeList.add(new Project(row, cfPersTypeList));
-            });
+            if (projects_join.count() > 0) {
+                projects_join.collectAsList().forEach(row -> {
+                    cfProjTypeList.add(new Project(row, cfPersTypeList));
+                });
+            }
 
-            publication_join.collectAsList().forEach(row -> {
-                cfResPublTypeList.add(new Publication(row, cfPersTypeList));
-            });
+            if (publication_join.count() > 0) {
+                publication_join.collectAsList().forEach(row -> {
+                    cfResPublTypeList.add(new Publication(row, cfPersTypeList));
+                });
+            }
 
             if (Objects.isNull(output))
-                marshaller.buld(String.format("/tmp/%s.xml", ruct), formatted, cfPersTypeList, cfOrgUnitTypeList, cfProjTypeList, cfResPublTypeList);
+                marshaller.build(String.format("/tmp/%s.xml", ruct), formatted, cfPersTypeList, cfOrgUnitTypeList, cfProjTypeList, cfResPublTypeList);
             else
-                marshaller.buld(output.toString(), formatted, cfPersTypeList, cfOrgUnitTypeList, cfProjTypeList, cfResPublTypeList);
+                marshaller.build(output.toString(), formatted, cfPersTypeList, cfOrgUnitTypeList, cfProjTypeList, cfResPublTypeList);
 
 
             sparkSession.log().info("Saved output {}", Objects.isNull(output) ? String.format("/tmp/%s.xml", ruct) : output);
