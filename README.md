@@ -13,7 +13,7 @@ mvn clean install -DskipTests
 ## Command line
 https://spark.apache.org/docs/latest/submitting-applications.html
 ```
-spark-submit --master "local[*]" --class org.csuc.cli.Cerif --packages info.picocli:picocli:4.6.2,com.crealytics:spark-excel_2.12:3.2.0_0.16.0,com.typesafe:config:1.4.1 --jars euroCRIS-cerif-definitions-1.6.2.jar prc-cerif-${version}.jar args
+spark-submit --master "local[*]" --class org.csuc.cli.Cerif --packages info.picocli:picocli:4.6.3,com.crealytics:spark-excel_2.12:3.2.1_0.16.4,com.typesafe:config:1.4.2 --jars euroCRIS-cerif-definitions-1.6.2.jar prc-cerif-${version}.jar args
 ```
 ```
 Usage: prc-cerif [-fhV] -i=<PATH> [-o=<PATH>] -r=<STRING>
