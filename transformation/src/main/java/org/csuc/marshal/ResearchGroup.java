@@ -136,11 +136,10 @@ public class ResearchGroup extends CfOrgUnitType implements Serializable {
     private void researcher(String id, String interve) {
         CfOrgUnitType.CfPersOrgUnit persOrgUnit = new CfOrgUnitType.CfPersOrgUnit();
         persOrgUnit.setCfPersId(id);
-        if (interve.toLowerCase().equals("si")
-                || interve.toLowerCase().equals("s"))
-            persOrgUnit.setCfClassId(Semantics.getClassId(ClassId.GROUP_LEADER));
-        else if (interve.toLowerCase().equals("no")
-                || interve.toLowerCase().equals("n")) persOrgUnit.setCfClassId(Semantics.getClassId(ClassId.MEMBER));
+
+        if(Objects.nonNull(interve) && (interve.toLowerCase().equals("si")
+                || interve.toLowerCase().equals("s")))  persOrgUnit.setCfClassId(Semantics.getClassId(ClassId.GROUP_LEADER));
+        else persOrgUnit.setCfClassId(Semantics.getClassId(ClassId.MEMBER));
 
         persOrgUnit.setCfClassSchemeId(Semantics.getSchemaId(SchemeId.PERSON_ORGANISATION_ROLES));
         getCfNameOrCfResActOrCfKeyw().add(FACTORY.createCfOrgUnitTypeCfPersOrgUnit(persOrgUnit));

@@ -124,11 +124,10 @@ public class Project extends CfProjType implements Serializable {
     private void researcher(String id, String ip) {
         CfProjType.CfProjPers pers = new CfProjType.CfProjPers();
         pers.setCfPersId(id);
-        if (ip.toLowerCase().equals("si")
-                || ip.toLowerCase().equals("s"))
-            pers.setCfClassId(Semantics.getClassId(ClassId.PRINCIPAL_INVESTIGATOR));
-        else if (ip.toLowerCase().equals("no")
-                || ip.toLowerCase().equals("n")) pers.setCfClassId(Semantics.getClassId(ClassId.CO_INVESTIGATOR));
+
+        if(Objects.nonNull(ip) && (ip.toLowerCase().equals("si")
+                || ip.toLowerCase().equals("s")))  pers.setCfClassId(Semantics.getClassId(ClassId.PRINCIPAL_INVESTIGATOR));
+        else pers.setCfClassId(Semantics.getClassId(ClassId.CO_INVESTIGATOR));
 
         pers.setCfClassSchemeId(Semantics.getSchemaId(SchemeId.PERSON_PROJECT_ENGAGEMENTS));
         getCfTitleOrCfAbstrOrCfKeyw().add(FACTORY.createCfProjTypeCfProjPers(pers));

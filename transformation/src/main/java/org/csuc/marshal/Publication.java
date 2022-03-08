@@ -176,8 +176,9 @@ public class Publication extends CfResPublType implements Serializable {
     private void researcher(String id, String direccio) {
         CfResPublType.CfPersResPubl pers = new CfResPublType.CfPersResPubl();
         pers.setCfPersId(id);
-        if (direccio.toLowerCase().equals("si")
-                || direccio.toLowerCase().equals("s")) pers.setCfClassId(Semantics.getClassId(ClassId.DISS_DIRECTOR));
+
+        if(Objects.nonNull(direccio) && (direccio.toLowerCase().equals("si")
+                || direccio.toLowerCase().equals("s")))  pers.setCfClassId(Semantics.getClassId(ClassId.DISS_DIRECTOR));
         else pers.setCfClassId(Semantics.getClassId(ClassId.AUTHOR));
 
         pers.setCfClassSchemeId(Semantics.getSchemaId(SchemeId.PERSON_PROFESSIONAL_RELATIONSHIPS));

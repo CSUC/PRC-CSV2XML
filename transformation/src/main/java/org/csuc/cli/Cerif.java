@@ -34,7 +34,7 @@ import static org.apache.spark.sql.functions.*;
                 "\tOS: ${os.name} ${os.version} ${os.arch}"
         }
 )
-public class App implements Runnable {
+public class Cerif implements Runnable {
     @CommandLine.Spec
     CommandLine.Model.CommandSpec spec;
 
@@ -53,7 +53,7 @@ public class App implements Runnable {
     private Instant inici;
 
     public static void main(String[] args) {
-        CommandLine cmd = new CommandLine(new App());
+        CommandLine cmd = new CommandLine(new Cerif());
         if (args.length == 0) cmd.usage(System.out);
         else cmd.execute(args);
     }
@@ -242,12 +242,13 @@ public class App implements Runnable {
             Dataset<Row> research_groups_join = research_groups.join(research_groups_relations, col("research_groups._c4").equalTo(col("research_groups_relations._c0")), "left").drop(col("research_groups_relations._c0"));
             Dataset<Row> publication_join = publications.join(publication_relations, col("publications._c1").equalTo(col("publication_relations._c0")), "left").drop(col("publication_relations._c0"));
 
+            //departments_join.write().parquet("/tmp/departments_join");
+
             //CERIF
             Marshaller marshaller = new Marshaller(ruct);
 
             CopyOnWriteArrayList<CfPersType> cfPersTypeList = new CopyOnWriteArrayList<>();
             CopyOnWriteArrayList<CfOrgUnitType> cfOrgUnitTypeList = new CopyOnWriteArrayList<>();
-            CopyOnWriteArrayList<CfOrgUnitType> cfOrgUnitTypeList_2 = new CopyOnWriteArrayList<>();
             CopyOnWriteArrayList<CfProjType> cfProjTypeList = new CopyOnWriteArrayList<>();
             CopyOnWriteArrayList<CfResPublType> cfResPublTypeList = new CopyOnWriteArrayList<>();
 
@@ -265,7 +266,7 @@ public class App implements Runnable {
 
             if (research_groups_join.count() > 0) {
                 research_groups_join.collectAsList().forEach(row -> {
-                    cfOrgUnitTypeList_2.add(new ResearchGroup(row, Semantics.getClassId(ClassId.RESEARCH_GROUP), cfPersTypeList));
+                    cfOrgUnitTypeList.add(new ResearchGroup(row, Semantics.getClassId(ClassId.RESEARCH_GROUP), cfPersTypeList));
                 });
             }
 

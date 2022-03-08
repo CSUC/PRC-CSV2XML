@@ -114,13 +114,11 @@ public class Department extends CfOrgUnitType implements Serializable {
         if (Objects.nonNull(row.getAs(8))) {
             List<Row> relations = row.getList(8);
 
-            relations.forEach(relation -> {
-                if(relations.size() == 2){
-                    if (Objects.nonNull(relation.getAs(2))) {
-                        researcher(relation.getAs(2));
-                    }
-                }
-            });
+            if(!relations.isEmpty()){
+                relations.forEach(relation -> {
+                    if(Objects.nonNull(relation.get(1))) researcher(relation.getString(1));
+                });
+            }
         }
     }
 
