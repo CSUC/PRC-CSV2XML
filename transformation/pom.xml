@@ -17,7 +17,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
         <spark.version>3.2.0</spark.version>
-        <spark.excel.version>3.2.1_0.16.4</spark.excel.version>
+        <spark.excel.version>3.2.1_0.16.5-pre2</spark.excel.version>
     </properties>
 
     <dependencies>
