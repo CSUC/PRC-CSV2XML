@@ -1,0 +1,10 @@
+version: '3.3'
+services:
+  prc-cerif:
+    build:
+      context: ./
+      dockerfile: Dockerfile
+    image: 'prc/prc-cerif:2.4.18'
+    container_name: prc-cerif
+    volumes:
+      - ${SOURCE_FOLDER}:${TARGET_FOLDER}:rw
