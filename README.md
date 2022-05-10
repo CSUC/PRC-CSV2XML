@@ -4,10 +4,10 @@
 * [Release Notes](../../releases)
 * [Wiki](../../wiki/Home)
 
-## Installing
+## Build
 
 ```
-mvn clean install -DskipTests
+sh build.sh
 ```
 
 ## Command line
