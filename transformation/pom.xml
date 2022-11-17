@@ -15,8 +15,8 @@
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
-        <spark.version>3.2.1</spark.version>
-        <spark.excel.version>3.2.1_0.17.0</spark.excel.version>
+        <spark.version>3.2.2</spark.version>
+        <spark.excel.version>3.3.1_0.18.5</spark.excel.version>
     </properties>
 
     <dependencies>
@@ -62,6 +62,7 @@
         <dependency>
             <groupId>info.picocli</groupId>
             <artifactId>picocli</artifactId>
+            <version>4.7.0</version>
         </dependency>
 
     </dependencies>
