@@ -13,7 +13,7 @@ sh build.sh
 ## Command line
 https://spark.apache.org/docs/latest/submitting-applications.html
 ```
-spark-submit --master "local[*]" --class org.csuc.cli.Cerif --packages info.picocli:picocli:4.7.0,com.crealytics:spark-excel_2.12:3.3.1_0.18.5,com.typesafe:config:1.4.2 --jars euroCRIS-cerif-definitions-1.6.2.jar prc-cerif-${version}.jar args
+spark-submit --master "local[*]" --class org.csuc.cli.Cerif --packages info.picocli:picocli:4.7.1,com.crealytics:spark-excel_2.12:3.3.1_0.18.5,com.typesafe:config:1.4.2 --jars euroCRIS-cerif-definitions-1.6.2.jar prc-cerif-${version}.jar args
 ```
 ```
 Usage: prc-cerif [-fhV] -i=<PATH> [-o=<PATH>] -r=<STRING>

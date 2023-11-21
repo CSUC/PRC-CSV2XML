@@ -18,7 +18,10 @@ import java.nio.file.Path;
 import java.time.Instant;
 import java.time.format.DateTimeFormatter;
 import java.util.Objects;
+import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.stream.Collectors;
 
 import static org.apache.spark.sql.functions.*;
 
@@ -247,14 +250,15 @@ public class Cerif implements Runnable {
             //CERIF
             Marshaller marshaller = new Marshaller(ruct);
 
-            CopyOnWriteArrayList<CfPersType> cfPersTypeList = new CopyOnWriteArrayList<>();
+            ConcurrentHashMap<String, CfPersType> cfPersTypeList = new ConcurrentHashMap<>();
             CopyOnWriteArrayList<CfOrgUnitType> cfOrgUnitTypeList = new CopyOnWriteArrayList<>();
             CopyOnWriteArrayList<CfProjType> cfProjTypeList = new CopyOnWriteArrayList<>();
             CopyOnWriteArrayList<CfResPublType> cfResPublTypeList = new CopyOnWriteArrayList<>();
 
             if (researchers.count() > 0) {
                 researchers.collectAsList().forEach(row -> {
-                    cfPersTypeList.add(new Researcher(row, Semantics.getClassId(ClassId.CHECKED)));
+                    cfPersTypeList.computeIfAbsent(Objects.isNull(row.getAs(1)) ? UUID.randomUUID().toString() : row.getAs(1), k -> new Researcher(row, Semantics.getClassId(ClassId.CHECKED)));
+                    //cfPersTypeList.add(new Researcher(row, Semantics.getClassId(ClassId.CHECKED)));
                 });
             }
 
@@ -283,10 +287,9 @@ public class Cerif implements Runnable {
             }
 
             if (Objects.isNull(output))
-                marshaller.build(String.format("/tmp/%s.xml", ruct), formatted, cfPersTypeList, cfOrgUnitTypeList, cfProjTypeList, cfResPublTypeList);
+                marshaller.build(String.format("/tmp/%s.xml", ruct), formatted, cfPersTypeList.values().stream().collect(Collectors.toList()), cfOrgUnitTypeList, cfProjTypeList, cfResPublTypeList);
             else
-                marshaller.build(output.toString(), formatted, cfPersTypeList, cfOrgUnitTypeList, cfProjTypeList, cfResPublTypeList);
-
+                marshaller.build(output.toString(), formatted, cfPersTypeList.values().stream().collect(Collectors.toList()), cfOrgUnitTypeList, cfProjTypeList, cfResPublTypeList);
 
             sparkSession.log().info("Saved output {}", Objects.isNull(output) ? String.format("/tmp/%s.xml", ruct) : output);
             sparkSession.log().info("Duration {}", TimeUtils.duration(inici, DateTimeFormatter.ISO_TIME));
