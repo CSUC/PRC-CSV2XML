@@ -13,15 +13,16 @@ import java.io.Serializable;
 import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Stream;
 
 public class Publication extends CfResPublType implements Serializable {
 
     private ObjectFactory FACTORY = new ObjectFactory();
     private Row row;
-    private List<CfPersType> cfPersTypeList;
+    private ConcurrentHashMap<String, CfPersType> cfPersTypeList;
 
-    public Publication(Row row, List<CfPersType> cfPersTypeList) {
+    public Publication(Row row, ConcurrentHashMap<String, CfPersType> cfPersTypeList) {
         this.row = row;
         this.cfPersTypeList = cfPersTypeList;
 
@@ -161,13 +162,14 @@ public class Publication extends CfResPublType implements Serializable {
                     String random = UUID.randomUUID().toString();
                     researcher(random, relation.getAs(2));
 
-                    cfPersTypeList.add(
-                            new Researcher(
+                    cfPersTypeList.computeIfAbsent(
+                            Objects.isNull(relation.get(1)) ? random : relation.getString(1),
+                                    k-> new Researcher(
                                     RowFactory.create(
                                             Objects.isNull(relation.get(0)) ? null : relation.getString(0),
                                             Objects.isNull(relation.get(1)) ? null : relation.getString(1),
                                             null, null, random),
-                                    Semantics.getClassId(ClassId.UNCHECKED)));
+                                            Objects.isNull(relation.get(1)) ? Semantics.getClassId(ClassId.UNCHECKED) : Semantics.getClassId(ClassId.CHECKED)));
                 }
             });
         }
