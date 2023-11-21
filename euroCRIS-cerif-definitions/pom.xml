@@ -10,7 +10,6 @@
     <artifactId>euroCRIS-cerif-definitions</artifactId>
     <version>1.6.2</version>
     <name>euroCRIS-cerif-definitions</name>
-    <url>http://maven.apache.org</url>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -34,14 +33,14 @@
         <dependency>
             <groupId>com.sun.xml.bind</groupId>
             <artifactId>jaxb-core</artifactId>
-            <version>4.0.2</version>
+            <version>4.0.4</version>
         </dependency>
 
         <!-- https://mvnrepository.com/artifact/com.sun.xml.bind/jaxb-impl -->
         <dependency>
             <groupId>com.sun.xml.bind</groupId>
             <artifactId>jaxb-impl</artifactId>
-            <version>4.0.2</version>
+            <version>4.0.4</version>
         </dependency>
 
     </dependencies>
