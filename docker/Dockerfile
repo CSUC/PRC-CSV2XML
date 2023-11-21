@@ -1,4 +1,4 @@
-FROM apache/spark:v3.2.1
+FROM apache/spark:latest
 
 LABEL maintainer="Albert Martínez <albert.martinez@csuc.cat>"
 
