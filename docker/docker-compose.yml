@@ -1,8 +1,8 @@
-version: '3.3'
+version: '3.8'
 services:
   prc-cerif:
     build:
-      context: ./
+      context: .
       dockerfile: Dockerfile
     image: 'prc/prc-cerif:2.4.19'
     container_name: prc-cerif
