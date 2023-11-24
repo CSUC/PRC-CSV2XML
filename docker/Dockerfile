@@ -8,4 +8,6 @@ ADD https://github.com/CSUC/PRC-CSV2XML/releases/download/2.4.19/euroCRIS-cerif-
 ADD https://github.com/CSUC/PRC-CSV2XML/releases/download/2.4.19/prc-cerif-2.4.19.jar /opt/spark/work-dir/prc-cerif.jar
 COPY run.sh /opt/spark/work-dir
 
+ENV PATH "${SPARK_HOME}/bin:${PATH}"
+
 CMD ["/bin/bash"]
