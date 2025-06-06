@@ -1,11 +1,18 @@
-version: '3.8'
 services:
   prc-cerif:
     build:
-      context: .
-      dockerfile: Dockerfile
-    image: 'prc/prc-cerif:2.4.19'
+      context: ..
+      dockerfile: docker/Dockerfile
+    image: prc-cerif:latest
     container_name: prc-cerif
-    hostname: prc-cerif
+    environment:
+      - SPARK_OPTS=--driver-java-options=-Xmx4g
+      - JAVA_OPTS=-Xmx4g
     volumes:
-      - ${SOURCE_FOLDER}:${TARGET_FOLDER}:rw
+      - ../data:/data
+    healthcheck:
+      test: ["CMD", "ps", "aux", "|", "grep", "spark"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    restart: unless-stopped 

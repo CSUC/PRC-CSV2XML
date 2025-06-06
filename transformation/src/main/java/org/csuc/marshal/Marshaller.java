@@ -14,10 +14,23 @@ import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
 
+/**
+ * Classe responsable de la generació del fitxer XML CERIF.
+ * Aquesta classe utilitza JAXB per serialitzar les dades a format XML
+ * segons l'estàndard CERIF.
+ *
+ * @author Albert Martínez
+ */
 public class Marshaller {
 
     private CERIF cerif = new CERIF();
 
+    /**
+     * Constructor de la classe Marshaller
+     *
+     * @param ruct Codi RUCT de la institució
+     * @throws DatatypeConfigurationException Si hi ha un error en la configuració de les dates
+     */
     public Marshaller(String ruct) throws DatatypeConfigurationException {
         GregorianCalendar gregory = new GregorianCalendar();
         gregory.setTime(new Date());
@@ -25,6 +38,15 @@ public class Marshaller {
         cerif.setSourceDatabase(ruct);
     }
 
+    /**
+     * Genera el fitxer XML CERIF amb les dades proporcionades
+     *
+     * @param output Ruta del fitxer de sortida
+     * @param formatted Indica si el XML ha de ser formatat
+     * @param objects Llistes d'objectes a serialitzar
+     * @throws JAXBException Si hi ha un error en la serialització
+     * @throws FileNotFoundException Si no es pot crear el fitxer de sortida
+     */
     public void build(String output, boolean formatted, List... objects) throws JAXBException, FileNotFoundException {
         Arrays.stream(objects).forEach(o -> {
             cerif.getCfClassOrCfClassSchemeOrCfClassSchemeDescr().addAll(o);
