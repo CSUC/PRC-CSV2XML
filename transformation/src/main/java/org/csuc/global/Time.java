@@ -10,8 +10,11 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 /**
- * @author amartinez
+ * Classe d'utilitats per a la gestió de dates i temps.
+ * Proporciona mètodes per convertir dates entre diferents formats
+ * i generar dates en format XMLGregorianCalendar.
  *
+ * @author Albert Martínez
  */
 public class Time {
     private static String DATE = "yyyy-MM-dd";
@@ -19,12 +22,12 @@ public class Time {
 
 
     /**
+     * Converteix una data en format String a XMLGregorianCalendar amb format de data i hora.
+     * Si hi ha algun error en la conversió, retorna null.
      *
-     * Canvia el format d'una data de tipus Date a Date Time (ISO-8601). Qualsevol error retorna un String null
-     * per a poder invalidad la data.
-     *
-     * @param inputDate
-     * @return
+     * @param inputDate Data d'entrada en format String
+     * @return XMLGregorianCalendar amb la data i hora convertida, o null si hi ha error
+     * @throws Exception Si hi ha un error en la conversió de la data
      */
     public static XMLGregorianCalendar formatDateTime(String inputDate) throws Exception {
         if (inputDate == null) return null;
@@ -36,12 +39,12 @@ public class Time {
     }
 
     /**
+     * Converteix una data en format String a XMLGregorianCalendar amb format de data.
+     * Si hi ha algun error en la conversió, retorna null.
      *
-     * Canvia el format d'una data de tipus Date a Date Time (ISO-8601). Qualsevol error retorna un String null
-     * per a poder invalidad la data.
-     *
-     * @param inputDate
-     * @return
+     * @param inputDate Data d'entrada en format String
+     * @return XMLGregorianCalendar amb la data convertida, o null si hi ha error
+     * @throws Exception Si hi ha un error en la conversió de la data
      */
     public static XMLGregorianCalendar formatDate(String inputDate) throws Exception {
         if (inputDate == null) return null;

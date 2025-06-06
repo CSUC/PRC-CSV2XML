@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
@@ -27,6 +28,8 @@
         <junit.version>4.13.2</junit.version>
         <picocli.version>4.7.6</picocli.version>
         <typesafe.config.version>1.4.3</typesafe.config.version>
+        <spark.version>3.5.0</spark.version>
+        <spark.excel.version>3.5.1_0.20.4</spark.excel.version>
     </properties>
 
     <dependencyManagement>
@@ -46,11 +49,59 @@
                 <version>${picocli.version}</version>
             </dependency>
 
+            <!-- https://mvnrepository.com/artifact/com.typesafe/config -->
             <dependency>
                 <groupId>com.typesafe</groupId>
                 <artifactId>config</artifactId>
                 <version>${typesafe.config.version}</version>
             </dependency>
+
+            <!-- https://mvnrepository.com/artifact/org.apache.spark/spark-core -->
+            <dependency>
+                <groupId>org.apache.spark</groupId>
+                <artifactId>spark-core_2.12</artifactId>
+                <version>${spark.version}</version>
+            </dependency>
+
+            <!-- https://mvnrepository.com/artifact/org.apache.spark/spark-sql -->
+            <dependency>
+                <groupId>org.apache.spark</groupId>
+                <artifactId>spark-sql_2.12</artifactId>
+                <version>${spark.version}</version>
+            </dependency>
+
+            <!-- https://mvnrepository.com/artifact/com.crealytics/spark-excel -->
+            <dependency>
+                <groupId>com.crealytics</groupId>
+                <artifactId>spark-excel_2.12</artifactId>
+                <version>${spark.excel.version}</version>
+            </dependency>
         </dependencies>
     </dependencyManagement>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.11.0</version>
+                <configuration>
+                    <source>${maven.compiler.source}</source>
+                    <target>${maven.compiler.target}</target>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-javadoc-plugin</artifactId>
+                <version>3.6.0</version>
+                <configuration>
+                    <source>${maven.compiler.source}</source>
+                    <encoding>${project.build.sourceEncoding}</encoding>
+                    <docencoding>${project.build.sourceEncoding}</docencoding>
+                    <charset>${project.build.sourceEncoding}</charset>
+                    <detectJavaApiLink>false</detectJavaApiLink>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
 </project>

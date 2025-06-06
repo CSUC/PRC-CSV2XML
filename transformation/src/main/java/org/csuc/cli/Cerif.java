@@ -25,6 +25,14 @@ import java.util.stream.Collectors;
 
 import static org.apache.spark.sql.functions.*;
 
+/**
+ * Classe principal que gestiona la conversió de dades CSV a XML CERIF.
+ * Aquesta classe utilitza Apache Spark per processar les dades i generar
+ * fitxers XML segons l'estàndard CERIF.
+ *
+ * @author Albert Martínez
+ * @version 2.4.19
+ */
 @CommandLine.Command(
         name = "prc-cerif",
         usageHelpAutoWidth = true,
@@ -41,26 +49,46 @@ public class Cerif implements Runnable {
     @CommandLine.Spec
     CommandLine.Model.CommandSpec spec;
 
+    /**
+     * Fitxer d'entrada amb les dades a processar
+     */
     @CommandLine.Option(names = {"-i", "--input"}, required = true, description = "data file", paramLabel = "<PATH>")
     private Path input;
 
+    /**
+     * Indica si el fitxer XML de sortida ha de ser formatat
+     */
     @CommandLine.Option(names = {"-f", "--formatted"}, description = "formatted output file (default: ${DEFAULT-VALUE})", paramLabel = "<BOOLEAN>")
     private Boolean formatted = false;
 
+    /**
+     * Codi RUCT de la institució
+     */
     @CommandLine.Option(names = {"-r", "--ruct"}, required = true, description = "ruct code (https://www.educacion.gob.es/ruct/home)", paramLabel = "<STRING>")
     private String ruct;
 
+    /**
+     * Fitxer de sortida XML
+     */
     @CommandLine.Option(names = {"-o", "--output"}, description = "output file (default: /tmp/`ruct`.xml)", paramLabel = "<PATH>")
     private Path output;
 
     private Instant inici;
 
+    /**
+     * Punt d'entrada principal de l'aplicació
+     *
+     * @param args Arguments de la línia de comandes
+     */
     public static void main(String[] args) {
         CommandLine cmd = new CommandLine(new Cerif());
         if (args.length == 0) cmd.usage(System.out);
         else cmd.execute(args);
     }
 
+    /**
+     * Executa el procés de conversió de dades
+     */
     @Override
     public void run() {
         try {

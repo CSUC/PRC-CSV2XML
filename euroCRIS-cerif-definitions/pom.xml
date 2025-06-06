@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <parent>
@@ -8,81 +9,100 @@
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>euroCRIS-cerif-definitions</artifactId>
-    <version>1.6.2</version>
+    <version>${revision}</version>
     <name>euroCRIS-cerif-definitions</name>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <jaxb.version>4.0.0</jaxb.version>
     </properties>
 
     <dependencies>
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
-            <version>4.13.2</version>
+            <version>${junit.version}</version>
+            <scope>test</scope>
         </dependency>
 
-        <!-- https://mvnrepository.com/artifact/javax.xml.bind/jaxb-api -->
+        <!-- JAXB API -->
         <dependency>
-            <groupId>javax.xml.bind</groupId>
-            <artifactId>jaxb-api</artifactId>
-            <version>2.4.0-b180830.0359</version>
+            <groupId>jakarta.xml.bind</groupId>
+            <artifactId>jakarta.xml.bind-api</artifactId>
+            <version>${jaxb.version}</version>
         </dependency>
 
-        <!-- https://mvnrepository.com/artifact/com.sun.xml.bind/jaxb-core -->
+        <!-- JAXB Implementation -->
+        <dependency>
+            <groupId>org.glassfish.jaxb</groupId>
+            <artifactId>jaxb-runtime</artifactId>
+            <version>${jaxb.version}</version>
+        </dependency>
+
+        <!-- JAXB Core -->
         <dependency>
             <groupId>com.sun.xml.bind</groupId>
             <artifactId>jaxb-core</artifactId>
-            <version>4.0.5</version>
+            <version>${jaxb.version}</version>
         </dependency>
-
-        <!-- https://mvnrepository.com/artifact/com.sun.xml.bind/jaxb-impl -->
-        <dependency>
-            <groupId>com.sun.xml.bind</groupId>
-            <artifactId>jaxb-impl</artifactId>
-            <version>4.0.5</version>
-        </dependency>
-
     </dependencies>
-    <!-- To use the plugin goals in your POM or parent POM -->
+
     <build>
         <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.11.0</version>
+                <configuration>
+                    <source>${maven.compiler.source}</source>
+                    <target>${maven.compiler.target}</target>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-javadoc-plugin</artifactId>
+                <version>3.6.0</version>
+                <configuration>
+                    <source>${maven.compiler.source}</source>
+                    <encoding>${project.build.sourceEncoding}</encoding>
+                    <docencoding>${project.build.sourceEncoding}</docencoding>
+                    <charset>${project.build.sourceEncoding}</charset>
+                    <detectJavaApiLink>false</detectJavaApiLink>
+                </configuration>
+            </plugin>
             <plugin>
                 <groupId>org.jvnet.jaxb2.maven2</groupId>
                 <artifactId>maven-jaxb2-plugin</artifactId>
                 <version>0.14.0</version>
                 <executions>
                     <execution>
-                        <id>add-source-for-oaidc</id>
                         <goals>
                             <goal>generate</goal>
                         </goals>
-                        <configuration>
-                            <schemaDirectory>src/main/resources</schemaDirectory>
-                            <schemaIncludes>
-                                <include>CERIF_1.6_2.xsd</include>
-                            </schemaIncludes>
-                            <generateDirectory>target/generated-sources/xjc-cerif</generateDirectory>
-                            <extension>true</extension>
-                            <cleanPackageDirectories>true</cleanPackageDirectories>
-                        </configuration>
                     </execution>
                 </executions>
+                <configuration>
+                    <schemaDirectory>${project.basedir}/src/main/resources</schemaDirectory>
+                    <schemaIncludes>
+                        <include>*.xsd</include>
+                    </schemaIncludes>
+                    <generatePackage>xmlns.org.eurocris.cerif_1</generatePackage>
+                </configuration>
             </plugin>
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>build-helper-maven-plugin</artifactId>
-                <version>3.0.0</version>
+                <version>3.5.0</version>
                 <executions>
                     <execution>
                         <id>add-source</id>
-                        <phase>install</phase>
+                        <phase>generate-sources</phase>
                         <goals>
                             <goal>add-source</goal>
                         </goals>
                         <configuration>
                             <sources>
-                                <source>${basedir}/target/generated-sources/xjc-cerif</source>
+                                <source>${project.build.directory}/generated-sources/xjc</source>
                             </sources>
                         </configuration>
                     </execution>
