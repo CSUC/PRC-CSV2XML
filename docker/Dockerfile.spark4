@@ -1,7 +1,7 @@
 # ============================================================
 # Stage 1: Resolució de dependències Maven (capa cachejada)
 # ============================================================
-FROM maven:3.9-eclipse-temurin-8 AS deps
+FROM maven:3.9-eclipse-temurin-21 AS deps
 
 WORKDIR /app
 
@@ -10,9 +10,9 @@ COPY pom.xml ./
 COPY euroCRIS-cerif-definitions/pom.xml ./euroCRIS-cerif-definitions/
 COPY transformation/pom.xml ./transformation/
 
-# Descarregar dependències offline amb cache de Maven (BuildKit)
+# Descarregar dependències offline amb cache de Maven (BuildKit) i perfil spark4
 RUN --mount=type=cache,target=/root/.m2 \
-    mvn dependency:go-offline -B -q
+    mvn dependency:go-offline -Pspark4 -B -q
 
 # ============================================================
 # Stage 2: Compilació del projecte
@@ -23,9 +23,9 @@ FROM deps AS builder
 COPY euroCRIS-cerif-definitions/src ./euroCRIS-cerif-definitions/src
 COPY transformation/src ./transformation/src
 
-# Compilar amb cache de Maven (el shade plugin inclou spark-excel, picocli, typesafe config al JAR)
+# Compilar amb cache de Maven i perfil spark4 (Scala 2.13, Java 21)
 RUN --mount=type=cache,target=/root/.m2 \
-    mvn clean package -DskipTests -B -q
+    mvn clean package -Pspark4 -DskipTests -B -q
 
 # ============================================================
 # Stage 3: Tests (opcional, es pot saltar amb --target=runtime)
@@ -34,12 +34,12 @@ FROM builder AS tester
 
 # Executar tests amb cache de Maven
 RUN --mount=type=cache,target=/root/.m2 \
-    mvn test -B -q || echo "Tests executats (ignorant errors per agilitat)"
+    mvn test -Pspark4 -B -q || echo "Tests executats (ignorant errors per agilitat)"
 
 # ============================================================
-# Stage 4: Imatge d'execució
+# Stage 4: Imatge d'execució (Spark 4.0.2 / Java 21)
 # ============================================================
-FROM apache/spark:3.5.1 AS runtime
+FROM apache/spark:4.0.2 AS runtime
 
 ARG VERSION=2.4.19
 ARG BUILD_DATE
@@ -47,7 +47,7 @@ ARG VCS_REF
 
 # Labels OCI estàndard
 LABEL org.opencontainers.image.title="PRC-CSV2XML"
-LABEL org.opencontainers.image.description="Conversor de CSV/Excel a XML CERIF per Spark 3.5.1 / Java 8"
+LABEL org.opencontainers.image.description="Conversor de CSV/Excel a XML CERIF per Spark 4.0.2 / Java 21"
 LABEL org.opencontainers.image.authors="Albert Martínez <albert.martinez@csuc.cat>"
 LABEL org.opencontainers.image.vendor="CSUC"
 LABEL org.opencontainers.image.version="${VERSION}"
@@ -60,7 +60,7 @@ LABEL org.opencontainers.image.documentation="https://github.com/CSUC/PRC-CSV2XM
 # Labels legacy per compatibilitat
 LABEL maintainer="Albert Martínez <albert.martinez@csuc.cat>"
 LABEL version="${VERSION}"
-LABEL description="PRC-CSV2XML: Conversor de CSV/Excel a XML CERIF"
+LABEL description="PRC-CSV2XML: Conversor de CSV/Excel a XML CERIF (Spark 4 / Java 21)"
 
 USER root
 
@@ -83,7 +83,7 @@ WORKDIR /app
 
 # Variables d'entorn
 ENV APP_VERSION=${VERSION}
-ENV SPARK_VERSION=3.5.1
+ENV SPARK_VERSION=4.0.2
 ENV HOME=/opt/spark
 
 # Health check per verificar que els JARs existeixen

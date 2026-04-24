@@ -223,3 +223,9 @@ buildNumber.properties
 .mvn/wrapper/maven-wrapper.jar
 
 data/*
+
+# Cursor/Claude AI
+.agents/
+.claude/
+.cursor/
+skills-lock.json
