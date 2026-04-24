@@ -17,11 +17,8 @@ import xmlns.org.eurocris.cerif_1.CfResPublType;
 import java.nio.file.Path;
 import java.time.Instant;
 import java.time.format.DateTimeFormatter;
-import java.util.Objects;
-import java.util.UUID;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.CopyOnWriteArrayList;
-import java.util.stream.Collectors;
 
 import static org.apache.spark.sql.functions.*;
 
@@ -36,7 +33,7 @@ import static org.apache.spark.sql.functions.*;
 @CommandLine.Command(
         name = "prc-cerif",
         usageHelpAutoWidth = true,
-        version = {"prc-cerif 2.4.17", "CSUC | (c) 2021"},
+        version = {"prc-cerif 2.4.19", "CSUC | (c) 2021"},
         mixinStandardHelpOptions = true,
         footerHeading = "System info:",
         footer = {
@@ -91,51 +88,33 @@ public class Cerif implements Runnable {
      */
     @Override
     public void run() {
+        inici = Instant.now();
+
+        SparkSession sparkSession = SparkSession.builder()
+                .appName("prc-csv2xml")
+                .getOrCreate();
+
         try {
-            inici = Instant.now();
+            sparkSession.sparkContext().setLogLevel("WARN");
 
-            SparkSession sparkSession = SparkSession.builder().appName("prc-csv2xml").getOrCreate();
-            //sparkSession.sparkContext().setLogLevel("WARN");
+            String inputPath = input.toString();
 
-            Dataset<Row> researchers =
-                    sparkSession
-                            .read()
-                            .format("com.crealytics.spark.excel") // Or .format("excel") for V2 implementation
-                            .option("dataAddress", String.format("'%s'!A1", SHEETS.researchers.value())) // Optional, default: "A1"
-                            .option("treatEmptyValuesAsNulls", "false") // Optional, default: true
-                            .option("maxRowsInMemory", 20)
-                            .option("header", "true")
-                            .load(input.toString())
+            Dataset<Row> researchers = readSheet(sparkSession, inputPath, SHEETS.researchers)
                             .toDF("_c0", "_c1", "_c2", "_c3")
                             .na().drop("all")
                             .withColumn("_c1", regexp_replace(col("_c1"), "\\s+", ""))
                             .withColumn("uuid", expr("uuid()"))
-                            .alias("researchers");
+                            .alias("researchers")
+                            .cache();
 
-            Dataset<Row> departments =
-                    sparkSession
-                            .read()
-                            .format("com.crealytics.spark.excel") // Or .format("excel") for V2 implementation
-                            .option("dataAddress", String.format("'%s'!A1", SHEETS.departments.value())) // Optional, default: "A1"
-                            .option("treatEmptyValuesAsNulls", "false") // Optional, default: true
-                            .option("maxRowsInMemory", 20)
-                            .option("header", "true")
-                            .load(input.toString())
+            Dataset<Row> departments = readSheet(sparkSession, inputPath, SHEETS.departments)
                             .toDF("_c0", "_c1", "_c2", "_c3", "_c4", "_c5", "_c6")
                             .na().drop("all")
                             .withColumn("_c5", regexp_replace(col("_c5"), "\\s+", ""))
                             .withColumn("uuid", expr("uuid()"))
                             .alias("departments");
 
-            Dataset<Row> departments_relations =
-                    sparkSession
-                            .read()
-                            .format("com.crealytics.spark.excel") // Or .format("excel") for V2 implementation
-                            .option("dataAddress", String.format("'%s'!A1", SHEETS.departments_relations.value())) // Optional, default: "A1"
-                            .option("treatEmptyValuesAsNulls", "false") // Optional, default:
-                            .option("maxRowsInMemory", 20)
-                            .option("header", "true")
-                            .load(input.toString())
+            Dataset<Row> departments_relations = readSheet(sparkSession, inputPath, SHEETS.departments_relations)
                             .toDF("_c0", "_c1")
                             .na().drop("all")
                             .withColumn("_c0", regexp_replace(col("_c0"), "\\s+", ""))
@@ -150,30 +129,14 @@ public class Cerif implements Runnable {
                                     collect_set(struct(col("departments_relations._c1"), col("uuid"))).as("relation")
                             );
 
-            Dataset<Row> research_groups =
-                    sparkSession
-                            .read()
-                            .format("com.crealytics.spark.excel") // Or .format("excel") for V2 implementation
-                            .option("dataAddress", String.format("'%s'!A1", SHEETS.research_groups.value())) // Optional, default: "A1"
-                            .option("treatEmptyValuesAsNulls", "false") // Optional, default: true
-                            .option("maxRowsInMemory", 20)
-                            .option("header", "true")
-                            .load(input.toString())
+            Dataset<Row> research_groups = readSheet(sparkSession, inputPath, SHEETS.research_groups)
                             .toDF("_c0", "_c1", "_c2", "_c3", "_c4", "_c5", "_c6")
                             .na().drop("all")
                             .withColumn("_c4", regexp_replace(col("_c4"), "\\s+", ""))
                             .withColumn("uuid", expr("uuid()"))
                             .alias("research_groups");
 
-            Dataset<Row> research_groups_relations =
-                    sparkSession
-                            .read()
-                            .format("com.crealytics.spark.excel") // Or .format("excel") for V2 implementation
-                            .option("dataAddress", String.format("'%s'!A1", SHEETS.research_groups_relations.value())) // Optional, default: "A1"
-                            .option("treatEmptyValuesAsNulls", "false") // Optional, default: true
-                            .option("maxRowsInMemory", 20)
-                            .option("header", "true")
-                            .load(input.toString())
+            Dataset<Row> research_groups_relations = readSheet(sparkSession, inputPath, SHEETS.research_groups_relations)
                             .toDF("_c0", "_c1", "_c2", "_c3")
                             .na().drop("all")
                             .withColumn("_c0", regexp_replace(col("_c0"), "\\s+", ""))
@@ -190,30 +153,14 @@ public class Cerif implements Runnable {
                             )
                             .alias("research_groups_relations");
 
-            Dataset<Row> projects =
-                    sparkSession
-                            .read()
-                            .format("com.crealytics.spark.excel") // Or .format("excel") for V2 implementation
-                            .option("dataAddress", String.format("'%s'!A1", SHEETS.projects.value())) // Optional, default: "A1"
-                            .option("treatEmptyValuesAsNulls", "false") // Optional, default: true
-                            .option("maxRowsInMemory", 20)
-                            .option("header", "true")
-                            .load(input.toString())
+            Dataset<Row> projects = readSheet(sparkSession, inputPath, SHEETS.projects)
                             .toDF("_c0", "_c1", "_c2", "_c3", "_c4", "_c5", "_c6")
                             .na().drop("all")
                             .withColumn("_c3", regexp_replace(col("_c3"), "\\s+", ""))
                             .withColumn("uuid", expr("uuid()"))
                             .alias("projects");
 
-            Dataset<Row> projects_relations =
-                    sparkSession
-                            .read()
-                            .format("com.crealytics.spark.excel") // Or .format("excel") for V2 implementation
-                            .option("dataAddress", String.format("'%s'!A1", SHEETS.projects_relations.value())) // Optional, default: "A1"
-                            .option("treatEmptyValuesAsNulls", "false") // Optional, default: true
-                            .option("maxRowsInMemory", 20)
-                            .option("header", "true")
-                            .load(input.toString())
+            Dataset<Row> projects_relations = readSheet(sparkSession, inputPath, SHEETS.projects_relations)
                             .toDF("_c0", "_c1", "_c2", "_c3")
                             .na().drop("all")
                             .withColumn("_c2", regexp_replace(col("_c2"), "\\s+", ""))
@@ -229,30 +176,13 @@ public class Cerif implements Runnable {
                                     collect_set(struct(col("projects_relations._c1"), col("projects_relations._c2"), col("projects_relations._c3"), col("uuid"))).as("relation")
                             );
 
-            Dataset<Row> publications =
-                    sparkSession
-                            .read()
-                            .format("com.crealytics.spark.excel") // Or .format("excel") for V2 implementation
-                            .option("dataAddress", String.format("'%s'!A1", SHEETS.publications.value())) // Optional, default: "A1"
-                            .option("treatEmptyValuesAsNulls", "false") // Optional, default: true
-                            .option("maxRowsInMemory", 20)
-                            .option("header", "true")
-                            .load(input.toString())
+            Dataset<Row> publications = readSheet(sparkSession, inputPath, SHEETS.publications)
                             .toDF("_c0", "_c1", "_c2", "_c3", "_c4", "_c5", "_c6", "_c7", "_c8", "_c9", "_c10", "_c11", "_c12", "_c13", "_c14")
                             .na().drop("all")
                             .withColumn("_c1", regexp_replace(col("_c1"), "\\s+", ""))
-                            //.withColumn("uuid", expr("uuid()"))
                             .alias("publications");
 
-            Dataset<Row> publication_relations =
-                    sparkSession
-                            .read()
-                            .format("com.crealytics.spark.excel") // Or .format("excel") for V2 implementation
-                            .option("dataAddress", String.format("'%s'!A1", SHEETS.publication_relations.value())) // Optional, default: "A1"
-                            .option("treatEmptyValuesAsNulls", "false") // Optional, default: true
-                            .option("maxRowsInMemory", 20)
-                            .option("header", "true")
-                            .load(input.toString())
+            Dataset<Row> publication_relations = readSheet(sparkSession, inputPath, SHEETS.publication_relations)
                             .toDF("_c0", "_c1", "_c2", "_c3")
                             .na().drop("all")
                             .withColumn("_c0", regexp_replace(col("_c0"), "\\s+", ""))
@@ -273,58 +203,72 @@ public class Cerif implements Runnable {
             Dataset<Row> research_groups_join = research_groups.join(research_groups_relations, col("research_groups._c4").equalTo(col("research_groups_relations._c0")), "left").drop(col("research_groups_relations._c0"));
             Dataset<Row> publication_join = publications.join(publication_relations, col("publications._c1").equalTo(col("publication_relations._c0")), "left").drop(col("publication_relations._c0"));
 
-            //departments_join.write().parquet("/tmp/departments_join");
-
-            //CERIF
             Marshaller marshaller = new Marshaller(ruct);
 
             ConcurrentHashMap<String, CfPersType> cfPersTypeList = new ConcurrentHashMap<>();
-            CopyOnWriteArrayList<CfOrgUnitType> cfOrgUnitTypeList = new CopyOnWriteArrayList<>();
-            CopyOnWriteArrayList<CfProjType> cfProjTypeList = new CopyOnWriteArrayList<>();
-            CopyOnWriteArrayList<CfResPublType> cfResPublTypeList = new CopyOnWriteArrayList<>();
+            List<CfOrgUnitType> cfOrgUnitTypeList = new ArrayList<>();
+            List<CfProjType> cfProjTypeList = new ArrayList<>();
+            List<CfResPublType> cfResPublTypeList = new ArrayList<>();
 
-            if (researchers.count() > 0) {
-                researchers.collectAsList().forEach(row -> {
-                    cfPersTypeList.computeIfAbsent(Objects.isNull(row.getAs(1)) ? UUID.randomUUID().toString() : row.getAs(1), k -> new Researcher(row, Semantics.getClassId(ClassId.CHECKED)));
-                    //cfPersTypeList.add(new Researcher(row, Semantics.getClassId(ClassId.CHECKED)));
-                });
-            }
+            String checkedClassId = Semantics.getClassId(ClassId.CHECKED);
+            String departmentClassId = Semantics.getClassId(ClassId.DEPARTMENT_OR_INSTITUTE);
+            String researchGroupClassId = Semantics.getClassId(ClassId.RESEARCH_GROUP);
 
-            if (departments_join.count() > 0) {
-                departments_join.collectAsList().forEach(row -> {
-                    cfOrgUnitTypeList.add(new Department(row, Semantics.getClassId(ClassId.DEPARTMENT_OR_INSTITUTE)));
-                });
-            }
+            List<Row> researcherRows = researchers.collectAsList();
+            researcherRows.forEach(row -> {
+                cfPersTypeList.computeIfAbsent(
+                        Objects.isNull(row.getAs(1)) ? UUID.randomUUID().toString() : row.getAs(1),
+                        k -> new Researcher(row, checkedClassId));
+            });
 
-            if (research_groups_join.count() > 0) {
-                research_groups_join.collectAsList().forEach(row -> {
-                    cfOrgUnitTypeList.add(new ResearchGroup(row, Semantics.getClassId(ClassId.RESEARCH_GROUP), cfPersTypeList));
-                });
-            }
+            departments_join.collectAsList().forEach(row -> {
+                cfOrgUnitTypeList.add(new Department(row, departmentClassId));
+            });
 
-            if (projects_join.count() > 0) {
-                projects_join.collectAsList().forEach(row -> {
-                    cfProjTypeList.add(new Project(row, cfPersTypeList));
-                });
-            }
+            research_groups_join.collectAsList().forEach(row -> {
+                cfOrgUnitTypeList.add(new ResearchGroup(row, researchGroupClassId, cfPersTypeList));
+            });
 
-            if (publication_join.count() > 0) {
-                publication_join.collectAsList().forEach(row -> {
-                    cfResPublTypeList.add(new Publication(row, cfPersTypeList));
-                });
-            }
+            projects_join.collectAsList().forEach(row -> {
+                cfProjTypeList.add(new Project(row, cfPersTypeList));
+            });
 
-            if (Objects.isNull(output))
-                marshaller.build(String.format("/tmp/%s.xml", ruct), formatted, cfPersTypeList.values().stream().collect(Collectors.toList()), cfOrgUnitTypeList, cfProjTypeList, cfResPublTypeList);
-            else
-                marshaller.build(output.toString(), formatted, cfPersTypeList.values().stream().collect(Collectors.toList()), cfOrgUnitTypeList, cfProjTypeList, cfResPublTypeList);
+            publication_join.collectAsList().forEach(row -> {
+                cfResPublTypeList.add(new Publication(row, cfPersTypeList));
+            });
 
-            sparkSession.log().info("Saved output {}", Objects.isNull(output) ? String.format("/tmp/%s.xml", ruct) : output);
+            String outputPath = Objects.isNull(output) ? String.format("/tmp/%s.xml", ruct) : output.toString();
+
+            marshaller.build(outputPath, formatted,
+                    new ArrayList<>(cfPersTypeList.values()), cfOrgUnitTypeList, cfProjTypeList, cfResPublTypeList);
+
+            sparkSession.log().info("Saved output {}", outputPath);
             sparkSession.log().info("Duration {}", TimeUtils.duration(inici, DateTimeFormatter.ISO_TIME));
 
-            sparkSession.close();
         } catch (Exception e) {
-            System.err.println(e);
+            System.err.println("Error durant la conversió: " + e.getMessage());
+            e.printStackTrace(System.err);
+        } finally {
+            sparkSession.close();
         }
+    }
+
+    /**
+     * Llegeix un full d'Excel des del fitxer d'entrada
+     *
+     * @param spark Sessió Spark
+     * @param path Ruta al fitxer Excel
+     * @param sheet Full a llegir
+     * @return Dataset amb les dades del full
+     */
+    private Dataset<Row> readSheet(SparkSession spark, String path, SHEETS sheet) {
+        return spark
+                .read()
+                .format("com.crealytics.spark.excel")
+                .option("dataAddress", String.format("'%s'!A1", sheet.value()))
+                .option("treatEmptyValuesAsNulls", "false")
+                .option("maxRowsInMemory", 20)
+                .option("header", "true")
+                .load(path);
     }
 }

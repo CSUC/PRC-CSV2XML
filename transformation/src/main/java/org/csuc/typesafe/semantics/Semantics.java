@@ -12,6 +12,10 @@ import com.typesafe.config.ConfigFactory;
  */
 public class Semantics {
 
+    private static final Config CONF = ConfigFactory.load("semantics.conf");
+    private static final Config SCHEME_ID_CONF = CONF.getObject("schemeId").toConfig();
+    private static final Config CLASS_ID_CONF = CONF.getObject("classId").toConfig();
+
     /**
      * Obté l'identificador d'esquema CERIF per al tipus especificat.
      *
@@ -19,8 +23,7 @@ public class Semantics {
      * @return Identificador de l'esquema
      */
     public static String getSchemaId(SchemeId id) {
-        Config conf = ConfigFactory.load("semantics.conf");
-        return conf.getObject("schemeId").toConfig().getString(id.name());
+        return SCHEME_ID_CONF.getString(id.name());
     }
 
     /**
@@ -30,7 +33,6 @@ public class Semantics {
      * @return Identificador de la classe
      */
     public static String getClassId(ClassId id) {
-        Config conf = ConfigFactory.load("semantics.conf");
-        return conf.getObject("classId").toConfig().getString(id.name());
+        return CLASS_ID_CONF.getString(id.name());
     }
 }

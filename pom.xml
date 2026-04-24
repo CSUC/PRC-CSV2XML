@@ -25,10 +25,12 @@
 
         <revision>2.4.19</revision>
 
+        <scala.binary.version>2.12</scala.binary.version>
+
         <junit.version>4.13.2</junit.version>
         <picocli.version>4.7.6</picocli.version>
         <typesafe.config.version>1.4.3</typesafe.config.version>
-        <spark.version>3.5.0</spark.version>
+        <spark.version>3.5.1</spark.version>
         <spark.excel.version>3.5.1_0.20.4</spark.excel.version>
     </properties>
 
@@ -59,25 +61,42 @@
             <!-- https://mvnrepository.com/artifact/org.apache.spark/spark-core -->
             <dependency>
                 <groupId>org.apache.spark</groupId>
-                <artifactId>spark-core_2.12</artifactId>
+                <artifactId>spark-core_${scala.binary.version}</artifactId>
                 <version>${spark.version}</version>
+                <scope>provided</scope>
             </dependency>
 
             <!-- https://mvnrepository.com/artifact/org.apache.spark/spark-sql -->
             <dependency>
                 <groupId>org.apache.spark</groupId>
-                <artifactId>spark-sql_2.12</artifactId>
+                <artifactId>spark-sql_${scala.binary.version}</artifactId>
                 <version>${spark.version}</version>
+                <scope>provided</scope>
             </dependency>
 
             <!-- https://mvnrepository.com/artifact/com.crealytics/spark-excel -->
             <dependency>
                 <groupId>com.crealytics</groupId>
-                <artifactId>spark-excel_2.12</artifactId>
+                <artifactId>spark-excel_${scala.binary.version}</artifactId>
                 <version>${spark.excel.version}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
+
+    <profiles>
+        <profile>
+            <id>spark4</id>
+            <properties>
+                <scala.binary.version>2.13</scala.binary.version>
+                <spark.version>4.0.2</spark.version>
+                <spark.excel.version>3.5.1_0.20.4</spark.excel.version>
+                <maven.compiler.source>21</maven.compiler.source>
+                <maven.compiler.target>21</maven.compiler.target>
+                <maven.compiler.testSource>21</maven.compiler.testSource>
+                <maven.compiler.testTarget>21</maven.compiler.testTarget>
+            </properties>
+        </profile>
+    </profiles>
 
     <build>
         <plugins>
