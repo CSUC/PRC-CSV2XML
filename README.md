@@ -65,8 +65,10 @@ mvn clean install -DskipTests -Pspark4
 # Pull de la imatge des de GitHub Container Registry
 docker pull ghcr.io/csuc/prc-csv2xml:latest
 
-# Executar directament
-docker run --rm -v $(pwd)/data:/data ghcr.io/csuc/prc-csv2xml:latest \
+# Executar directament (nota: pot requerir sudo chown després per canviar propietari)
+docker run --rm \
+  -v $(pwd)/data:/data \
+  ghcr.io/csuc/prc-csv2xml:latest \
   --input /data/entrada.xlsx \
   --output /data/sortida.xml \
   --ruct RUCT_CODE
