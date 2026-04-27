@@ -62,8 +62,6 @@ LABEL maintainer="Albert Martínez <albert.martinez@csuc.cat>"
 LABEL version="${VERSION}"
 LABEL description="PRC-CSV2XML: Conversor de CSV/Excel a XML CERIF"
 
-USER root
-
 # Crear directoris amb permisos segurs (775 en lloc de 777)
 RUN mkdir -p /app /data && \
     chown -R 185:185 /app /data && \
