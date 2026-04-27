@@ -86,7 +86,7 @@ WORKDIR /app
 # Variables d'entorn
 ENV APP_VERSION=${VERSION}
 ENV SPARK_VERSION=3.5.1
-ENV HOME=/opt/spark
+ENV HOME=/tmp
 
 # Health check per verificar que els JARs existeixen
 HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
