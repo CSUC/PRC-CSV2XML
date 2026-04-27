@@ -30,11 +30,6 @@ jobs:
             dockerfile: docker/Dockerfile
             platforms: linux/amd64
             tags-suffix: ""
-          - name: spark4
-            dockerfile: docker/Dockerfile.spark4
-            platforms: linux/amd64
-            tags-suffix: "-spark4"
-    
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -66,7 +61,7 @@ jobs:
             type=semver,pattern={{version}}
             type=semver,pattern={{major}}.{{minor}}
             type=semver,pattern={{major}}
-            type=sha,prefix={{branch}}-
+            type=sha,prefix=sha-
             type=raw,value=latest,enable={{is_default_branch}}
           labels: |
             org.opencontainers.image.title=PRC-CSV2XML
