@@ -62,6 +62,9 @@ LABEL maintainer="Albert Martínez <albert.martinez@csuc.cat>"
 LABEL version="${VERSION}"
 LABEL description="PRC-CSV2XML: Conversor de CSV/Excel a XML CERIF"
 
+# Canviar a usuari root per crear directoris
+USER root
+
 # Crear directoris amb permisos segurs (775 en lloc de 777)
 RUN mkdir -p /app /data && \
     chown -R 185:185 /app /data && \
@@ -75,7 +78,8 @@ COPY --from=builder --chown=185:185 /app/euroCRIS-cerif-definitions/target/euroC
 RUN test -f /app/prc-cerif.jar && \
     test -f /app/euroCRIS-cerif-definitions.jar && \
     echo "✓ JARs validats correctament:" && \
-    ls -lh /app/*.jar
+    ls -lh /app/*.jar && \
+    chown -R 185:185 /app
 
 WORKDIR /app
 
