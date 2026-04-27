@@ -1,18 +1,96 @@
 services:
+  # Spark 3.5.1 / Java 8 (per defecte)
   prc-cerif:
+    profiles: ["spark3", "default"]
     build:
       context: ..
       dockerfile: docker/Dockerfile
-    image: prc-cerif:latest
+      target: runtime
+      args:
+        VERSION: ${VERSION:-2.4.19}
+        BUILD_DATE: ${BUILD_DATE:-unknown}
+        VCS_REF: ${VCS_REF:-unknown}
+    image: prc-cerif:${VERSION:-latest}
     container_name: prc-cerif
+    user: "${DOCKER_UID:-0}:${DOCKER_GID:-0}"
     environment:
       - SPARK_OPTS=--driver-java-options=-Xmx4g
       - JAVA_OPTS=-Xmx4g
+      - HOME=/tmp
+      - APP_VERSION=${VERSION:-2.4.19}
+      - SPARK_VERSION=3.5.1
     volumes:
       - ../data:/data
+    deploy:
+      resources:
+        limits:
+          cpus: '2.0'
+          memory: 6G
+        reservations:
+          cpus: '1.0'
+          memory: 4G
+      restart_policy:
+        condition: on-failure
+        delay: 5s
+        max_attempts: 3
+        window: 120s
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+        compress: "true"
     healthcheck:
-      test: ["CMD", "ps", "aux", "|", "grep", "spark"]
+      test: ["CMD", "test", "-f", "/app/prc-cerif.jar"]
       interval: 30s
       timeout: 10s
       retries: 3
-    restart: unless-stopped 
+      start_period: 5s
+
+  # Spark 4.0.2 / Java 21
+  prc-cerif-spark4:
+    profiles: ["spark4"]
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile.spark4
+      target: runtime
+      args:
+        VERSION: ${VERSION:-2.4.19}
+        BUILD_DATE: ${BUILD_DATE:-unknown}
+        VCS_REF: ${VCS_REF:-unknown}
+    image: prc-cerif:spark4-${VERSION:-latest}
+    container_name: prc-cerif-spark4
+    user: "${DOCKER_UID:-0}:${DOCKER_GID:-0}"
+    environment:
+      - SPARK_OPTS=--driver-java-options=-Xmx4g
+      - JAVA_OPTS=-Xmx4g
+      - HOME=/tmp
+      - APP_VERSION=${VERSION:-2.4.19}
+      - SPARK_VERSION=4.0.2
+    volumes:
+      - ../data:/data
+    deploy:
+      resources:
+        limits:
+          cpus: '2.0'
+          memory: 6G
+        reservations:
+          cpus: '1.0'
+          memory: 4G
+      restart_policy:
+        condition: on-failure
+        delay: 5s
+        max_attempts: 3
+        window: 120s
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+        compress: "true"
+    healthcheck:
+      test: ["CMD", "test", "-f", "/app/prc-cerif.jar"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 5s

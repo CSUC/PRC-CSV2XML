@@ -15,9 +15,6 @@
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-
-        <spark.version>3.5.0</spark.version>
-        <spark.excel.version>3.5.1_0.20.4</spark.excel.version>
     </properties>
 
     <dependencies>
@@ -27,23 +24,25 @@
             <version>${revision}</version>
         </dependency>
 
-        <!-- Apache Spark -->
+        <!-- Apache Spark (provided pel runtime Spark) -->
         <dependency>
             <groupId>org.apache.spark</groupId>
-            <artifactId>spark-core_2.12</artifactId>
+            <artifactId>spark-core_${scala.binary.version}</artifactId>
             <version>${spark.version}</version>
+            <scope>provided</scope>
         </dependency>
 
         <dependency>
             <groupId>org.apache.spark</groupId>
-            <artifactId>spark-sql_2.12</artifactId>
+            <artifactId>spark-sql_${scala.binary.version}</artifactId>
             <version>${spark.version}</version>
+            <scope>provided</scope>
         </dependency>
 
         <!-- Spark Excel -->
         <dependency>
             <groupId>com.crealytics</groupId>
-            <artifactId>spark-excel_2.12</artifactId>
+            <artifactId>spark-excel_${scala.binary.version}</artifactId>
             <version>${spark.excel.version}</version>
         </dependency>
 

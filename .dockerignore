@@ -1,0 +1,40 @@
+# Git
+.git
+.gitignore
+
+# IDE
+.idea/
+*.iml
+*.iws
+*.ipr
+.vscode/
+
+# Maven build output
+**/target/
+dependency-reduced-pom.xml
+
+# Docker
+docker/
+
+# Claude/Cursor
+.claude/
+.cursor/
+.github/
+
+# Data files
+data/
+example/
+
+# Documentation
+*.md
+!docker/README.md
+LICENSE
+CODE_OF_CONDUCT.md
+PULL_REQUEST_TEMPLATE.md
+
+# OS files
+.DS_Store
+Thumbs.db
+*.tmp
+*.bak
+*.swp
