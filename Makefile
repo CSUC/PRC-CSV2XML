@@ -65,6 +65,7 @@ run:
 	@echo "   RUCT:   $(RUCT)"
 	@echo ""
 	VERSION=$(VERSION) BUILD_DATE=$(BUILD_DATE) VCS_REF=$(VCS_REF) \
+		DOCKER_UID=$$(id -u) DOCKER_GID=$$(id -g) \
 		docker compose --profile spark3 -f $(COMPOSE_FILE) run --rm prc-cerif \
 			--input /data/$(INPUT) \
 			--output /data/$(OUTPUT) \
@@ -84,6 +85,7 @@ run-spark4:
 	@echo "   RUCT:   $(RUCT)"
 	@echo ""
 	VERSION=$(VERSION) BUILD_DATE=$(BUILD_DATE) VCS_REF=$(VCS_REF) \
+		DOCKER_UID=$$(id -u) DOCKER_GID=$$(id -g) \
 		docker compose --profile spark4 -f $(COMPOSE_FILE) run --rm prc-cerif-spark4 \
 			--input /data/$(INPUT) \
 			--output /data/$(OUTPUT) \
