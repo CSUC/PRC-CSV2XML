@@ -65,9 +65,25 @@ mvn clean install -DskipTests -Pspark4
 # Pull de la imatge des de GitHub Container Registry
 docker pull ghcr.io/csuc/prc-csv2xml:latest
 
-# Executar directament (nota: pot requerir sudo chown després per canviar propietari)
+# Executar amb el directori data del projecte
+# Nota: pot requerir sudo chown després per canviar propietari dels fitxers generats
+docker run --rm -v $(pwd)/data:/data ghcr.io/csuc/prc-csv2xml:latest \
+  --input /data/entrada.xlsx \
+  --output /data/sortida.xml \
+  --ruct RUCT_CODE
+
+# Amb paths personalitzats (input i output en directoris diferents)
 docker run --rm \
-  -v $(pwd)/data:/data \
+  -v /tmp:/input:ro \
+  -v ~/Baixades:/output \
+  ghcr.io/csuc/prc-csv2xml:latest \
+  --input /input/entrada.xlsx \
+  --output /output/sortida.xml \
+  --ruct RUCT_CODE
+
+# Amb el mateix directori per input i output
+docker run --rm \
+  -v ~/Documents:/data \
   ghcr.io/csuc/prc-csv2xml:latest \
   --input /data/entrada.xlsx \
   --output /data/sortida.xml \
@@ -128,11 +144,11 @@ Usage: prc-cerif [-fhV] -i=<PATH> [-o=<PATH>] -r=<STRING>
 ### Amb Docker + Makefile (més senzill) 🚀
 
 ```bash
-# Copiar el fitxer d'entrada al directori data
+# Copiar el fitxer d'entrada al directori data (opcional si uses paths personalitzats)
 mkdir -p data
 cp fitxer.xlsx data/entrada.xlsx
 
-# Executar amb Spark 3.5 (estable)
+# Executar amb Spark 3.5 (estable) - usa el directori data/ per defecte
 make run INPUT=entrada.xlsx OUTPUT=sortida.xml RUCT=RUCT_CODE
 
 # Executar amb Spark 4
@@ -141,9 +157,24 @@ make run-spark4 INPUT=entrada.xlsx OUTPUT=sortida.xml RUCT=RUCT_CODE
 # XML formatat (indentat)
 make run INPUT=entrada.xlsx OUTPUT=sortida.xml RUCT=RUCT_CODE FORMATTED=1
 
+# Amb paths personalitzats (input i output de diferents directoris)
+make run INPUT_DIR=/tmp INPUT=entrada.xlsx \
+         OUTPUT_DIR=~/Baixades OUTPUT=sortida.xml \
+         RUCT=RUCT_CODE
+
+# Amb el mateix directori per input i output
+make run INPUT_DIR=~/Documents INPUT=dades.xlsx OUTPUT=resultat.xml RUCT=RUCT_CODE
+
 # Veure totes les comandes disponibles
 make help
 ```
+
+**Notes sobre paths personalitzats:**
+- Per defecte, `INPUT_DIR` i `OUTPUT_DIR` són `./data`
+- Si especifiques directoris diferents, el Makefile usarà `docker run` directament
+- Si input i output són al mateix directori, es munta com a `/data`
+- Si són en directoris diferents, es munten com `/input` (read-only) i `/output`
+- Els paths suportats inclouen `~` per al home directory
 
 ### Amb Docker Compose
 

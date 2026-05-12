@@ -6,6 +6,10 @@ VERSION := 2.4.19
 BUILD_DATE := $(shell date -u +'%Y-%m-%dT%H:%M:%SZ')
 VCS_REF := $(shell git rev-parse --short HEAD 2>/dev/null || echo "unknown")
 
+# Directoris per defecte (poden ser sobreescrits)
+INPUT_DIR := ./data
+OUTPUT_DIR := ./data
+
 # Colors per output
 BLUE := \033[0;34m
 GREEN := \033[0;32m
@@ -26,6 +30,10 @@ help:
 	@echo "  make run-spark4 INPUT=entrada.xlsx OUTPUT=sortida.xml RUCT=CODE"
 	@echo "                      - Executar amb Spark 4"
 	@echo ""
+	@echo "  $(YELLOW)Amb paths personalitzats:$(NC)"
+	@echo "  make run INPUT_DIR=/tmp INPUT=entrada.xlsx \\"
+	@echo "           OUTPUT_DIR=~/Baixades OUTPUT=sortida.xml RUCT=CODE"
+	@echo ""
 	@echo "$(GREEN)Desenvolupament:$(NC)"
 	@echo "  make shell          - Shell interactiu al contenidor (Spark 3.5)"
 	@echo "  make test           - Executar tests"
@@ -35,9 +43,10 @@ help:
 	@echo "$(GREEN)Neteja:$(NC)"
 	@echo "  make clean          - Netejar imatges i contenidors"
 	@echo ""
-	@echo "$(YELLOW)Exemple:$(NC)"
+	@echo "$(YELLOW)Exemples:$(NC)"
 	@echo "  make build"
 	@echo "  make run INPUT=plantilla_PRC_CREAF.xlsx OUTPUT=resultat.xml RUCT=CODE123"
+	@echo "  make run INPUT_DIR=/tmp INPUT=test.xlsx OUTPUT_DIR=~/Baixades OUTPUT=out.xml RUCT=CODE"
 
 build:
 	@echo "$(BLUE)🔨 Construint imatge Spark 3.5.1 / Java 8...$(NC)"
@@ -60,16 +69,45 @@ run:
 	@test -n "$(OUTPUT)" || (echo "$(YELLOW)ERROR: OUTPUT no definit.$(NC)" && exit 1)
 	@test -n "$(RUCT)" || (echo "$(YELLOW)ERROR: RUCT no definit.$(NC)" && exit 1)
 	@echo "$(BLUE)🚀 Executant conversió amb Spark 3.5.1...$(NC)"
-	@echo "   Input:  data/$(INPUT)"
-	@echo "   Output: data/$(OUTPUT)"
+	@echo "   Input:  $(INPUT_DIR)/$(INPUT)"
+	@echo "   Output: $(OUTPUT_DIR)/$(OUTPUT)"
 	@echo "   RUCT:   $(RUCT)"
 	@echo ""
-	VERSION=$(VERSION) BUILD_DATE=$(BUILD_DATE) VCS_REF=$(VCS_REF) \
-		docker compose --profile spark3 -f $(COMPOSE_FILE) run --rm prc-cerif \
-			--input /data/$(INPUT) \
-			--output /data/$(OUTPUT) \
+	@# Expandir ~ si existeix
+	$(eval INPUT_DIR_EXPANDED := $(shell echo $(INPUT_DIR)))
+	$(eval OUTPUT_DIR_EXPANDED := $(shell echo $(OUTPUT_DIR)))
+	@# Detectar si s'usen paths personalitzats
+	@if [ "$(INPUT_DIR)" != "./data" ] || [ "$(OUTPUT_DIR)" != "./data" ]; then \
+		echo "$(YELLOW)📁 Usant paths personalitzats...$(NC)"; \
+		MOUNT_ARGS=""; \
+		if [ "$(INPUT_DIR_EXPANDED)" = "$(OUTPUT_DIR_EXPANDED)" ]; then \
+			MOUNT_ARGS="-v $(INPUT_DIR_EXPANDED):/data"; \
+			INPUT_PATH="/data/$(INPUT)"; \
+			OUTPUT_PATH="/data/$(OUTPUT)"; \
+		else \
+			MOUNT_ARGS="-v $(INPUT_DIR_EXPANDED):/input:ro -v $(OUTPUT_DIR_EXPANDED):/output"; \
+			INPUT_PATH="/input/$(INPUT)"; \
+			OUTPUT_PATH="/output/$(OUTPUT)"; \
+		fi; \
+		docker run --rm \
+			--user "$$(id -u):$$(id -g)" \
+			-e SPARK_OPTS="--driver-java-options=-Xmx4g" \
+			-e JAVA_OPTS="-Xmx4g" \
+			-e HOME=/tmp \
+			$$MOUNT_ARGS \
+			prc-cerif:$(VERSION) \
+			--input $$INPUT_PATH \
+			--output $$OUTPUT_PATH \
 			--ruct $(RUCT) \
-			$(if $(FORMATTED),--formatted)
+			$(if $(FORMATTED),--formatted); \
+	else \
+		VERSION=$(VERSION) BUILD_DATE=$(BUILD_DATE) VCS_REF=$(VCS_REF) \
+			docker compose --profile spark3 -f $(COMPOSE_FILE) run --rm prc-cerif \
+				--input /data/$(INPUT) \
+				--output /data/$(OUTPUT) \
+				--ruct $(RUCT) \
+				$(if $(FORMATTED),--formatted); \
+	fi
 	@echo ""
 	@echo "$(GREEN)✓ Conversió completada!$(NC)"
 
@@ -79,16 +117,45 @@ run-spark4:
 	@test -n "$(OUTPUT)" || (echo "$(YELLOW)ERROR: OUTPUT no definit.$(NC)" && exit 1)
 	@test -n "$(RUCT)" || (echo "$(YELLOW)ERROR: RUCT no definit.$(NC)" && exit 1)
 	@echo "$(BLUE)🚀 Executant conversió amb Spark 4.0.2...$(NC)"
-	@echo "   Input:  data/$(INPUT)"
-	@echo "   Output: data/$(OUTPUT)"
+	@echo "   Input:  $(INPUT_DIR)/$(INPUT)"
+	@echo "   Output: $(OUTPUT_DIR)/$(OUTPUT)"
 	@echo "   RUCT:   $(RUCT)"
 	@echo ""
-	VERSION=$(VERSION) BUILD_DATE=$(BUILD_DATE) VCS_REF=$(VCS_REF) \
-		docker compose --profile spark4 -f $(COMPOSE_FILE) run --rm prc-cerif-spark4 \
-			--input /data/$(INPUT) \
-			--output /data/$(OUTPUT) \
+	@# Expandir ~ si existeix
+	$(eval INPUT_DIR_EXPANDED := $(shell echo $(INPUT_DIR)))
+	$(eval OUTPUT_DIR_EXPANDED := $(shell echo $(OUTPUT_DIR)))
+	@# Detectar si s'usen paths personalitzats
+	@if [ "$(INPUT_DIR)" != "./data" ] || [ "$(OUTPUT_DIR)" != "./data" ]; then \
+		echo "$(YELLOW)📁 Usant paths personalitzats...$(NC)"; \
+		MOUNT_ARGS=""; \
+		if [ "$(INPUT_DIR_EXPANDED)" = "$(OUTPUT_DIR_EXPANDED)" ]; then \
+			MOUNT_ARGS="-v $(INPUT_DIR_EXPANDED):/data"; \
+			INPUT_PATH="/data/$(INPUT)"; \
+			OUTPUT_PATH="/data/$(OUTPUT)"; \
+		else \
+			MOUNT_ARGS="-v $(INPUT_DIR_EXPANDED):/input:ro -v $(OUTPUT_DIR_EXPANDED):/output"; \
+			INPUT_PATH="/input/$(INPUT)"; \
+			OUTPUT_PATH="/output/$(OUTPUT)"; \
+		fi; \
+		docker run --rm \
+			--user "$$(id -u):$$(id -g)" \
+			-e SPARK_OPTS="--driver-java-options=-Xmx4g" \
+			-e JAVA_OPTS="-Xmx4g" \
+			-e HOME=/tmp \
+			$$MOUNT_ARGS \
+			prc-cerif:spark4-$(VERSION) \
+			--input $$INPUT_PATH \
+			--output $$OUTPUT_PATH \
 			--ruct $(RUCT) \
-			$(if $(FORMATTED),--formatted)
+			$(if $(FORMATTED),--formatted); \
+	else \
+		VERSION=$(VERSION) BUILD_DATE=$(BUILD_DATE) VCS_REF=$(VCS_REF) \
+			docker compose --profile spark4 -f $(COMPOSE_FILE) run --rm prc-cerif-spark4 \
+				--input /data/$(INPUT) \
+				--output /data/$(OUTPUT) \
+				--ruct $(RUCT) \
+				$(if $(FORMATTED),--formatted); \
+	fi
 	@echo ""
 	@echo "$(GREEN)✓ Conversió completada!$(NC)"
 
