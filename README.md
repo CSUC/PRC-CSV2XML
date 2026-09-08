@@ -171,7 +171,7 @@ make help
 
 **Notes sobre paths personalitzats:**
 - Per defecte, `INPUT_DIR` i `OUTPUT_DIR` són `./data`
-- Si especifiques directoris diferents, el Makefile usarà `docker run` directament
+- Si especifiques directoris diferents, el Makefile munta volums addicionals via `docker compose`
 - Si input i output són al mateix directori, es munta com a `/data`
 - Si són en directoris diferents, es munten com `/input` (read-only) i `/output`
 - Els paths suportats inclouen `~` per al home directory

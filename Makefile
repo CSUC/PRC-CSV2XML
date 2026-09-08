@@ -73,33 +73,32 @@ run:
 	@echo "   Output: $(OUTPUT_DIR)/$(OUTPUT)"
 	@echo "   RUCT:   $(RUCT)"
 	@echo ""
-	@# Expandir ~ si existeix
+	@# Expandir ~ i obtenir paths absoluts per als volums
 	$(eval INPUT_DIR_EXPANDED := $(shell echo $(INPUT_DIR)))
 	$(eval OUTPUT_DIR_EXPANDED := $(shell echo $(OUTPUT_DIR)))
+	$(eval INPUT_DIR_ABS := $(abspath $(INPUT_DIR_EXPANDED)))
+	$(eval OUTPUT_DIR_ABS := $(abspath $(OUTPUT_DIR_EXPANDED)))
 	@# Detectar si s'usen paths personalitzats
 	@if [ "$(INPUT_DIR)" != "./data" ] || [ "$(OUTPUT_DIR)" != "./data" ]; then \
 		echo "$(YELLOW)📁 Usant paths personalitzats...$(NC)"; \
-		MOUNT_ARGS=""; \
-		if [ "$(INPUT_DIR_EXPANDED)" = "$(OUTPUT_DIR_EXPANDED)" ]; then \
-			MOUNT_ARGS="-v $(INPUT_DIR_EXPANDED):/data"; \
+		VOLUME_ARGS=""; \
+		if [ "$(INPUT_DIR_ABS)" = "$(OUTPUT_DIR_ABS)" ]; then \
+			VOLUME_ARGS="-v $(INPUT_DIR_ABS):/data"; \
 			INPUT_PATH="/data/$(INPUT)"; \
 			OUTPUT_PATH="/data/$(OUTPUT)"; \
 		else \
-			MOUNT_ARGS="-v $(INPUT_DIR_EXPANDED):/input:ro -v $(OUTPUT_DIR_EXPANDED):/output"; \
+			VOLUME_ARGS="-v $(INPUT_DIR_ABS):/input:ro -v $(OUTPUT_DIR_ABS):/output"; \
 			INPUT_PATH="/input/$(INPUT)"; \
 			OUTPUT_PATH="/output/$(OUTPUT)"; \
 		fi; \
-		docker run --rm \
-			--user "$$(id -u):$$(id -g)" \
-			-e SPARK_OPTS="--driver-java-options=-Xmx4g" \
-			-e JAVA_OPTS="-Xmx4g" \
-			-e HOME=/tmp \
-			$$MOUNT_ARGS \
-			prc-cerif:$(VERSION) \
-			--input $$INPUT_PATH \
-			--output $$OUTPUT_PATH \
-			--ruct $(RUCT) \
-			$(if $(FORMATTED),--formatted); \
+		VERSION=$(VERSION) BUILD_DATE=$(BUILD_DATE) VCS_REF=$(VCS_REF) \
+			docker compose --profile spark3 -f $(COMPOSE_FILE) run --rm \
+				$$VOLUME_ARGS \
+				prc-cerif \
+				--input $$INPUT_PATH \
+				--output $$OUTPUT_PATH \
+				--ruct $(RUCT) \
+				$(if $(FORMATTED),--formatted); \
 	else \
 		VERSION=$(VERSION) BUILD_DATE=$(BUILD_DATE) VCS_REF=$(VCS_REF) \
 			docker compose --profile spark3 -f $(COMPOSE_FILE) run --rm prc-cerif \
@@ -121,33 +120,32 @@ run-spark4:
 	@echo "   Output: $(OUTPUT_DIR)/$(OUTPUT)"
 	@echo "   RUCT:   $(RUCT)"
 	@echo ""
-	@# Expandir ~ si existeix
+	@# Expandir ~ i obtenir paths absoluts per als volums
 	$(eval INPUT_DIR_EXPANDED := $(shell echo $(INPUT_DIR)))
 	$(eval OUTPUT_DIR_EXPANDED := $(shell echo $(OUTPUT_DIR)))
+	$(eval INPUT_DIR_ABS := $(abspath $(INPUT_DIR_EXPANDED)))
+	$(eval OUTPUT_DIR_ABS := $(abspath $(OUTPUT_DIR_EXPANDED)))
 	@# Detectar si s'usen paths personalitzats
 	@if [ "$(INPUT_DIR)" != "./data" ] || [ "$(OUTPUT_DIR)" != "./data" ]; then \
 		echo "$(YELLOW)📁 Usant paths personalitzats...$(NC)"; \
-		MOUNT_ARGS=""; \
-		if [ "$(INPUT_DIR_EXPANDED)" = "$(OUTPUT_DIR_EXPANDED)" ]; then \
-			MOUNT_ARGS="-v $(INPUT_DIR_EXPANDED):/data"; \
+		VOLUME_ARGS=""; \
+		if [ "$(INPUT_DIR_ABS)" = "$(OUTPUT_DIR_ABS)" ]; then \
+			VOLUME_ARGS="-v $(INPUT_DIR_ABS):/data"; \
 			INPUT_PATH="/data/$(INPUT)"; \
 			OUTPUT_PATH="/data/$(OUTPUT)"; \
 		else \
-			MOUNT_ARGS="-v $(INPUT_DIR_EXPANDED):/input:ro -v $(OUTPUT_DIR_EXPANDED):/output"; \
+			VOLUME_ARGS="-v $(INPUT_DIR_ABS):/input:ro -v $(OUTPUT_DIR_ABS):/output"; \
 			INPUT_PATH="/input/$(INPUT)"; \
 			OUTPUT_PATH="/output/$(OUTPUT)"; \
 		fi; \
-		docker run --rm \
-			--user "$$(id -u):$$(id -g)" \
-			-e SPARK_OPTS="--driver-java-options=-Xmx4g" \
-			-e JAVA_OPTS="-Xmx4g" \
-			-e HOME=/tmp \
-			$$MOUNT_ARGS \
-			prc-cerif:spark4-$(VERSION) \
-			--input $$INPUT_PATH \
-			--output $$OUTPUT_PATH \
-			--ruct $(RUCT) \
-			$(if $(FORMATTED),--formatted); \
+		VERSION=$(VERSION) BUILD_DATE=$(BUILD_DATE) VCS_REF=$(VCS_REF) \
+			docker compose --profile spark4 -f $(COMPOSE_FILE) run --rm \
+				$$VOLUME_ARGS \
+				prc-cerif-spark4 \
+				--input $$INPUT_PATH \
+				--output $$OUTPUT_PATH \
+				--ruct $(RUCT) \
+				$(if $(FORMATTED),--formatted); \
 	else \
 		VERSION=$(VERSION) BUILD_DATE=$(BUILD_DATE) VCS_REF=$(VCS_REF) \
 			docker compose --profile spark4 -f $(COMPOSE_FILE) run --rm prc-cerif-spark4 \
